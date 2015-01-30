@@ -63,8 +63,12 @@ var values = {}
 var error = false
 var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
 
+var scope = {
+    values: {}
+}
+
 $(document).ready(function (event) {
-    var inputs = {
+    scope.inputs = {
         balls: {
             min: $('#balls-min'),
             max: $('#balls-max')
@@ -79,23 +83,24 @@ $(document).ready(function (event) {
         }
     }
 
-    var $form = $('#form')
-    var $root = $('body, html')
+    scope.$form = $('#form')
+    scope.$root = $('body, html')
 
-    var outputs = {
+    scope.outputs = {
         balls:  $('#p-balls'),
         period: $('#p-period'),
         height:  $('#p-height'),
     }
 
-    var message = {
+    scope.message = {
         $success: $('#success'),
         $error:   $('#error')
     }
 
-    var $patterns = $('#patterns')
+    scope.$patterns = $('#patterns')
 
-    $form.on('submit', function (event) {
+    scope.$form.on('submit', scope, function (event) {
+        var scope = event.data
         event.preventDefault()
 
         var patterns = siteswapGenerator(values.balls, values.period, values.height)
@@ -109,35 +114,36 @@ $(document).ready(function (event) {
         }
         html += '</ul>'
 
-        var top = $patterns.offset().top
+        var top = scope.$patterns.offset().top
         console.log($(window).height())
-        $patterns.css('height', 'auto')
-        $patterns.css('min-height', $(window).height())
+        scope.$patterns.css('height', 'auto')
+        scope.$patterns.css('min-height', $(window).height())
 
-        $root.animate({scrollTop: top}, '500', 'swing', function() { 
+        scope.$root.animate({scrollTop: top}, '500', 'swing', function() { 
             //alert("Finished animating");
         });
 
-        $patterns.html(html)
+        scope.$patterns.html(html)
     })
 
-    $form.on('input', 'input[type=number]', function () {
+    scope.$form.on('input', 'input[type=number]', scope, function (event) {
+        var scope = event.data
         var key = $(this).data('type')
         values[key] = {
-            min: parseInt(inputs[key].min.val()) || undefined,
-            max: parseInt(inputs[key].max.val()) || undefined
+            min: parseInt(scope.inputs[key].min.val()) || undefined,
+            max: parseInt(scope.inputs[key].max.val()) || undefined
         }
-        generateText[key](text, values[key], outputs[key])
-        console.log('error:', error)
-        console.log('text.error:', text.error)
+        generateText[key](text, values[key], scope.outputs[key])
+        //console.log('error:', error)
+        //console.log('text.error:', text.error)
         if (!error && text.error) {
-            message.$success.addClass('hide')
-            message.$error.text(text.error)
-            message.$error.removeClass('hide')
+            scope.message.$success.addClass('hide')
+            scope.message.$error.text(text.error)
+            scope.message.$error.removeClass('hide')
             error = true
         } else if (error && !text.error) {
-            message.$error.addClass('hide')
-            message.$success.removeClass('hide')
+            scope.message.$error.addClass('hide')
+            scope.message.$success.removeClass('hide')
             error = false
         }
         console.log(text)
@@ -146,16 +152,15 @@ $(document).ready(function (event) {
     })
 
     
-    for (var key in outputs) {
+    for (var key in scope.outputs) {
         values[key] = {
-            min: parseInt(inputs[key].min.val()) || undefined,
-            max: parseInt(inputs[key].max.val()) || undefined
+            min: parseInt(scope.inputs[key].min.val()) || undefined,
+            max: parseInt(scope.inputs[key].max.val()) || undefined
         }
-        console.log(values[key])
-        generateText[key](text, values[key], outputs[key])
+        generateText[key](text, values[key], scope.outputs[key])
 
         if (!error && text.error) {
-            message.$error.text(text.error)
+            scope.message.$error.text(text.error)
         }
     }
 })

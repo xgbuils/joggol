@@ -91,7 +91,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'src/styles/',
-          src: [ '**/*.styl' ],
+          src: [ 'main.styl' ],
           dest: 'dist/dev/styles/',
           ext: '.css'
         }]
@@ -104,7 +104,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'src/styles/',
-          src: [ '**/*.styl' ],
+          src: [ 'main.styl' ],
           dest: 'dist/prod/styles/',
           ext: '.css'
         }]
