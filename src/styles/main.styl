@@ -1,22 +1,26 @@
 @import '../../bower_components/normalize.styl/normalize.styl'
 @import 'siteswap_icons.styl'
+@import 'mixins/mixins.styl'
 
 orangeColor = #ff8000
 grayColor   = #474747
 redColor    = #CF4646
+bodySize    = 18px
 
 body
-	font-family: 'Sans Serif';
-	font-size: 18px;
-	margin: 0;
+	font-family 'Sans Serif'
+	font-size bodySize
+	margin 0
+	padding 0
+	overflow hidden
 fieldset
 	background: rgba(redColor, 0.2);
 	padding .5em .2em
 	margin .5em 0
 	border solid 1px #c0c0c0
 	border-radius 3px
-form
-	padding .3em
+	div
+		display inline-block
 legend
 	display block
 	padding 0.3em 0.6em
@@ -27,7 +31,7 @@ legend
 header
 	background redColor
 	color white
-	padding .5em
+	//padding .5em
 	box-shadow rgba(redColor, 0.2) 2px 2px 2px 2px
 	.icon-logo
 		vertical-align middle
@@ -37,34 +41,101 @@ header
 		display inline-block
 		vertical-align middle
 		margin 0
-		padding-left .5em
+		padding 0
+		//padding-left .5em
 		font-size 1.7em
 		font-family: 'Shadows Into Light', cursive;
 		
 
-input {
+input
 	width: 64px;
-}
-
-.submit {
+.content
+.header
+	margin 0 auto
+.content
+	width 100%
+	text-align center
+	//overflow hidden
+	font-size 0
+.dashboard
+.description
+.patterns
+	width 100%
+	display inline-block
+	vertical-align top
+	text-align left
+	font-size bodySize
+.description
+	show false
+@media screen and (min-width: 350px)
+	.header
+	.patterns
+	.dashboard
+		width 350px
+@media screen and (min-width: 500px)
+	.header
+	.content
+		width 90%
+	.dashboard
+		width 100%
+		text-align justify
+		fieldset
+			width 30%
+			display inline-block
+			text-align left
+			label
+				display inline-block
+				width 2.3em
+		.message
+			width 100%
+			box-sizing border-box
+		.submit
+			width 100%
+			input
+				width 300px
+	.patterns
+		width 100%
+@media screen and (min-width: 800px)
+	article
+		margin .5em
+	.content
+		margin 0 auto
+		padding 0
+	.dashboard
+		width 60%
+		margin-top 1em
+	.description
+		show true
+		width 25%
+	.patterns
+		width 90%
+		padding 0 5%
+@media screen and (min-width: 1000px)
+	.header
+	.content
+		width 1000px
+	.description
+		width 30%
+	.patterns
+		padding 0 0%
+.hide
+	display: none;
+.patterns
+	//margin-top 2em
+	text-align justify
+.submit
 	border: none;
 	background: transparent;
 	box-shadow: none;
-}
-
-.submit input {
-	display: block;
-	width: 80%;
-	margin: 0 auto;
-	padding: .5em;
-	font-size: 1.5em;
-}
-
-.hide {
-	display: none;
-}
+	input
+		display: block;
+		width: 80%;
+		margin: 0 auto;
+		padding: .5em;
+		font-size: 1.5em;
+.title
+	font-family: 'Shadows Into Light', cursive;
 #patterns
-	overflow hidden
 	ul
 		margin 0
 		padding 0
@@ -72,9 +143,8 @@ input {
 		display inline-block
 		list-style-type none
 		padding .5em
-		margin .5em
+		margin .2em
 		border-radius 3px
 		background rgba(redColor, 0.2)
-#wrapper {
-	margin-top: .5em;
-}
+.wrapper
+	//margin-top: .5em

@@ -20,6 +20,7 @@ var generateText = {
     
     period: function (text, period, $output) {
         text.error = false
+        console.log(period)
         console.log('eooo', text.error)
         if (period.min !== undefined && period.max !== undefined 
          && period.min <= period.max && period.min > 0) {
@@ -150,10 +151,11 @@ $(document).ready(function (event) {
             min: parseInt(inputs[key].min.val()) || undefined,
             max: parseInt(inputs[key].max.val()) || undefined
         }
+        console.log(values[key])
         generateText[key](text, values[key], outputs[key])
 
         if (!error && text.error) {
-            message.$error(text.error)
+            message.$error.text(text.error)
         }
     }
 })
