@@ -163,4 +163,8 @@ $(document).ready(function (event) {
             scope.message.$error.text(text.error)
         }
     }
+
+    $(window).on('resize', function () {
+        $('#data-height').text($(this).height())
+    })
 })
