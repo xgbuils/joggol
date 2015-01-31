@@ -126,6 +126,12 @@ $(document).ready(function (event) {
         scope.$patterns.html(html)
     })
 
+    $('input[type=number]', scope.$form).on('focus', function (event) {
+        var $this = $(this)
+        console.log($this[0])
+        $this.select()
+    })
+
     scope.$form.on('input', 'input[type=number]', scope, function (event) {
         var scope = event.data
         var key = $(this).data('type')
