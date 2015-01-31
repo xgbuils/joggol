@@ -43,6 +43,13 @@ fieldset
 	border-radius 3px
 	div
 		display inline-block
+	@media screen and (max-width: 799px) and (max-height: 319px)
+		margin .3em 0
+		&.description
+			margin-top 0
+	@media screen and (max-width: 799px) and (max-height: 290px)
+		legend
+			margin-bottom -0.2em
 legend
 	display: block
 	padding: 0.3em 0.6em
