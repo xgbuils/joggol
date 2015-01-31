@@ -16,72 +16,76 @@
     </div>
   </header>
   <div class="wrapper">
-    <section class="content">
-      <article class="description">
-        <h2 class="title">joggol</h2>
-        <p>
-            Generador i simulador de malabars.
-        </p>
-        <p>
-            Prova amb diferents nombres i genera tots els patrons possibles!
-        </p>
-      </article>
-      <article class="dashboard">
-        <form id="form">
-          <fieldset class="balls">
-            <legend>boles</legend>
-            <div>
-              <label>Min:</label>
-              <input type="number" data-type="balls" name="balls-min" id="balls-min" value="3" required/>
-            </div>
-            <div>
-              <label>Max:</label>
-              <input type="number" data-type="balls" name="balls-max" id="balls-max" value="3" required/>
-            </div>
-          </fieldset>
-          <fieldset class="period">
-            <legend>període</legend>
-            <div>
-              <label>Min:</label>
-              <input type="number" data-type="period" name="period-min" id="period-min" value="2" required/>
-            </div>
-            <div>
-              <label>Max:</label>
-              <input type="number" data-type="period" name="period-max" id="period-max" value="3" required/>
-            </div>
-          </fieldset>
-          <fieldset class="height">
-            <legend>alçada</legend>
-            <div>
-              <label>Min:</label>
-              <input type="number" data-type="height" name="height-min" id="height-min" />
-            </div>
-            <div>
-              <label>Max:</label>
-              <input type="number" data-type="height" name="height-max" id="height-max" value="5" />
-            </div>
-          </fieldset>
-          <fieldset class="message">
-            <legend>descripció</legend>
-            <span id="error"></span>
-            <span id="success">
-              Patrons
-              <span id="p-balls"></span>
-              <span id="p-period"></span>
-              <span id="p-height"></span>
-            </span>
-          </fieldset>
-          <fieldset class="create">
-            <input type="submit" value="generar" />
-          </fieldset>
-        </form>
-      </article>
-      <article class="patterns">
-        <div id="patterns"></div>
-      </article>
-      <article class="simulator">
-      </article>
-    </section>
+    <div class="content">
+      <section>
+        <article class="description">
+          <h2 class="title">joggol</h2>
+          <p>
+              Generador i simulador de malabars.
+          </p>
+          <p>
+              Prova amb diferents nombres i genera tots els patrons possibles!
+          </p>
+        </article>
+        <article class="dashboard">
+          <form id="form">
+            <fieldset class="balls">
+              <legend>boles</legend>
+              <div>
+                <label>Min:</label>
+                  <input type="number" data-type="balls" name="balls-min" id="balls-min" value="3" required/>
+              </div>
+              <div>
+                <label>Max:</label>
+                  <input type="number" data-type="balls" name="balls-max" id="balls-max" value="3" required/>
+              </div>
+            </fieldset>
+            <fieldset class="period">
+              <legend>període</legend>
+              <div>
+                <label>Min:</label>
+                  <input type="number" data-type="period" name="period-min" id="period-min" value="2" required/>
+              </div>
+              <div>
+                <label>Max:</label>
+                  <input type="number" data-type="period" name="period-max" id="period-max" value="3" required/>
+              </div>
+            </fieldset>
+            <fieldset class="height">
+              <legend>alçada</legend>
+              <div>
+                <label>Min:</label>
+                  <input type="number" data-type="height" name="height-min" id="height-min" />
+              </div>
+              <div>
+                <label>Max:</label>
+                  <input type="number" data-type="height" name="height-max" id="height-max" value="5" />
+              </div>
+            </fieldset>
+            <fieldset class="message">
+              <legend>descripció</legend>
+              <span id="error"></span>
+              <span id="success">
+                Patrons
+                <span id="p-balls"></span>
+                <span id="p-period"></span>
+                <span id="p-height"></span>
+              </span>
+            </fieldset>
+            <fieldset class="create">
+              <input type="submit" value="generar" />
+            </fieldset>
+          </form>
+        </article>
+      </section>
+      <section>
+        <article class="patterns">
+          <div id="patterns"></div>
+        </article>
+        <article class="simulator">
+        </article>
+      </section>
+    </div>
   </div>
   <script src="js/jquery.min.js"></script>
   <script src="js/main.js"></script>
