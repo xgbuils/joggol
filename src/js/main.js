@@ -1,5 +1,6 @@
 var siteswapGenerator = require('siteswap-generator')
 var scrollTo = require('./scrollTo.js')
+var Juggler = require('./Juggler/juggler.js')
 
 var generateText = {
     balls: function (text, balls, $output) {
@@ -99,6 +100,8 @@ $(document).ready(function (event) {
 
     scope.$patterns = $('#patterns')
 
+    scope.$simulator = $('#simulator')
+
     scope.$form.on('submit', scope, function (event) {
         var scope = event.data
         event.preventDefault()
@@ -106,18 +109,19 @@ $(document).ready(function (event) {
         var patterns = siteswapGenerator(values.balls, values.period, values.height)
         var html = '<ul>\n'
         for (var i = 0; i < patterns.length; ++i) {
-            html += '<li>'
-            html += patterns[i].map(function (e) {
+            var textPattern = patterns[i].map(function (e) {
                 return heightToLetter[e]
             }).join('')
-            html += '</li>\n'
+            html += '<li><a href="#simulator' + '?pattern=' + textPattern + '">'
+            html += textPattern
+            html += '</a></li>\n'
         }
         html += '</ul>'
 
         var top = scope.$patterns.offset().top
         console.log($(window).height())
-        scope.$patterns.css('height', 'auto')
-        scope.$patterns.css('min-height', $(window).height())
+        scope.$simulator.css('height', 'auto')
+        scope.$simulator.css('min-height', $(window).height())
 
         scope.$root.animate({scrollTop: top}, '500', 'swing', function() { 
             //alert("Finished animating");
@@ -172,5 +176,21 @@ $(document).ready(function (event) {
 
     $(window).on('resize', function () {
         $('#data-height').text($(this).height())
+    })
+
+    scope.$patterns.on('click', 'a', scope, function (event) {
+        var scope = event.data
+        if (!scope.juggler) {
+            scope.juggler = new Juggler({
+                stage: {
+                    container: 'juggler-simulator',
+                    width:  scope.$simulator.width(),
+                    height: scope.$simulator.height()
+                }
+            })
+        }
+        scope.juggler.stop()
+        scope.juggler.setPattern('531')
+        scope.juggler.play()
     })
 })
