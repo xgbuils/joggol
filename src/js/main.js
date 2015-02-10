@@ -179,7 +179,8 @@ $(document).ready(function (event) {
     })
 
     scope.$patterns.on('click', 'a', scope, function (event) {
-        var scope = event.data
+        var scope     = event.data
+        var targetTop = scope.$simulator.offset().top
         if (!scope.juggler) {
             scope.juggler = new Juggler({
                 stage: {
@@ -189,8 +190,11 @@ $(document).ready(function (event) {
                 }
             })
         }
+        scope.$root.animate({scrollTop: targetTop}, '500', 'swing', function() { 
+            //alert("Finished animating");
+        });
         scope.juggler.stop()
-        scope.juggler.setPattern('531')
+        scope.juggler.setPattern($(this).text())
         scope.juggler.play()
     })
 })
