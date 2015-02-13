@@ -74,7 +74,8 @@ var error = false
 var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
 
 var scope = {
-    values: {}
+    values: {},
+    touch: {}
 }
 
 $(document).ready(function (event) {
@@ -241,11 +242,11 @@ $(document).ready(function (event) {
         scope.$focus.text(num)
     })
 
-    scope.$root.on('touchstart', scope, function (event) {
-        scope.$root.css('background', 'red')
+    scope.$keyboard.on('swipeleft', scope, function (event) {
+        scope.$create.text(event.velocityX)
     })
 
-    scope.$root.on('touchmove', scope, function (event) {
-        scope.$root.css('background', 'red')
+    scope.$root.on('swiperight', scope, function (event) {
+        scope.$create.text(event.velocityX)
     })
 })

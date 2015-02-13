@@ -111,10 +111,16 @@ module.exports = function(grunt) {
       },
     },
     copy: {
-      'vendor-dev': {
+      'jquery-dev': {
         expand: true,
         cwd: 'bower_components/jquery/dist/',
         src: ['jquery.min.js'],
+        dest: 'dist/dev/js/',
+      },
+      'jquerymobile-dev': {
+        expand: true,
+        cwd: 'vendor/',
+        src: ['jquery.mobile.custom.js'],
         dest: 'dist/dev/js/',
       },
       'html-dev': {
@@ -129,7 +135,7 @@ module.exports = function(grunt) {
         src: ['**/*'],
         dest: 'dist/dev/fonts',
       },
-      'vendor-prod': {
+      'jquery-prod': {
         expand: true,
         cwd: 'bower_components/jquery/dist/',
         src: ['jquery.min.js'],
@@ -147,11 +153,17 @@ module.exports = function(grunt) {
         src: ['**/*'],
         dest: 'dist/prod/fonts/',
       },
+      'jquerymobile-prod': {
+        expand: true,
+        cwd: 'vendor/',
+        src: ['jquery.mobile.custom.js'],
+        dest: 'dist/prod/js/',
+      },
     }
   });
 
-  grunt.registerTask('copy:dev', ['copy:html-dev', 'copy:fonts-dev', 'copy:vendor-dev']);
-  grunt.registerTask('copy:prod', ['copy:html-prod', 'copy:fonts-prod', 'copy:vendor-prod']);
+  grunt.registerTask('copy:dev', ['copy:html-dev', 'copy:fonts-dev', 'copy:jquery-dev', 'copy:jquerymobile-dev']);
+  grunt.registerTask('copy:prod', ['copy:html-prod', 'copy:fonts-prod', 'copy:jquery-prod', 'copy:jquerymobile-prod']);
   grunt.registerTask('build:dev', ['copy:dev', 'stylus:dev', 'browserify:dev']);
   grunt.registerTask('build:prod', ['copy:prod', 'stylus:prod', 'browserify:prod', 'uglify:prod']);
   grunt.registerTask('server:dev', ['build:dev', 'connect:dev', 'watch']);
