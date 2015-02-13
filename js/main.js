@@ -1,6 +1,248 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+require('./rAF.js')
+
+var Animation = function (func) {
+    this.func   = func
+    this.on     = false
+    this.paused = this.played = Date.now()
+    this.v      = 1
+    this.active = false
+}
+Animation.prototype = {
+    play: function () {
+        if (this.func && !this.on) {
+            if (this.paused)
+                this.played += (Date.now() - this.paused)
+            loop.call(this)
+            this.active = this.on = true
+        }
+    },
+    pause: function () {
+        if (this.func && this.on) {
+            cancelAnimationFrame(this.id)
+            this.active = this.on = false
+            this.paused = Date.now()
+        }
+    },
+    mute: function () {
+        if (this.func && this.on) {
+            cancelAnimationFrame(this.id)
+            this.active = this.on = false
+            this.paused = undefined
+        }
+    },
+    stop: function () {
+        if (this.func) {
+            this.pause()
+            this.paused = this.played = Date.now()
+        }
+    },
+    seek: function (time) {
+        if (this.func) {
+            var now     = Date.now()
+            this.played = now - time
+            this.paused = now
+        }
+    },
+    speed: function (v) {
+        if(this.func && isFinite(v)) {
+            if (v) {
+                v = v / this.v
+                var now         = Date.now()
+                var diff_played = (now - this.played) / v
+                this.played     = now - diff_played
+                if (this.paused) {
+                    var diff_paused = (now - this.paused) / v
+                    this.paused     = now - diff_paused
+                }
+                this.v *= v
+                if (this.active)
+                    this.play()
+            } else {
+                this.pause()
+                this.active = true
+            }
+        }
+    },
+    remove: function () {
+    	if (this.func) {
+            this.pause()
+            delete this.func
+        }
+    },
+}
+function loop () {
+    var now = Date.now()
+    var frame = {
+        time: (now - this.played) * this.v
+    }
+    this.func(frame)
+    this.id = window.requestAnimationFrame(loop.bind(this))
+}
+module.exports = Animation
+},{"./rAF.js":2}],2:[function(require,module,exports){
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+ 
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+ 
+// MIT license
+ 
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+},{}],3:[function(require,module,exports){
+function Layer(options) {
+	this.shapes    = []
+	this.canvas    = document.createElement('canvas')
+	this.canvas.style.position = 'absolute'
+	this.canvas.style.top  = '0'
+	this.canvas.style.left = '0'
+    this.ctx       = this.canvas.getContext('2d')
+}
+
+var LayerProto = Layer.prototype
+
+LayerProto.add = function (shape) {
+	this.shapes.push(shape)
+	shape.layer = this
+}
+
+LayerProto.draw = function (shape) {
+	this.clear()
+	this.shapes.forEach(function (shape) {
+		shape.draw()
+	})
+}
+
+var ua = window.navigator.userAgent
+var native_android_browser = /android/i.test(ua) && ua.indexOf('534.30')
+
+if (native_android_browser) {
+	console.log('native_android_browser')
+    LayerProto.clear = function (shape) {
+    	this.ctx.clearRect(0, 0, this.width, this.height)
+    	// if early version of android browser
+    	// fix bug android browsers: 
+    	// https://medium.com/@dhashvir/android-4-1-x-stock-browser-canvas-solution-ffcb939af758
+    	this.canvas.style.display = 'none'
+        this.canvas.offsetHeight
+        this.canvas.style.display = 'inherit'
+    }
+} else {
+	LayerProto.clear = function (shape) {
+		this.ctx.clearRect(0, 0, this.width, this.height)
+	}
+}
+
+LayerProto.remove = function (shape) {
+	this.clear()
+	this.shapes.forEach(function (shape) {
+		delete shape.layer
+	})
+	this.shapes = []
+}
+
+module.exports = Layer
+},{}],4:[function(require,module,exports){
+function Circle(options) {
+	this.shape = options
+}
+
+Circle.prototype.draw = function () {
+	//console.log('draw circle')
+	var shape = this.shape
+	var layer = this.layer
+	layer.ctx.beginPath()
+	layer.ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI)
+	layer.ctx.closePath()
+	if (shape.fill) {
+		layer.ctx.fillStyle = shape.fill
+		layer.ctx.fill()
+	}
+}
+
+Circle.prototype.setX = function (x) {
+	this.shape.x = x
+}
+
+Circle.prototype.setY = function (y) {
+	this.shape.y = y
+}
+
+module.exports = Circle
+},{}],5:[function(require,module,exports){
+function Stage (options) {
+	this.layers    = []
+	var container = this.container = document.getElementById(options.container)
+	if (!container)
+		throw new Error ('element #' + options.container + ' does not exist')
+	var style = container.style
+	style.position = 'relative'
+	style.width  = options.width + 'px'
+	style.height = options.height + 'px'
+	style.overflow = 'hidden'
+	this.width  = parseInt(options.width)
+	this.height = parseInt(options.height)
+}
+
+Stage.prototype.add = function (layer) {
+	var canvas = layer.canvas
+	this.layers.push(layer)
+	canvas.width  = layer.width  = this.width
+	canvas.height = layer.height = this.height
+	this.container.appendChild(canvas)
+}
+
+Stage.prototype.resize = function (dimensions) {
+	var dim    = {}
+	  , width  = parseInt(dimensions.width)
+	  , height = parseInt(dimensions.height)
+	  , style  = this.container.style
+	if (isFinite(width)) {
+		style.width  = width  + 'px'
+		this.width   = width
+	}
+	if (isFinite(height)) {
+		style.height = height + 'px'
+		this.height  = height
+	}
+}
+
+module.exports = Stage
+},{}],6:[function(require,module,exports){
+module.exports = {
+  Animation: require('./Animation/Animation.js'),
+  Stage:     require('./Canvas/Stage.js'),
+  Layer:     require('./Canvas/Layer.js'),
+  Circle:    require('./Canvas/Shape/Circle.js')
+}
+
+
+},{"./Animation/Animation.js":1,"./Canvas/Layer.js":3,"./Canvas/Shape/Circle.js":4,"./Canvas/Stage.js":5}],7:[function(require,module,exports){
 module.exports = require('./src/siteswap-generator')
-},{"./src/siteswap-generator":2}],2:[function(require,module,exports){
+},{"./src/siteswap-generator":8}],8:[function(require,module,exports){
 function copyObject (obj) {
     var o = {}
     for (var key in obj) {
@@ -97,211 +339,7 @@ function recursive(period, top, used, pattern, patterns) {
 }
 
 module.exports = siteswapGenerator
-},{}],3:[function(require,module,exports){
-require('./rAF.js')
-
-var Animation = function (func) {
-    this.func   = func
-    this.on     = false
-    this.paused = this.played = Date.now()
-    this.v      = 1
-    this.active = false
-}
-Animation.prototype = {
-    play: function () {
-        if (this.func && !this.on) {
-            this.played += (Date.now() - this.paused)
-            loop.call(this)
-            this.active = this.on = true
-        }
-    },
-    pause: function () {
-        if (this.func && this.on) {
-            cancelAnimationFrame(this.id)
-            this.active = this.on = false
-            this.paused = Date.now()
-        }        
-    },
-    stop: function () {
-        if (this.func) {
-            this.pause()
-            this.paused = this.played = Date.now()
-        }
-    },
-    seek: function (time) {
-        if (this.func) {
-            var now     = Date.now()
-            this.played = now - time
-            this.paused = now
-        }
-    },
-    speed: function (v) {
-        if(this.func && isFinite(v)) {
-            if (v) {
-                v = v / this.v
-                var now         = Date.now()
-                var diff_played = (now - this.played) / v
-                var diff_paused = (now - this.paused) / v
-                this.played     = now - diff_played
-                this.paused     = now - diff_paused
-                this.v *= v
-                if (this.active)
-                    this.play()
-            } else {
-                this.pause()
-                this.active = true
-            }
-        }
-    },
-    remove: function () {
-    	if (this.func) {
-            this.pause()
-            delete this.func
-        }
-    },
-}
-function loop () {
-    var now = Date.now()
-    var frame = {
-        time: (now - this.played) * this.v
-    }
-    this.func(frame)
-    this.id = window.requestAnimationFrame(loop.bind(this))
-}
-module.exports = Animation
-},{"./rAF.js":4}],4:[function(require,module,exports){
-// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
- 
-// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
- 
-// MIT license
- 
-(function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
-                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
- 
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
- 
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-}());
-},{}],5:[function(require,module,exports){
-function Layer(options) {
-	this.shapes    = []
-	this.canvas    = document.createElement('canvas')
-	this.canvas.style.position = 'absolute'
-	this.canvas.style.top  = '0'
-	this.canvas.style.left = '0'
-    this.ctx       = this.canvas.getContext('2d')
-}
-
-var LayerProto = Layer.prototype
-
-LayerProto.add = function (shape) {
-	this.shapes.push(shape)
-	shape.layer = this
-}
-
-LayerProto.draw = function (shape) {
-	this.clear()
-	this.shapes.forEach(function (shape) {
-		shape.draw()
-	})
-}
-
-var ua = window.navigator.userAgent
-var native_android_browser = /android/i.test(ua) && ua.indexOf('534.30')
-
-if (native_android_browser) {
-	console.log('native_android_browser')
-    LayerProto.clear = function (shape) {
-    	this.ctx.clearRect(0, 0, this.width, this.height)
-    	// if early version of android browser
-    	// fix bug android browsers: 
-    	// https://medium.com/@dhashvir/android-4-1-x-stock-browser-canvas-solution-ffcb939af758
-    	this.canvas.style.display = 'none'
-        this.canvas.offsetHeight
-        this.canvas.style.display = 'inherit'
-    }
-} else {
-	LayerProto.clear = function (shape) {
-		this.ctx.clearRect(0, 0, this.width, this.height)
-	}
-}
-
-LayerProto.remove = function (shape) {
-	this.clear()
-	this.shapes.forEach(function (shape) {
-		delete shape.layer
-	})
-	this.shapes = []
-}
-
-module.exports = Layer
-},{}],6:[function(require,module,exports){
-function Circle(options) {
-	this.shape = options
-}
-
-Circle.prototype.draw = function () {
-	//console.log('draw circle')
-	var shape = this.shape
-	var layer = this.layer
-	layer.ctx.beginPath()
-	layer.ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI)
-	layer.ctx.closePath()
-	if (shape.fill) {
-		layer.ctx.fillStyle = shape.fill
-		layer.ctx.fill()
-	}
-}
-
-Circle.prototype.setX = function (x) {
-	this.shape.x = x
-}
-
-Circle.prototype.setY = function (y) {
-	this.shape.y = y
-}
-
-module.exports = Circle
-},{}],7:[function(require,module,exports){
-function Stage (options) {
-	this.layers    = []
-	var container = this.container = document.getElementById(options.container)
-	container.style.position = 'relative'
-	container.width  = options.width
-	container.height = options.height
-	this.width  = parseInt(options.width)
-	this.height = parseInt(options.height)
-}
-
-Stage.prototype.add = function (layer) {
-	var canvas = layer.canvas
-	this.layers.push(layer)
-	canvas.width  = layer.width  = this.width
-	canvas.height = layer.height = this.height
-	this.container.appendChild(canvas)
-}
-
-module.exports = Stage
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 var undefined;
@@ -384,12 +422,9 @@ function extend() {
 };
 
 module.exports = extend
-},{}],9:[function(require,module,exports){
-var Animation = require('./Animation/Animation.js')
-var Circle = require('./Canvas/Shape/Circle.js')
+},{}],10:[function(require,module,exports){
+var Kinema = require('kinemajs')
 var extend = require('./extend.js')
-var Layer = require('./Canvas/Layer.js')
-var Stage = require('./Canvas/Stage.js')
 
 var Juggler = (function () {
 
@@ -452,9 +487,9 @@ var Juggler = (function () {
                     y: 0.9 * attrs.stage.height
                 }
             },
-            layer: new Layer()
+            layer: new Kinema.Layer()
         }, attrs)
-        this.attrs.stage = new Stage(this.attrs.stage)
+        this.attrs.stage = new Kinema.Stage(this.attrs.stage)
         this.attrs.stage.add(this.attrs.layer)
 
         var juggling = this.attrs.juggling
@@ -552,7 +587,7 @@ var Juggler = (function () {
                     begin[j + numbers[jmod].value] = i
                     ++i
                     var ball = {
-                        figure: new Circle({
+                        figure: new Kinema.Circle({
                             x: j % 2 === 0 ? left + 15 : right -15,
                             y: y0,
                             radius: radius || 10,
@@ -575,7 +610,7 @@ var Juggler = (function () {
         var self = this
 
         //attrs.stage.add(attrs.layer)          
-        attrs.animation = new Animation(function(frame) {
+        attrs.animation = new Kinema.Animation(function(frame) {
             var steps = Math.floor(frame.time / juggling.interval)
             //console.log(steps)
             self.balls.forEach(function (ball) {
@@ -654,26 +689,42 @@ var Juggler = (function () {
         var self = this
         self.attrs.animation.stop()
         self.attrs.layer.remove()
-        //self.attrs.layer = new Kinetic.Layer()
     }
 
+    /*Juggler.prototype.resize = function (dimensions) {
+        this.stop()
+        this.attrs.stage.resize(dimensions)
+    }*/
+
     Juggler.prototype.play = function () {
-        this.attrs.animation.play()
+        var animation = this.attrs.animation
+        if (animation)
+            animation.play()
     }
 
     Juggler.prototype.pause = function () {
-        this.attrs.animation.pause()
+        var animation = this.attrs.animation
+        if (animation)
+            animation.pause()
+    }
+
+    Juggler.prototype.mute = function () {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.mute()
     }
 
     Juggler.prototype.stop = function () {
-        if(this.attrs.animation) {
-            this.attrs.animation.stop()
-        }
+        var animation = this.attrs.animation
+        if (animation)
+            animation.stop()
         this.attrs.layer.remove()
     }
 
     Juggler.prototype.speed = function (speed) {
-        this.attrs.animation.speed(speed)
+        var animation = this.attrs.animation
+        if (animation)
+            animation.speed(speed)
     }
 
     Juggler.prototype.colors = function (colors) {
@@ -704,7 +755,7 @@ function behaviour(figure, frame) {
 }
 
 module.exports = Juggler
-},{"./Animation/Animation.js":3,"./Canvas/Layer.js":5,"./Canvas/Shape/Circle.js":6,"./Canvas/Stage.js":7,"./extend.js":8}],10:[function(require,module,exports){
+},{"./extend.js":9,"kinemajs":6}],11:[function(require,module,exports){
 var siteswapGenerator = require('siteswap-generator')
 var scrollTo = require('./scrollTo.js')
 var Juggler = require('./Juggler/juggler.js')
@@ -791,7 +842,8 @@ $(document).ready(function (event) {
         }
     }
 
-    scope.$form = $('#form')
+    scope.$form   = $('#form')
+    scope.$create = $('#create')
     scope.$root = $('body, html')
 
     scope.outputs = {
@@ -809,7 +861,7 @@ $(document).ready(function (event) {
 
     scope.$simulator = $('#simulator')
 
-    scope.$form.on('submit', scope, function (event) {
+    scope.$create.on('click', scope, function (event) {
         var scope = event.data
         event.preventDefault()
 
@@ -837,18 +889,18 @@ $(document).ready(function (event) {
         scope.$patterns.html(html)
     })
 
-    $('input[type=number]', scope.$form).on('focus', function (event) {
+    $('span[contenteditable]').on('focus', function (event) {
         var $this = $(this)
         console.log($this[0])
         $this.select()
     })
 
-    scope.$form.on('input', 'input[type=number]', scope, function (event) {
+    scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
         var scope = event.data
         var key = $(this).data('type')
         values[key] = {
-            min: parseInt(scope.inputs[key].min.val()) || undefined,
-            max: parseInt(scope.inputs[key].max.val()) || undefined
+            min: parseInt(scope.inputs[key].min.text()) || undefined,
+            max: parseInt(scope.inputs[key].max.text()) || undefined
         }
         generateText[key](text, values[key], scope.outputs[key])
         //console.log('error:', error)
@@ -871,8 +923,8 @@ $(document).ready(function (event) {
     
     for (var key in scope.outputs) {
         values[key] = {
-            min: parseInt(scope.inputs[key].min.val()) || undefined,
-            max: parseInt(scope.inputs[key].max.val()) || undefined
+            min: parseInt(scope.inputs[key].min.text()) || undefined,
+            max: parseInt(scope.inputs[key].max.text()) || undefined
         }
         generateText[key](text, values[key], scope.outputs[key])
 
@@ -905,7 +957,7 @@ $(document).ready(function (event) {
         scope.juggler.play()
     })
 })
-},{"./Juggler/juggler.js":9,"./scrollTo.js":11,"siteswap-generator":1}],11:[function(require,module,exports){
+},{"./Juggler/juggler.js":10,"./scrollTo.js":12,"siteswap-generator":7}],12:[function(require,module,exports){
 module.exports = function scrollTo(element, to, duration) {
     var start = element.scrollTop,
         change = to - start,
@@ -933,4 +985,4 @@ Math.easeInOutQuad = function (t, b, c, d) {
 	t--;
 	return -c/2 * (t*(t-2) - 1) + b;
 };
-},{}]},{},[10]);
+},{}]},{},[11]);
