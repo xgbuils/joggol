@@ -131,24 +131,21 @@ $(document).ready(function (event) {
         scope.$patterns.html(html)
     })
 
-    $('span[contenteditable]').on('focus', function (event) {
-        var $this = $(this)
-        console.log($this[0])
-        $this.select()
-    })
-
     scope.$form.on('click', '.editable', scope, function (event) {
         var scope = event.data
         $('.contenteditable', this).first().focus()
     })
 
-    scope.$form.on('click', '.contenteditable', scope, function (event) {
+    scope.$form.on('click', '.contenteditable', function (event) {
         event.stopPropagation()
         event.preventDefault()
     })
 
-    scope.$form.on('focus', '.contenteditable', scope, function (event) {
+    scope.$form.on('focus', '.contenteditable', function (event) {
         event.preventDefault()
+        var $this = $(this)
+        console.log($this[0])
+        $this.select()
     })
 
     scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
