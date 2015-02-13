@@ -13,7 +13,7 @@ article = {
 
 body = {
 	font: {
-		size: 18px
+		size: 22px
 	}
 }
 
@@ -25,166 +25,92 @@ button = {
 }
 
 color = {
-	'red': #CF4646
+	main: #2F9C9A
 }
 
-
+num_samples = 2
 
 body
-	font-family: 'Sans Serif'
+	//font-family: 'Sans Serif'
+	font-family: 'Josefin Sans', sans-serif;
 	font-size: body.font.size
 	margin: 0
 	padding: 0
-fieldset
-	background: rgba(color.red, 0.2);
-	padding .5em .2em
-	margin .5em 0
-	border solid 1px #c0c0c0
-	border-radius 3px
-	div
-		display inline-block
-header
-	background: color.red
+li
+	list-style: none
+
+.content
+	padding: .5em
+	width: 100%
+.form
+	font-size: 1.4em
+	padding: 1em 0
+	h2
+		//border-bottom: solid 1px color.main
+		display: inline-block
+		font-size: 1em
+		text-transform: capitalize
+		&:after
+			content: ":"
+	.editable
+		border: solid 1px #ccc
+		border-radius: .2em
+		//box-shadow: 2px 2px 8px #ccc
+		display: inline-block
+		padding: .2em .2em 0
+	.patterns-description
+		h2
+			display: block
+.header
+	background: color.main
 	color: white
-	padding: .5em 0
-	box-shadow: rgba(color.red, 0.2) 2px 2px 2px 2px
-legend
-	display: block
-	padding: 0.3em 0.6em
-	border-radius: .4em
-	text-transform: capitalize
-	border: solid 1px #c0c0c0
-	background: white
-
-		
-
-input
-	width: 64px;
-.content
-.header
 	margin: 0 auto
-.content
-	width: 100%
 	text-align: center
-	font-size: 0
-	section:first-child
-		border-bottom: solid 8px color.red
-.dashboard
-.description
-.patterns
-.simulator
-	width: 100%
-	display: inline-block
-	vertical-align: top
-	text-align: left
-	font-size: body.font.size
-.description
-	show false
-.header
-	font-size 0.8em
 	.icon-logo
 		vertical-align middle
 		display inline-block
 		font-size 3.3em
 		margin 0
 		margin-right .1em
+	
+.header-btn
+	background: white
+	border-radius: .2em
+	color: black
+	display: inline-block
+	height: 2em
+	line-height: 2em
+	padding 0 .5em
+	text-decoration: none
+.header-main
+	font-size 1.3em
+	padding: 1em 0
 	h1
-		display inline-block
-		vertical-align middle
+		font-size: 2.5em
+		margin: 0
+		padding: 0
+	strong
+		font-weight: normal
+	.description
+		margin .2 0
+.hide
+	display: none
+.languages
+	font-size: 0.7em
+	padding: 3em 0 1.5em
+	ul
 		margin 0
 		padding 0
-@media screen and (min-width: 350px)
-	.header
-	.patterns
-	.dashboard
-		width 350px
-@media screen and (min-width: 500px)
-	.header
-	.content
-		width 90%
-	.dashboard
-		width: 100%
-		text-align: justify
-		fieldset
-			width: 30%
-			display: inline-block
-			text-align: left
-			label
-				display inline-block
-				width 2.3em
-		.message
-			width: 100%
-			box-sizing: border-box
-		.create
-			width: 100%
-			input
-				width: button.create.width
-	.patterns
-		width 100%
-@media screen and (min-width: 800px)
-	article
-		margin: article.margin
-	header
-		margin-bottom 1em
-	/*.balls
-	.period
-		margin-right 1em*/
-	.content
-		margin: 0 auto
-		padding: 0
-		text-align: justify
-		section:first-child
-			padding-bottom: button.create.height + 3 * article.margin * body.font.size
-	.dashboard
-		width: 68%
-		margin-top: 1em
-		.balls
-		.height
-		.period
-			width 25%
-			padding .7em
-			input
-				margin .15em 0	
-		.message
-			margin-top 1em
-			margin-bottom 1em
-			padding .7em
-	.create
-		position: absolute
-		left: 50%
-		bottom: 0
-		margin-left: -50%
-	.description
-		show true
-		width: 25%
-	.header
-		font-size: 1.2em
-		padding-top: 1em
-		padding-bottom: 1em
-		.icon-logo
-			font-size: 3.8em
-			margin-right .2em
-	
-	.patterns
-		width: 40%
-	.simulator
-		width: 50%
-@media screen and (min-width: 1000px)
-	.header
-	.content
-		width 1000px
-	.dashboard
-		width: 60%
-		.message
-			width 60%
-			margin-left 20%
-			margin-right 20%
-	.description
-		width 33%
-	.patterns
-		padding 0 0%
-.hide
-	display: none;
+	li
+		display: inline-block
+		border-left: solid white 1px
+		&:first-child
+			border: none
+	a
+		color: white
+		display: block
+		padding 0 .5em
+		text-decoration: none
 .patterns
 	//margin-top 2em
 	text-align justify
@@ -193,17 +119,30 @@ input
 	background: transparent
 	box-shadow: none
 	padding: 0 0 .5em
-	input
+	button
 		display: block
 		width: 80%
 		height: button.create.height + 8px
 		margin: 0 auto
 		font-size: 1.5em
 		line-height: button.create.height
+.samples
+	overflow: hidden
+	ul
+		font-size: 0
+		margin: 0
+		padding: 0
+		width: num_samples * 100%
+	li
+		display: inline-block
+		font-size: body.font.size
+		vertical-align: top
+		width: (100% / num_samples)
+	p
+		margin: 0
+		padding: 0
 .title
 	font-family: 'Shadows Into Light', cursive;
-.up
-	position: relative
 #patterns
 	ul
 		margin 0
@@ -214,6 +153,27 @@ input
 		padding: .5em
 		margin: .2em
 		border-radius: 3px
-		background: rgba(color.red, 0.2)
+		background: rgba(color.main, 0.2)
 .wrapper
 	//margin-top: .5em
+		
+@media screen and (min-width: 350px)
+	.patterns
+	.dashboard
+		margin: 0 auto
+		width: 350px
+@media screen and (min-width: 800px)
+	fieldset
+		margin: 1em 0
+		padding: .8em .8em
+	.dashboard
+	.patterns
+	.simulator
+		display: inline-block
+		vertical-align: top
+	.dashboard
+		margin-right: 1em
+	.patterns
+		margin-left: 1em
+		margin-top: 1em
+		

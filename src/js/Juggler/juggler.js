@@ -1,8 +1,5 @@
-var Animation = require('./Animation/Animation.js')
-var Circle = require('./Canvas/Shape/Circle.js')
+var Kinema = require('kinemajs')
 var extend = require('./extend.js')
-var Layer = require('./Canvas/Layer.js')
-var Stage = require('./Canvas/Stage.js')
 
 var Juggler = (function () {
 
@@ -65,9 +62,9 @@ var Juggler = (function () {
                     y: 0.9 * attrs.stage.height
                 }
             },
-            layer: new Layer()
+            layer: new Kinema.Layer()
         }, attrs)
-        this.attrs.stage = new Stage(this.attrs.stage)
+        this.attrs.stage = new Kinema.Stage(this.attrs.stage)
         this.attrs.stage.add(this.attrs.layer)
 
         var juggling = this.attrs.juggling
@@ -165,7 +162,7 @@ var Juggler = (function () {
                     begin[j + numbers[jmod].value] = i
                     ++i
                     var ball = {
-                        figure: new Circle({
+                        figure: new Kinema.Circle({
                             x: j % 2 === 0 ? left + 15 : right -15,
                             y: y0,
                             radius: radius || 10,
@@ -188,7 +185,7 @@ var Juggler = (function () {
         var self = this
 
         //attrs.stage.add(attrs.layer)          
-        attrs.animation = new Animation(function(frame) {
+        attrs.animation = new Kinema.Animation(function(frame) {
             var steps = Math.floor(frame.time / juggling.interval)
             //console.log(steps)
             self.balls.forEach(function (ball) {
@@ -267,26 +264,42 @@ var Juggler = (function () {
         var self = this
         self.attrs.animation.stop()
         self.attrs.layer.remove()
-        //self.attrs.layer = new Kinetic.Layer()
     }
 
+    /*Juggler.prototype.resize = function (dimensions) {
+        this.stop()
+        this.attrs.stage.resize(dimensions)
+    }*/
+
     Juggler.prototype.play = function () {
-        this.attrs.animation.play()
+        var animation = this.attrs.animation
+        if (animation)
+            animation.play()
     }
 
     Juggler.prototype.pause = function () {
-        this.attrs.animation.pause()
+        var animation = this.attrs.animation
+        if (animation)
+            animation.pause()
+    }
+
+    Juggler.prototype.mute = function () {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.mute()
     }
 
     Juggler.prototype.stop = function () {
-        if(this.attrs.animation) {
-            this.attrs.animation.stop()
-        }
+        var animation = this.attrs.animation
+        if (animation)
+            animation.stop()
         this.attrs.layer.remove()
     }
 
     Juggler.prototype.speed = function (speed) {
-        this.attrs.animation.speed(speed)
+        var animation = this.attrs.animation
+        if (animation)
+            animation.speed(speed)
     }
 
     Juggler.prototype.colors = function (colors) {

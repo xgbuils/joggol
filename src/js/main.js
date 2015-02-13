@@ -84,7 +84,8 @@ $(document).ready(function (event) {
         }
     }
 
-    scope.$form = $('#form')
+    scope.$form   = $('#form')
+    scope.$create = $('#create')
     scope.$root = $('body, html')
 
     scope.outputs = {
@@ -102,7 +103,7 @@ $(document).ready(function (event) {
 
     scope.$simulator = $('#simulator')
 
-    scope.$form.on('submit', scope, function (event) {
+    scope.$create.on('click', scope, function (event) {
         var scope = event.data
         event.preventDefault()
 
@@ -130,18 +131,18 @@ $(document).ready(function (event) {
         scope.$patterns.html(html)
     })
 
-    $('input[type=number]', scope.$form).on('focus', function (event) {
+    $('span[contenteditable]').on('focus', function (event) {
         var $this = $(this)
         console.log($this[0])
         $this.select()
     })
 
-    scope.$form.on('input', 'input[type=number]', scope, function (event) {
+    scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
         var scope = event.data
         var key = $(this).data('type')
         values[key] = {
-            min: parseInt(scope.inputs[key].min.val()) || undefined,
-            max: parseInt(scope.inputs[key].max.val()) || undefined
+            min: parseInt(scope.inputs[key].min.text()) || undefined,
+            max: parseInt(scope.inputs[key].max.text()) || undefined
         }
         generateText[key](text, values[key], scope.outputs[key])
         //console.log('error:', error)
@@ -164,8 +165,8 @@ $(document).ready(function (event) {
     
     for (var key in scope.outputs) {
         values[key] = {
-            min: parseInt(scope.inputs[key].min.val()) || undefined,
-            max: parseInt(scope.inputs[key].max.val()) || undefined
+            min: parseInt(scope.inputs[key].min.text()) || undefined,
+            max: parseInt(scope.inputs[key].max.text()) || undefined
         }
         generateText[key](text, values[key], scope.outputs[key])
 

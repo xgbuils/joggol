@@ -4,6 +4,7 @@
   "description": "aplicació web de malabars",
   "main": "dist/index.html",
   "dependencies": {
+    "kinemajs": "0.0.2",
     "siteswap-generator": "0.1.x"
   },
   "devDependencies": {

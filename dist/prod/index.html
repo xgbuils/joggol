@@ -3,82 +3,93 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-  <!--<link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>-->
+  <meta name="description" content="Generador i simulador de malabars" />
+  <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="styles/main.css" />
   <title>joggol</title>
 </head>
 <body>
-  <header>
-    <div class="header">
-      <div class="icon-logo"></div>
+  <header class="header">
+    <nav class="languages links">
+      <ul>
+        <li>
+          <a href="#">Català</a>
+        </li>
+        <li>
+          <a href="#">Castellano</a>
+        </li>
+        <li>
+          <a href="#">English</a>
+        </li>
+      </ul>
+    </nav>
+    <!--<div class="icon-logo"></div>-->
+    <div class="header-main">
       <h1 class="title">joggol</h1>
-      <span id="data-height"></span>
+      <p class="description">
+        <strong>Generador</strong>
+        i
+        <strong>simulador</strong>
+        de
+        <strong>malabars</strong>
+      </p>
+      <a href="#" class="header-btn">Prova'l</a>
     </div>
+    <div class="samples">
+      <ul>
+        <li>
+          <p>Se't resisteix algun patró?</p>
+          <a href="#">Observa'l a camara lenta</a>
+        </li>
+        <li>
+          <p>Saps tots els patrons de malabars amb tres boles?</p>
+          <a href="#">Comprova-ho!</a>
+        </li>
+      </ul>
+    </div>
+    <span id="data-height"></span>
   </header>
   <div class="wrapper">
     <div class="content">
-      <section class="up">
-        <article class="description">
-          <h2 class="title">joggol</h2>
-          <p>
-              Generador i simulador de malabars.
-          </p>
-          <p>
-              Prova amb diferents nombres i genera tots els patrons possibles!
-          </p>
+        <article class="form" id="form">
+          <div class="balls">
+            <h2>boles</h2>
+            <div class="editable">
+              <span contenteditable data-type="balls" id="balls-min">3</span>
+              a
+              <span contenteditable data-type="balls" id="balls-max">3</span>
+            </div>
+          </div>
+          <div class="period">
+            <h2>període</h2>
+            <div class="editable">
+              <span contenteditable data-type="period" id="period-min">2</span>
+              a
+              <span contenteditable data-type="period" id="period-max">3</span>
+            </div>
+          </div>
+          <div class="height">
+            <h2>alçada</h2>
+            <div class="editable">
+              <span contenteditable data-type="height" id="height-min"> </span>
+              a
+              <span contenteditable data-type="height" id="height-max">5</span>
+            </div>
+          </div>
+          <div class="patterns-description">
+            <h2>descripció</h2>
+            <span id="error"></span>
+            <span id="success">
+              Patrons
+              <span id="p-balls"></span>
+              <span id="p-period"></span>
+              <span id="p-height"></span>
+            </span>
+          </div>
+          <div class="create">
+            <button id="create">generar</button>
+          </div>
         </article>
-        <article class="dashboard">
-          <form id="form">
-            <fieldset class="balls">
-              <legend>boles</legend>
-              <div>
-                <label>Min:</label>
-                  <input type="number" data-type="balls" name="balls-min" id="balls-min" value="3" required/>
-              </div>
-              <div>
-                <label>Max:</label>
-                  <input type="number" data-type="balls" name="balls-max" id="balls-max" value="3" required/>
-              </div>
-            </fieldset>
-            <fieldset class="period">
-              <legend>període</legend>
-              <div>
-                <label>Min:</label>
-                  <input type="number" data-type="period" name="period-min" id="period-min" value="2" required/>
-              </div>
-              <div>
-                <label>Max:</label>
-                  <input type="number" data-type="period" name="period-max" id="period-max" value="3" required/>
-              </div>
-            </fieldset>
-            <fieldset class="height">
-              <legend>alçada</legend>
-              <div>
-                <label>Min:</label>
-                  <input type="number" data-type="height" name="height-min" id="height-min" />
-              </div>
-              <div>
-                <label>Max:</label>
-                  <input type="number" data-type="height" name="height-max" id="height-max" value="5" />
-              </div>
-            </fieldset>
-            <fieldset class="message">
-              <legend>descripció</legend>
-              <span id="error"></span>
-              <span id="success">
-                Patrons
-                <span id="p-balls"></span>
-                <span id="p-period"></span>
-                <span id="p-height"></span>
-              </span>
-            </fieldset>
-            <fieldset class="create">
-              <input type="submit" value="generar" />
-            </fieldset>
-          </form>
-        </article>
-      </section>
-      <section class="down">
         <article class="patterns">
           <div id="patterns"></div>
         </article>
@@ -86,7 +97,6 @@
           <div id="juggler-simulator">
           </div>
         </article>
-      </section>
     </div>
   </div>
   <script src="js/jquery.min.js"></script>
