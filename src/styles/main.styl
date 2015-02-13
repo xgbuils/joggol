@@ -36,11 +36,13 @@ body
 	font-size: body.font.size
 	margin: 0
 	padding: 0
+ul
 li
 	list-style: none
+	margin: 0
+	padding: 0
 
 .content
-	padding: .5em
 	width: 100%
 .form
 	font-size: 1.4em
@@ -49,6 +51,7 @@ li
 		//border-bottom: solid 1px color.main
 		display: inline-block
 		font-size: 1em
+		margin: 0
 		text-transform: capitalize
 		&:after
 			content: ":"
@@ -61,7 +64,11 @@ li
 	.patterns-description
 		h2
 			display: block
+	.fieldset
+		margin: 1em
 .header
+	height: 170%
+	height: 100vh
 	background: color.main
 	color: white
 	margin: 0 auto
@@ -111,6 +118,28 @@ li
 		display: block
 		padding 0 .5em
 		text-decoration: none
+.keyboard
+	background: color.main
+	bottom: 0
+	height: 50px
+	line-height: 50px
+	overflow: hidden
+	position: fixed
+	text-align: left
+	transition: height .3s
+	width: 100%
+	ul
+		width 200%
+	li
+		background: white
+		display: inline-block
+		height: 30px
+		line-height: 30px
+		margin: 0 .5em
+		padding: 0 .5em
+	&.hide
+		display: block
+		height: 0
 .patterns
 	//margin-top 2em
 	text-align justify
@@ -141,6 +170,8 @@ li
 	p
 		margin: 0
 		padding: 0
+.select
+	background: #ECA350
 .title
 	font-family: 'Shadows Into Light', cursive;
 #patterns

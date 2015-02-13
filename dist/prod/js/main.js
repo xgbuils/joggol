@@ -760,6 +760,15 @@ var siteswapGenerator = require('siteswap-generator')
 var scrollTo = require('./scrollTo.js')
 var Juggler = require('./Juggler/juggler.js')
 
+$.fn.keyboard = function (min, max) {
+    var html = '<ul>'
+    for (var i = min; i <= max; ++i) {
+        html += '<li>' + i + '</li>'
+    }
+    html += '</ul>'
+    $(this).append(html)
+}
+
 var generateText = {
     balls: function (text, balls, $output) {
         text.error = false
@@ -845,6 +854,7 @@ $(document).ready(function (event) {
     scope.$form   = $('#form')
     scope.$create = $('#create')
     scope.$root = $('body, html')
+    scope.$keyboard = $('#keyboard')
 
     scope.outputs = {
         balls:  $('#p-balls'),
@@ -889,21 +899,32 @@ $(document).ready(function (event) {
         scope.$patterns.html(html)
     })
 
+    scope.$root.on('click', scope, function (event) {
+        scope.$focus.removeClass('select')
+        scope.$keyboard.addClass('hide')
+    })
+
     scope.$form.on('click', '.editable', scope, function (event) {
-        var scope = event.data
-        $('.contenteditable', this).first().focus()
-    })
-
-    scope.$form.on('click', '.contenteditable', function (event) {
         event.stopPropagation()
-        event.preventDefault()
+        var scope = event.data
+        if (scope.$focus) {
+            scope.$focus.removeClass('select')
+        }
+        scope.$focus = $('.contenteditable', this).first()
+        scope.$focus.addClass('select')
+        scope.$keyboard.keyboard(1, 9)
     })
 
-    scope.$form.on('focus', '.contenteditable', function (event) {
-        event.preventDefault()
-        var $this = $(this)
-        console.log($this[0])
-        $this.select()
+    scope.$form.on('click', '.contenteditable', scope, function (event) {
+        event.stopPropagation()
+        var scope = event.data
+        if (scope.$focus) {
+            scope.$focus.removeClass('select')
+        }
+        scope.$focus = $(this)
+        scope.$focus.addClass('select')
+        scope.$keyboard.removeClass('hide')
+        scope.$keyboard.keyboard(1, 9)
     })
 
     scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
@@ -966,6 +987,24 @@ $(document).ready(function (event) {
         scope.juggler.stop()
         scope.juggler.setPattern($(this).text())
         scope.juggler.play()
+    })
+
+    scope.$keyboard.on('click', function (event) {
+        event.stopPropagation()
+    })
+
+    scope.$keyboard.on('click', 'li', scope, function (event) {
+        event.stopPropagation()
+        var num = parseInt($(this).text())
+        scope.$focus.text(num)
+    })
+
+    scope.$root.on('touchstart', scope, function (event) {
+        scope.$root.css('background', 'red')
+    })
+
+    scope.$root.on('touchmove', scope, function (event) {
+        scope.$root.css('background', 'red')
     })
 })
 },{"./Juggler/juggler.js":10,"./scrollTo.js":12,"siteswap-generator":7}],12:[function(require,module,exports){
