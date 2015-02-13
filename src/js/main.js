@@ -242,11 +242,18 @@ $(document).ready(function (event) {
         scope.$focus.text(num)
     })
 
-    scope.$keyboard.on('swipeleft', scope, function (event) {
-        scope.$create.text(event.velocityX)
+    scope.$touch = $('#touch')
+
+    scope.$root.on('touchstart', scope, function (event) {
+        scope.touch.start = event.touches[0].screenX
     })
 
-    scope.$root.on('swiperight', scope, function (event) {
+    scope.$root.on('touchmove', scope, function (event) {
         scope.$root.css('background', 'red')
+    })
+
+    scope.$root.on('touchend', scope, function (event) {
+        scope.touch.end = event.touches[0].screenX
+        scope.$touch.append('<div>' + scope.touch.start + ' ' + scope.touch.start + '</div>')
     })
 })
