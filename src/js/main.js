@@ -3,7 +3,7 @@ var scrollTo = require('./scrollTo.js')
 var Juggler = require('./Juggler/juggler.js')
 
 $.fn.keyboard = function (min, max) {
-    var html = '<ul>'
+    var html = '<div class="slow"><ul class="fast">'
     for (var i = min; i <= max; ++i) {
         html += '<li>' + i + '</li>'
     }
@@ -75,7 +75,11 @@ var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
 
 var scope = {
     values: {},
-    touch: {}
+    touch: {},
+    keyboard: {
+        margin: 0,
+        width: 2 * $(window).width()
+    }
 }
 
 $(document).ready(function (event) {
@@ -155,7 +159,7 @@ $(document).ready(function (event) {
         }
         scope.$focus = $('.contenteditable', this).first()
         scope.$focus.addClass('select')
-        scope.$keyboard.keyboard(1, 9)
+        scope.$keyboard.keyboard(1, 90)
     })
 
     scope.$form.on('click', '.contenteditable', scope, function (event) {
@@ -167,7 +171,7 @@ $(document).ready(function (event) {
         scope.$focus = $(this)
         scope.$focus.addClass('select')
         scope.$keyboard.removeClass('hide')
-        scope.$keyboard.keyboard(1, 9)
+        scope.$keyboard.keyboard(1, 90)
     })
 
     scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
@@ -244,16 +248,56 @@ $(document).ready(function (event) {
 
     scope.$touch = $('#touch')
 
-    scope.$root.on('touchstart', scope, function (event) {
-        scope.touch.start = event.touches[0].screenX
+    scope.$keyboard.on('touchstart', scope, function (event) {
+        var originalEvent = event.originalEvent
+        //console.log(originalEvent.touches[0])
+        console.log(originalEvent.touches[0].screenX)
+        scope.touch.start = {
+            x: originalEvent.touches[0].screenX,
+            time: Date.now()
+        }
     })
 
     scope.$root.on('touchmove', scope, function (event) {
-        scope.$root.css('background', 'red')
+        if (scope.touch.start) {
+            var originalEvent = event.originalEvent
+            //scope.$root.css('background', 'red')
+            var end = scope.touch.end
+            scope.touch.end = {
+                x: originalEvent.touches[0].screenX,
+                time: Date.now()
+            }
+            if (end) {
+                var diff = end.x - scope.touch.end.x
+                scope.keyboard.margin -= diff
+                scope.keyboard.width  += diff
+                console.log(scope.keyboard)
+                $('.slow', scope.$keyboard).css('margin-left', scope.keyboard.margin + 'px')
+                $('.slow', scope.$keyboard).css('width', scope.keyboard.width + 'px')
+            }
+        }
+
     })
 
     scope.$root.on('touchend', scope, function (event) {
-        scope.touch.end = event.touches[0].screenX
-        scope.$touch.append('<div>' + scope.touch.start + ' ' + scope.touch.start + '</div>')
+        if (scope.touch.start && scope.touch.end) {
+            var dx = scope.touch.end.x - scope.touch.start.x
+            var dt = scope.touch.end.time - scope.touch.start.time
+            console.log(dx/dt)
+            var speed = dx / dt
+            if (Math.abs(speed) >= 0.25) {
+                
+                var diff = -400 * speed - 100
+                console.log('hola ', diff)
+                scope.keyboard.margin -= diff
+                scope.keyboard.width  += diff
+                $('.slow', scope.$keyboard).animate({
+                    'margin-left': scope.keyboard.margin + 'px',
+                    'width': scope.keyboard.width + 'px'
+                }, 300)
+            }
+            //scope.$touch.append('<div>' + scope.touch.start.x + ' ' + scope.touch.end.x + ' ' + (dx/dt) + '</div>')
+        }
+        scope.touch.start = scope.touch.end = undefined
     })
 })

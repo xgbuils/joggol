@@ -123,13 +123,17 @@ li
 	bottom: 0
 	height: 50px
 	line-height: 50px
-	overflow: hidden
+	//overflow: hidden
 	position: fixed
 	text-align: left
 	transition: height .3s
 	width: 100%
-	ul
+	.slow
+		background: color.main
 		width 200%
+	.fast
+		width 100%
+		transition: margin-left .3s, width .3s
 	li
 		background: white
 		display: inline-block
