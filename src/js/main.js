@@ -137,6 +137,20 @@ $(document).ready(function (event) {
         $this.select()
     })
 
+    scope.$form.on('click', '.editable', scope, function (event) {
+        var scope = event.data
+        $('.contenteditable', this).first().focus()
+    })
+
+    scope.$form.on('click', '.contenteditable', scope, function (event) {
+        event.stopPropagation()
+        event.preventDefault()
+    })
+
+    scope.$form.on('focus', '.contenteditable', scope, function (event) {
+        event.preventDefault()
+    })
+
     scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
         var scope = event.data
         var key = $(this).data('type')
