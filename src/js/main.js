@@ -247,6 +247,6 @@ $(document).ready(function (event) {
     })
 
     scope.$root.on('swiperight', scope, function (event) {
-        scope.$create.text(event.velocityX)
+        scope.$root.css('background', 'red')
     })
 })
