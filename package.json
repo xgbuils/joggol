@@ -5,6 +5,7 @@
   "main": "dist/index.html",
   "dependencies": {
     "kinemajs": "0.0.2",
+    "nib": "^1.1.0",
     "siteswap-generator": "0.1.x"
   },
   "devDependencies": {

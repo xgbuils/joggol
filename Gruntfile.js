@@ -83,6 +83,11 @@ module.exports = function(grunt) {
       }
     },
     stylus: {
+      options: {
+        use: [
+          require('nib')
+        ]
+      },
       dev: {
         options: {
           linenos: false,

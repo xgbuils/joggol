@@ -9,48 +9,54 @@
   <title>joggol</title>
 </head>
 <body>
-  <header class="header">
-    <nav class="languages links">
-      <ul>
-        <li>
-          <a href="#">Català</a>
-        </li>
-        <li>
-          <a href="#">Castellano</a>
-        </li>
-        <li>
-          <a href="#">English</a>
-        </li>
-      </ul>
-    </nav>
-    <!--<div class="icon-logo"></div>-->
-    <div class="header-main">
-      <h1 class="title">joggol</h1>
-      <p class="description">
-        <strong>Generador</strong>
-        i
-        <strong>simulador</strong>
-        de
-        <strong>malabars</strong>
-      </p>
-      <a href="#" class="header-btn">Prova'l</a>
-    </div>
-    <div class="samples">
-      <ul>
-        <li>
-          <p>Se't resisteix algun patró?</p>
-          <a href="#">Observa'l a camara lenta</a>
-        </li>
-        <li>
-          <p>Saps tots els patrons de malabars amb tres boles?</p>
-          <a href="#">Comprova-ho!</a>
-        </li>
-      </ul>
-    </div>
-    <span id="data-height"></span>
-  </header>
   <div class="wrapper">
-    <div class="content">
+    <header class="header">
+      <div class="presentation">
+        <nav class="languages links">
+          <ul>
+            <li>
+              <a href="#">Català</a>
+            </li>
+            <li>
+              <a href="#">Castellano</a>
+            </li>
+            <li>
+              <a href="#">English</a>
+            </li>
+          </ul>
+        </nav>
+        <!--<div class="icon-logo"></div>-->
+        <div class="header-main">
+          <span class="icon-right"></span>
+          <h1 class="title">joggol</h1>
+          <p class="description">
+            <strong>Generador</strong>
+            i
+            <strong>simulador</strong>
+            de
+            <strong>malabars</strong>
+          </p>
+          <a href="#" class="header-btn" id="header-btn">Prova'l</a>
+        </div>
+        <div class="samples">
+          <ul>
+            <li>
+              <p>Se't resisteix algun patró?</p>
+              <a href="#">Observa'l a camara lenta</a>
+            </li>
+            <li>
+              <p>Saps tots els patrons de malabars amb tres boles?</p>
+              <a href="#">Comprova-ho!</a>
+            </li>
+          </ul>
+        </div>
+        <span id="data-height"></span>
+      </div>
+      <div class="menu-header">
+        <h1 class="title">joggol</h1>
+      </div>
+    </header>
+    <div id="generator" class="generator">
         <article class="form" id="form">
           <div class="fieldset balls">
             <h2>boles</h2>
@@ -101,6 +107,9 @@
   </div>
   <div id="touch"></div>
   <div id="keyboard" class="keyboard hide">
+    <div class="icon-left" id="keyboard-left"></div>
+    <div class="keys" id="keyboard-keys"></div>
+    <div class="icon-right" id="keyboard-right"></div>
   </div>
   <script src="js/jquery.min.js"></script>
   <script src="js/jquery.mobile.custom.js"></script>

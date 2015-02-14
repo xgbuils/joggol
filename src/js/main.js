@@ -1,14 +1,19 @@
 var siteswapGenerator = require('siteswap-generator')
-var scrollTo = require('./scrollTo.js')
 var Juggler = require('./Juggler/juggler.js')
 
 $.fn.keyboard = function (min, max) {
-    var html = '<div class="slow"><ul class="fast">'
+    var html = '<ul>'
     for (var i = min; i <= max; ++i) {
         html += '<li>' + i + '</li>'
     }
     html += '</ul>'
-    $(this).append(html)
+    $(this).html(html)
+}
+
+function triggerDelegatedEvent (name, $wrapper, elem) {
+    var e = $.Event(name)
+    e.target = elem
+    $wrapper.trigger(e)
 }
 
 var generateText = {
@@ -75,11 +80,6 @@ var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
 
 var scope = {
     values: {},
-    touch: {},
-    keyboard: {
-        margin: 0,
-        width: 2 * $(window).width()
-    }
 }
 
 $(document).ready(function (event) {
@@ -101,7 +101,13 @@ $(document).ready(function (event) {
     scope.$form   = $('#form')
     scope.$create = $('#create')
     scope.$root = $('body, html')
-    scope.$keyboard = $('#keyboard')
+    scope.keyboard = {
+        $widget: $('#keyboard'),
+        $left: $('#keyboard-left'),
+        $keys: $('#keyboard-keys'),
+        $right: $('#keyboard-right'),
+        position: 0
+    }
 
     scope.outputs = {
         balls:  $('#p-balls'),
@@ -147,34 +153,48 @@ $(document).ready(function (event) {
     })
 
     scope.$root.on('click', scope, function (event) {
-        scope.$focus.removeClass('select')
-        scope.$keyboard.addClass('hide')
+        var scope = event.data
+        if (scope.$focus) {
+            triggerDelegatedEvent('blureditable', scope.$form, scope.$focus[0])
+            scope.$focus = undefined
+        }
     })
 
     scope.$form.on('click', '.editable', scope, function (event) {
         event.stopPropagation()
         var scope = event.data
         if (scope.$focus) {
-            scope.$focus.removeClass('select')
+            triggerDelegatedEvent('blureditable', scope.$form, scope.$focus[0])
         }
         scope.$focus = $('.contenteditable', this).first()
-        scope.$focus.addClass('select')
-        scope.$keyboard.keyboard(1, 90)
+        triggerDelegatedEvent('focuseditable', scope.$form, scope.$focus[0])
     })
 
     scope.$form.on('click', '.contenteditable', scope, function (event) {
         event.stopPropagation()
         var scope = event.data
         if (scope.$focus) {
-            scope.$focus.removeClass('select')
+            triggerDelegatedEvent('blureditable', scope.$form, scope.$focus[0])
         }
         scope.$focus = $(this)
-        scope.$focus.addClass('select')
-        scope.$keyboard.removeClass('hide')
-        scope.$keyboard.keyboard(1, 90)
+        triggerDelegatedEvent('focuseditable', scope.$form, this)
     })
 
-    scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
+    scope.$form.on('focuseditable', '.contenteditable', scope, function (event) {
+        var scope = event.data
+        $(this).addClass('select')
+        scope.keyboard.$widget.removeClass('hide')
+        scope.keyboard.$keys.keyboard(1, 90)
+    })
+
+    scope.$form.on('blureditable', '.contenteditable', scope, function (event) {
+        var scope = event.data
+        $(this).removeClass('select')
+        scope.keyboard.$widget.addClass('hide')
+    })
+
+    scope.$form.on('inputeditable', '.contenteditable', scope, function (event) {
+        console.log('dsadsa')
         var scope = event.data
         var key = $(this).data('type')
         values[key] = {
@@ -182,8 +202,7 @@ $(document).ready(function (event) {
             max: parseInt(scope.inputs[key].max.text()) || undefined
         }
         generateText[key](text, values[key], scope.outputs[key])
-        //console.log('error:', error)
-        //console.log('text.error:', text.error)
+
         if (!error && text.error) {
             scope.message.$success.addClass('hide')
             scope.message.$error.text(text.error)
@@ -195,10 +214,7 @@ $(document).ready(function (event) {
             error = false
         }
         console.log(text)
-        /*div_patterns.style.height = '0px'
-        div_patterns.style.minHeight = '0px'*/
     })
-
     
     for (var key in scope.outputs) {
         values[key] = {
@@ -236,72 +252,33 @@ $(document).ready(function (event) {
         scope.juggler.play()
     })
 
-    scope.$keyboard.on('click', function (event) {
+    scope.keyboard.$widget.on('click', function (event) {
         event.stopPropagation()
     })
 
-    scope.$keyboard.on('click', 'li', scope, function (event) {
+    scope.keyboard.$left.on('click', scope, function (event) {
+        var scope = event.data
+        var width = scope.keyboard.$widget.width() - 100
+        console.log(width)
+        var pos = scope.keyboard.position += width
+        scope.keyboard.$keys.css('left', pos)
+    })
+
+    scope.keyboard.$right.on('click', scope, function (event) {
+        var scope = event.data
+        var width = scope.keyboard.$widget.width() - 100
+        var pos = scope.keyboard.position -= width
+        scope.keyboard.$keys.css('left', pos)
+    })
+
+    scope.keyboard.$keys.on('click', 'li', scope, function (event) {
         event.stopPropagation()
         var num = parseInt($(this).text())
         scope.$focus.text(num)
+        triggerDelegatedEvent('inputeditable', scope.$form, scope.$focus[0])
     })
 
-    scope.$touch = $('#touch')
-
-    scope.$keyboard.on('touchstart', scope, function (event) {
-        var originalEvent = event.originalEvent
-        //console.log(originalEvent.touches[0])
-        console.log(originalEvent.touches[0].screenX)
-        scope.touch.start = {
-            x: originalEvent.touches[0].screenX,
-            time: Date.now()
-        }
-    })
-
-    scope.$root.on('touchmove', scope, function (event) {
-        if (scope.touch.start) {
-            var originalEvent = event.originalEvent
-            //scope.$root.css('background', 'red')
-            var end = scope.touch.end
-            scope.touch.end = {
-                x: originalEvent.touches[0].screenX,
-                time: Date.now()
-            }
-            if (end) {
-                var diff = end.x - scope.touch.end.x
-                scope.keyboard.margin -= diff
-                scope.keyboard.width  += diff
-                console.log(scope.keyboard)
-                $('.slow', scope.$keyboard).css('margin-left', scope.keyboard.margin + 'px')
-                $('.slow', scope.$keyboard).css('width', scope.keyboard.width + 'px')
-            }
-        }
-
-    })
-
-    var average = 0
-    var n = 0
-
-    scope.$root.on('touchend', scope, function (event) {
-        if (scope.touch.start && scope.touch.end) {
-            var dx = scope.touch.end.x - scope.touch.start.x
-            var dt = scope.touch.end.time - scope.touch.start.time
-            console.log(dx/dt)
-            var speed = dx / dt
-            average = average * n / (n + 1) + Math.abs(speed) / (n + 1)
-            ++n
-            if (Math.abs(speed) >= 0.25) {
-                
-                var diff = -400 * speed - 100
-                scope.keyboard.margin -= diff
-                scope.keyboard.width  += diff
-                $('.slow', scope.$keyboard).animate({
-                    'margin-left': scope.keyboard.margin + 'px',
-                    'width': scope.keyboard.width + 'px'
-                }, 300)
-            }
-            scope.$touch.append('<div>' + speed.toFixed(2) + ' ' + average.toFixed(2) + '</div>')
-        }
-        scope.touch.start = scope.touch.end = undefined
+    $('#header-btn').on('click', function () {
+        $('.header').addClass('reduce')
     })
 })
