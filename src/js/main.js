@@ -279,16 +279,20 @@ $(document).ready(function (event) {
 
     })
 
+    var average = 0
+    var n = 0
+
     scope.$root.on('touchend', scope, function (event) {
         if (scope.touch.start && scope.touch.end) {
             var dx = scope.touch.end.x - scope.touch.start.x
             var dt = scope.touch.end.time - scope.touch.start.time
             console.log(dx/dt)
             var speed = dx / dt
+            average = average * n / (n + 1) + Math.abs(speed) / (n + 1)
+            ++n
             if (Math.abs(speed) >= 0.25) {
                 
                 var diff = -400 * speed - 100
-                console.log('hola ', diff)
                 scope.keyboard.margin -= diff
                 scope.keyboard.width  += diff
                 $('.slow', scope.$keyboard).animate({
@@ -296,7 +300,7 @@ $(document).ready(function (event) {
                     'width': scope.keyboard.width + 'px'
                 }, 300)
             }
-            //scope.$touch.append('<div>' + scope.touch.start.x + ' ' + scope.touch.end.x + ' ' + (dx/dt) + '</div>')
+            scope.$touch.append('<div>' + speed.toFixed(2) + ' ' + average.toFixed(2) + '</div>')
         }
         scope.touch.start = scope.touch.end = undefined
     })

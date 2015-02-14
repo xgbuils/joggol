@@ -1,1 +1,1094 @@
-!function a(b,c,d){function e(g,h){if(!c[g]){if(!b[g]){var i="function"==typeof require&&require;if(!h&&i)return i(g,!0);if(f)return f(g,!0);var j=new Error("Cannot find module '"+g+"'");throw j.code="MODULE_NOT_FOUND",j}var k=c[g]={exports:{}};b[g][0].call(k.exports,function(a){var c=b[g][1][a];return e(c?c:a)},k,k.exports,a,b,c,d)}return c[g].exports}for(var f="function"==typeof require&&require,g=0;g<d.length;g++)e(d[g]);return e}({1:[function(a,b){function c(){var a=Date.now(),b={time:(a-this.played)*this.v};this.func(b),this.id=window.requestAnimationFrame(c.bind(this))}a("./rAF.js");var d=function(a){this.func=a,this.on=!1,this.paused=this.played=Date.now(),this.v=1,this.active=!1};d.prototype={play:function(){this.func&&!this.on&&(this.paused&&(this.played+=Date.now()-this.paused),c.call(this),this.active=this.on=!0)},pause:function(){this.func&&this.on&&(cancelAnimationFrame(this.id),this.active=this.on=!1,this.paused=Date.now())},mute:function(){this.func&&this.on&&(cancelAnimationFrame(this.id),this.active=this.on=!1,this.paused=void 0)},stop:function(){this.func&&(this.pause(),this.paused=this.played=Date.now())},seek:function(a){if(this.func){var b=Date.now();this.played=b-a,this.paused=b}},speed:function(a){if(this.func&&isFinite(a))if(a){a/=this.v;var b=Date.now(),c=(b-this.played)/a;if(this.played=b-c,this.paused){var d=(b-this.paused)/a;this.paused=b-d}this.v*=a,this.active&&this.play()}else this.pause(),this.active=!0},remove:function(){this.func&&(this.pause(),delete this.func)}},b.exports=d},{"./rAF.js":2}],2:[function(){!function(){for(var a=0,b=["ms","moz","webkit","o"],c=0;c<b.length&&!window.requestAnimationFrame;++c)window.requestAnimationFrame=window[b[c]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[b[c]+"CancelAnimationFrame"]||window[b[c]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(b){var c=(new Date).getTime(),d=Math.max(0,16-(c-a)),e=window.setTimeout(function(){b(c+d)},d);return a=c+d,e}),window.cancelAnimationFrame||(window.cancelAnimationFrame=function(a){clearTimeout(a)})}()},{}],3:[function(a,b){function c(){this.shapes=[],this.canvas=document.createElement("canvas"),this.canvas.style.position="absolute",this.canvas.style.top="0",this.canvas.style.left="0",this.ctx=this.canvas.getContext("2d")}var d=c.prototype;d.add=function(a){this.shapes.push(a),a.layer=this},d.draw=function(){this.clear(),this.shapes.forEach(function(a){a.draw()})};var e=window.navigator.userAgent,f=/android/i.test(e)&&e.indexOf("534.30");f?(console.log("native_android_browser"),d.clear=function(){this.ctx.clearRect(0,0,this.width,this.height),this.canvas.style.display="none",this.canvas.offsetHeight,this.canvas.style.display="inherit"}):d.clear=function(){this.ctx.clearRect(0,0,this.width,this.height)},d.remove=function(){this.clear(),this.shapes.forEach(function(a){delete a.layer}),this.shapes=[]},b.exports=c},{}],4:[function(a,b){function c(a){this.shape=a}c.prototype.draw=function(){var a=this.shape,b=this.layer;b.ctx.beginPath(),b.ctx.arc(a.x,a.y,a.radius,0,2*Math.PI),b.ctx.closePath(),a.fill&&(b.ctx.fillStyle=a.fill,b.ctx.fill())},c.prototype.setX=function(a){this.shape.x=a},c.prototype.setY=function(a){this.shape.y=a},b.exports=c},{}],5:[function(a,b){function c(a){this.layers=[];var b=this.container=document.getElementById(a.container);if(!b)throw new Error("element #"+a.container+" does not exist");var c=b.style;c.position="relative",c.width=a.width+"px",c.height=a.height+"px",c.overflow="hidden",this.width=parseInt(a.width),this.height=parseInt(a.height)}c.prototype.add=function(a){var b=a.canvas;this.layers.push(a),b.width=a.width=this.width,b.height=a.height=this.height,this.container.appendChild(b)},c.prototype.resize=function(a){var b=parseInt(a.width),c=parseInt(a.height),d=this.container.style;isFinite(b)&&(d.width=b+"px",this.width=b),isFinite(c)&&(d.height=c+"px",this.height=c)},b.exports=c},{}],6:[function(a,b){b.exports={Animation:a("./Animation/Animation.js"),Stage:a("./Canvas/Stage.js"),Layer:a("./Canvas/Layer.js"),Circle:a("./Canvas/Shape/Circle.js")}},{"./Animation/Animation.js":1,"./Canvas/Layer.js":3,"./Canvas/Shape/Circle.js":4,"./Canvas/Stage.js":5}],7:[function(a,b){b.exports=a("./src/siteswap-generator")},{"./src/siteswap-generator":8}],8:[function(a,b){function c(a){var b={};for(var c in a)b[c]=a[c];return b}function d(a,b,c){var d=[];"number"==typeof a&&(a={max:a}),void 0===a.min&&(a.min=a.max),"number"==typeof b&&(b={max:b}),void 0===b.min&&(b.min=1),void 0===c?c={max:b.max*a.max}:"number"==typeof c?c={max:c}:"number"!=typeof c.max&&(c.max=b.max*a.max),void 0===c.min&&(c.min=0),console.log(a,b,c);for(var f=a.max;f>=a.min;--f){for(var g,h,i=Math.max(b.min,2),j=b.max;j>=i;--j){g=Math.min(c.max,j*f),h=Math.max(c.min,f+1);for(var k=g;k>=h;--k)e(f,j,k,d)}b.min<=1&&1<=b.max&&c.min<=f&&f<=c.max&&d.push([f])}return d}function e(a,b,c,d){if(1===b&&a===c)d.push([a]);else{var e={};e[c%b]=!0,f(b,c,e,{array:[c],index:0,pos:1,rest:a*b-c},d)}}function f(a,b,d,e,g){if(e.pos<a){var h=a-e.pos,i=e.array[e.index],j=Math.min(i,e.rest),k=e.rest-b*(h-1);h>1&&k++,k=Math.max(k,0);for(var l=j;l>=k;--l){var m=i>l?0:e.index+1,n=(l+e.pos)%a;if(void 0===d[n]){var o=c(d);o[n]=!0,f(a,b,o,{array:e.array.concat([l]),index:m,pos:e.pos+1,rest:e.rest-l},g)}}}else 0===e.index&&g.push(e.array)}b.exports=d},{}],9:[function(a,b){function c(){"use strict";var a,b,e,f,h,i,j=arguments[0],k=1,l=arguments.length,m=!1;for("boolean"==typeof j?(m=j,j=arguments[1]||{},k=2):("object"!=typeof j&&"function"!=typeof j||null==j)&&(j={});l>k;++k)if(a=arguments[k],null!=a)for(b in a)e=j[b],f=a[b],j!==f&&(m&&f&&(g(f)||(h=Array.isArray(f)))?(h?(h=!1,i=e&&Array.isArray(e)?e:[]):i=e&&g(e)?e:{},j[b]=c(m,i,f)):f!==d&&(j[b]=f));return j}var d,e=Object.prototype.hasOwnProperty,f=Object.prototype.toString,g=function(a){"use strict";if(!a||"[object Object]"!==f.call(a))return!1;var b=e.call(a,"constructor"),c=a.constructor&&a.constructor.prototype&&e.call(a.constructor.prototype,"isPrototypeOf");if(a.constructor&&!b&&!c)return!1;var g;for(g in a);return g===d||e.call(a,g)};b.exports=c},{}],10:[function(a,b){function c(a,b){var c,d=b.time,e=b.position,f=d.now;if(f<d.thrown){c=e.middle.x-e.start.x,a.setX(e.start.x+c*f/d.thrown);var g=.5*b.gravity*d.thrown;a.setY(e.start.y-g*f+.5*b.gravity*f*f)}else c=e.end.x-e.middle.x,a.setX(e.middle.x+c*(f-d.thrown)/d.caught),a.setY(e.middle.y)}var d=a("kinemajs"),e=a("./extend.js"),f=function(){function a(a,b){var c,d=a.juggling,e=a.stage,f=(b-d.waiting.time)*d.interval;if(e.width){var g=(d.integer_height-d.waiting.time)*d.interval,h=g/f;c=h*e.width,console.log("uu",h)}else{var g=(3-d.waiting.time)*d.interval,h=g/f;c=1.5*d.height*h}return{width:.5*c,gravity:8*d.height/(f*f),shift:d.waiting.shift*h,radius:d.balls.radius*h}}function b(b){console.log(b.stage),this.attrs={},this.attrs=e(!0,this.attrs,{stage:{width:500,height:650},juggling:{interval:500,waiting:{time:.5,shift:50},integer_height:5,balls:{radius:10,colors:["red","blue","green","yellow","black","orange","purple"]},height:.8*b.stage.height,center:{x:.5*b.stage.width,y:.9*b.stage.height}},layer:new d.Layer},b),this.attrs.stage=new d.Stage(this.attrs.stage),this.attrs.stage.add(this.attrs.layer);var c=this.attrs.juggling,f=a(this.attrs,this.attrs.juggling.integer_height);c.width=f.width,c.gravity=f.gravity}for(var f="abcdefghijklmnopqrstuvwxyz",g={},h=0;10>h;++h)g[h]=h;for(var h=0;h<f.length;++h)g[f[h]]=h+10;return b.toPattern=function(a){return a.split("").map(function(a){return g[a]})},b.prototype.setPattern=function(e){"string"==typeof e&&(e=b.toPattern(e));var f,g,h,i,j=this.attrs,k=(j.stage,j.juggling),l=Math.max.apply(null,e);if(l>k.integer_height){var m=a(j,l);i=m.width,h=m.gravity,g=m.shift,f=m.radius}else g=k.waiting.shift,i=k.width,h=k.gravity,f=k.balls.radius;var n=e.reduce(function(a,b){return a+b},0);if(n%e.length!=0)throw new Error("El patró es irrealitzable. Es necessita un nombre enter de boles. Actualment: "+n/e.length);n/=e.length;for(var o=[],p=0;p<e.length;++p){var q={};q.value=e[p],q.next=(p+q.value)%e.length,q.period=(q.value-k.waiting.time)*k.interval,q.velocity=.5*h*q.period,o.push(q)}for(var p=0;p<e.length;++p)if(!o[p].cycle){for(var r={},s=p,t=0;!r[s];)r[s]=!0,s=o[s].next,t+=o[s].value;for(var s in r)o[s].cycle=t}var u=k.center.y;g/=2;var v=k.center.x-i/2,w=k.center.x+i/2,x=0,y=0,p=0,z=0,A={};for(this.balls=[];n>p;){if(0!==o[y].value)if(void 0===A[x]){A[x]=p,A[x+o[y].value]=p,++p;var B={figure:new d.Circle({x:x%2===0?v+15:w-15,y:u,radius:f||10,fill:k.balls.colors[z%k.balls.colors.length]}),start:x,cycle:o[y].cycle};this.balls.push(B),j.layer.add(B.figure),++z}else A[x+o[y].value]=o[y].value;++x,y=x%o.length}var C=this;j.animation=new d.Animation(function(a){var b=Math.floor(a.time/k.interval);C.balls.forEach(function(d){var e=a.time-k.interval*d.start;if(e>=0){e%=d.cycle*k.interval;for(var f,i=d.start%o.length;;){f=o[i].value;var j=f*k.interval;if(j>e)break;e-=j,i=o[i].next}var l=b-Math.floor(e/k.interval),m={};m.start=l%2===0?{x:v+g,y:u}:{x:w-g,y:u},(l+o[i].value)%2===0?(m.middle={x:v-g,y:u},m.end={x:v+g,y:u}):(m.middle={x:w+g,y:u},m.end={x:w-g,y:u});var n={value:o[i].value,time:{total:k.interval,thrown:o[i].period,caught:k.interval*o[i].value-o[i].period,now:e},left:l%2===0,gravity:h,position:m};c(d.figure,n)}}),j.layer.draw()})},b.prototype.removePattern=function(){var a=this;a.attrs.animation.stop(),a.attrs.layer.remove()},b.prototype.play=function(){var a=this.attrs.animation;a&&a.play()},b.prototype.pause=function(){var a=this.attrs.animation;a&&a.pause()},b.prototype.mute=function(){var a=this.attrs.animation;a&&a.mute()},b.prototype.stop=function(){var a=this.attrs.animation;a&&a.stop(),this.attrs.layer.remove()},b.prototype.speed=function(a){var b=this.attrs.animation;b&&b.speed(a)},b.prototype.colors=function(a){this.stop(),this.attrs.juggling.balls.colors=[].concat(a)},b}();b.exports=f},{"./extend.js":9,kinemajs:6}],11:[function(a){var b=a("siteswap-generator"),c=(a("./scrollTo.js"),a("./Juggler/juggler.js"));$.fn.keyboard=function(a,b){for(var c='<div class="slow"><ul class="fast">',d=a;b>=d;++d)c+="<li>"+d+"</li>";c+="</ul>",$(this).append(c)};var d={balls:function(a,b,c){a.error=!1,void 0!==b.min&&void 0!==b.max&&b.min<=b.max&&b.min>0?b.min===b.max?a.balls="de "+b.max+" boles":1===b.min?a.balls="de màxim "+b.max+" boles":b.min<b.max&&(a.balls="de "+b.min+" a "+b.max+" boles"):a.error="L'interval de boles que demanes no es correcte",c.text(a.balls)},period:function(a,b,c){a.error=!1,console.log(b),console.log("eooo",a.error),void 0!==b.min&&void 0!==b.max&&b.min<=b.max&&b.min>0?b.min===b.max?a.period="de període "+b.max:1===b.min?a.period="amb periodes no més grans de "+b.max:b.min<b.max&&(a.period="amb períodes entre "+b.min+" i "+b.max):a.error="L'interval de períodes que demanes no es correcte",c.text(a.period)},height:function(a,b,c){a.error=!1,void 0===b.min&&void 0===b.max?a.height="":void 0===b.min&&b.max>=0?a.height="amb llançaments no més alts de "+b.max:void 0===b.max&&b.min>=0?a.height="amb llançaments que continguin alguna alçada major o igual a "+b.min:b.min<=b.max&&b.min>=0?a.height=b.min===b.max?"amb llançaments que continguin alguna alçada de "+b.min+" i no més alta":"amb llançaments que continguin alguna alçada major o igual a "+b.min+" i no continguin cap alçada superior a "+b.max:a.error="L'interval de periodes que demanes no es correcte",c.text(a.height)}},e={},f={},g=!1,h="0123456789abcdefghijklmnopqrstuvxyz",i={values:{},touch:{},keyboard:{margin:0,width:2*$(window).width()}};$(document).ready(function(){i.inputs={balls:{min:$("#balls-min"),max:$("#balls-max")},period:{min:$("#period-min"),max:$("#period-max")},height:{min:$("#height-min"),max:$("#height-max")}},i.$form=$("#form"),i.$create=$("#create"),i.$root=$("body, html"),i.$keyboard=$("#keyboard"),i.outputs={balls:$("#p-balls"),period:$("#p-period"),height:$("#p-height")},i.message={$success:$("#success"),$error:$("#error")},i.$patterns=$("#patterns"),i.$simulator=$("#simulator"),i.$create.on("click",i,function(a){var c=a.data;a.preventDefault();for(var d=b(f.balls,f.period,f.height),e="<ul>\n",g=0;g<d.length;++g){var i=d[g].map(function(a){return h[a]}).join("");e+='<li><a href="#simulator?pattern='+i+'">',e+=i,e+="</a></li>\n"}e+="</ul>";var j=c.$patterns.offset().top;console.log($(window).height()),c.$simulator.css("height","auto"),c.$simulator.css("min-height",$(window).height()),c.$root.animate({scrollTop:j},"500","swing",function(){}),c.$patterns.html(e)}),i.$root.on("click",i,function(){i.$focus.removeClass("select"),i.$keyboard.addClass("hide")}),i.$form.on("click",".editable",i,function(a){a.stopPropagation();var b=a.data;b.$focus&&b.$focus.removeClass("select"),b.$focus=$(".contenteditable",this).first(),b.$focus.addClass("select"),b.$keyboard.keyboard(1,90)}),i.$form.on("click",".contenteditable",i,function(a){a.stopPropagation();var b=a.data;b.$focus&&b.$focus.removeClass("select"),b.$focus=$(this),b.$focus.addClass("select"),b.$keyboard.removeClass("hide"),b.$keyboard.keyboard(1,90)}),i.$form.on("input","span[contenteditable]",i,function(a){var b=a.data,c=$(this).data("type");f[c]={min:parseInt(b.inputs[c].min.text())||void 0,max:parseInt(b.inputs[c].max.text())||void 0},d[c](e,f[c],b.outputs[c]),!g&&e.error?(b.message.$success.addClass("hide"),b.message.$error.text(e.error),b.message.$error.removeClass("hide"),g=!0):g&&!e.error&&(b.message.$error.addClass("hide"),b.message.$success.removeClass("hide"),g=!1),console.log(e)});for(var a in i.outputs)f[a]={min:parseInt(i.inputs[a].min.text())||void 0,max:parseInt(i.inputs[a].max.text())||void 0},d[a](e,f[a],i.outputs[a]),!g&&e.error&&i.message.$error.text(e.error);$(window).on("resize",function(){$("#data-height").text($(this).height())}),i.$patterns.on("click","a",i,function(a){var b=a.data,d=b.$simulator.offset().top;b.juggler||(b.juggler=new c({stage:{container:"juggler-simulator",width:b.$simulator.width(),height:b.$simulator.height()}})),b.$root.animate({scrollTop:d},"500","swing",function(){}),b.juggler.stop(),b.juggler.setPattern($(this).text()),b.juggler.play()}),i.$keyboard.on("click",function(a){a.stopPropagation()}),i.$keyboard.on("click","li",i,function(a){a.stopPropagation();var b=parseInt($(this).text());i.$focus.text(b)}),i.$touch=$("#touch"),i.$keyboard.on("touchstart",i,function(a){var b=a.originalEvent;console.log(b.touches[0].screenX),i.touch.start={x:b.touches[0].screenX,time:Date.now()}}),i.$root.on("touchmove",i,function(a){if(i.touch.start){var b=a.originalEvent,c=i.touch.end;if(i.touch.end={x:b.touches[0].screenX,time:Date.now()},c){var d=c.x-i.touch.end.x;i.keyboard.margin-=d,i.keyboard.width+=d,console.log(i.keyboard),$(".slow",i.$keyboard).css("margin-left",i.keyboard.margin+"px"),$(".slow",i.$keyboard).css("width",i.keyboard.width+"px")}}}),i.$root.on("touchend",i,function(){if(i.touch.start&&i.touch.end){var a=i.touch.end.x-i.touch.start.x,b=i.touch.end.time-i.touch.start.time;console.log(a/b);var c=a/b;if(Math.abs(c)>=.25){var d=-400*c-100;console.log("hola ",d),i.keyboard.margin-=d,i.keyboard.width+=d,$(".slow",i.$keyboard).animate({"margin-left":i.keyboard.margin+"px",width:i.keyboard.width+"px"},300)}}i.touch.start=i.touch.end=void 0})})},{"./Juggler/juggler.js":10,"./scrollTo.js":12,"siteswap-generator":7}],12:[function(a,b){b.exports=function(a,b,c){var d=a.scrollTop,e=b-d,f=0,g=20,h=function(){f+=g;var a=Math.easeInOutQuad(f,d,e,c);window.scroll(0,a),c>f&&setTimeout(h,g)};h()},Math.easeInOutQuad=function(a,b,c,d){return a/=d/2,1>a?c/2*a*a+b:(a--,-c/2*(a*(a-2)-1)+b)}},{}]},{},[11]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+require('./rAF.js')
+
+var Animation = function (func) {
+    this.func   = func
+    this.on     = false
+    this.paused = this.played = Date.now()
+    this.v      = 1
+    this.active = false
+}
+Animation.prototype = {
+    play: function () {
+        if (this.func && !this.on) {
+            if (this.paused)
+                this.played += (Date.now() - this.paused)
+            loop.call(this)
+            this.active = this.on = true
+        }
+    },
+    pause: function () {
+        if (this.func && this.on) {
+            cancelAnimationFrame(this.id)
+            this.active = this.on = false
+            this.paused = Date.now()
+        }
+    },
+    mute: function () {
+        if (this.func && this.on) {
+            cancelAnimationFrame(this.id)
+            this.active = this.on = false
+            this.paused = undefined
+        }
+    },
+    stop: function () {
+        if (this.func) {
+            this.pause()
+            this.paused = this.played = Date.now()
+        }
+    },
+    seek: function (time) {
+        if (this.func) {
+            var now     = Date.now()
+            this.played = now - time
+            this.paused = now
+        }
+    },
+    speed: function (v) {
+        if(this.func && isFinite(v)) {
+            if (v) {
+                v = v / this.v
+                var now         = Date.now()
+                var diff_played = (now - this.played) / v
+                this.played     = now - diff_played
+                if (this.paused) {
+                    var diff_paused = (now - this.paused) / v
+                    this.paused     = now - diff_paused
+                }
+                this.v *= v
+                if (this.active)
+                    this.play()
+            } else {
+                this.pause()
+                this.active = true
+            }
+        }
+    },
+    remove: function () {
+    	if (this.func) {
+            this.pause()
+            delete this.func
+        }
+    },
+}
+function loop () {
+    var now = Date.now()
+    var frame = {
+        time: (now - this.played) * this.v
+    }
+    this.func(frame)
+    this.id = window.requestAnimationFrame(loop.bind(this))
+}
+module.exports = Animation
+},{"./rAF.js":2}],2:[function(require,module,exports){
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+ 
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+ 
+// MIT license
+ 
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+},{}],3:[function(require,module,exports){
+function Layer(options) {
+	this.shapes    = []
+	this.canvas    = document.createElement('canvas')
+	this.canvas.style.position = 'absolute'
+	this.canvas.style.top  = '0'
+	this.canvas.style.left = '0'
+    this.ctx       = this.canvas.getContext('2d')
+}
+
+var LayerProto = Layer.prototype
+
+LayerProto.add = function (shape) {
+	this.shapes.push(shape)
+	shape.layer = this
+}
+
+LayerProto.draw = function (shape) {
+	this.clear()
+	this.shapes.forEach(function (shape) {
+		shape.draw()
+	})
+}
+
+var ua = window.navigator.userAgent
+var native_android_browser = /android/i.test(ua) && ua.indexOf('534.30')
+
+if (native_android_browser) {
+	console.log('native_android_browser')
+    LayerProto.clear = function (shape) {
+    	this.ctx.clearRect(0, 0, this.width, this.height)
+    	// if early version of android browser
+    	// fix bug android browsers: 
+    	// https://medium.com/@dhashvir/android-4-1-x-stock-browser-canvas-solution-ffcb939af758
+    	this.canvas.style.display = 'none'
+        this.canvas.offsetHeight
+        this.canvas.style.display = 'inherit'
+    }
+} else {
+	LayerProto.clear = function (shape) {
+		this.ctx.clearRect(0, 0, this.width, this.height)
+	}
+}
+
+LayerProto.remove = function (shape) {
+	this.clear()
+	this.shapes.forEach(function (shape) {
+		delete shape.layer
+	})
+	this.shapes = []
+}
+
+module.exports = Layer
+},{}],4:[function(require,module,exports){
+function Circle(options) {
+	this.shape = options
+}
+
+Circle.prototype.draw = function () {
+	//console.log('draw circle')
+	var shape = this.shape
+	var layer = this.layer
+	layer.ctx.beginPath()
+	layer.ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI)
+	layer.ctx.closePath()
+	if (shape.fill) {
+		layer.ctx.fillStyle = shape.fill
+		layer.ctx.fill()
+	}
+}
+
+Circle.prototype.setX = function (x) {
+	this.shape.x = x
+}
+
+Circle.prototype.setY = function (y) {
+	this.shape.y = y
+}
+
+module.exports = Circle
+},{}],5:[function(require,module,exports){
+function Stage (options) {
+	this.layers    = []
+	var container = this.container = document.getElementById(options.container)
+	if (!container)
+		throw new Error ('element #' + options.container + ' does not exist')
+	var style = container.style
+	style.position = 'relative'
+	style.width  = options.width + 'px'
+	style.height = options.height + 'px'
+	style.overflow = 'hidden'
+	this.width  = parseInt(options.width)
+	this.height = parseInt(options.height)
+}
+
+Stage.prototype.add = function (layer) {
+	var canvas = layer.canvas
+	this.layers.push(layer)
+	canvas.width  = layer.width  = this.width
+	canvas.height = layer.height = this.height
+	this.container.appendChild(canvas)
+}
+
+Stage.prototype.resize = function (dimensions) {
+	var dim    = {}
+	  , width  = parseInt(dimensions.width)
+	  , height = parseInt(dimensions.height)
+	  , style  = this.container.style
+	if (isFinite(width)) {
+		style.width  = width  + 'px'
+		this.width   = width
+	}
+	if (isFinite(height)) {
+		style.height = height + 'px'
+		this.height  = height
+	}
+}
+
+module.exports = Stage
+},{}],6:[function(require,module,exports){
+module.exports = {
+  Animation: require('./Animation/Animation.js'),
+  Stage:     require('./Canvas/Stage.js'),
+  Layer:     require('./Canvas/Layer.js'),
+  Circle:    require('./Canvas/Shape/Circle.js')
+}
+
+
+},{"./Animation/Animation.js":1,"./Canvas/Layer.js":3,"./Canvas/Shape/Circle.js":4,"./Canvas/Stage.js":5}],7:[function(require,module,exports){
+module.exports = require('./src/siteswap-generator')
+},{"./src/siteswap-generator":8}],8:[function(require,module,exports){
+function copyObject (obj) {
+    var o = {}
+    for (var key in obj) {
+        o[key] = obj[key]
+    }
+    return o
+}
+
+function siteswapGenerator (balls, period, height) {
+    var patterns = []
+
+    if (typeof balls === 'number')
+        balls = {max: balls}
+    if (balls.min === undefined)
+        balls.min = balls.max
+
+    if (typeof period === 'number')
+        period = {max: period}
+    if (period.min === undefined)
+        period.min = 1
+
+    if (height === undefined)
+        height = {max: period.max * balls.max}
+    else if (typeof height === 'number')
+        height = {max: height}
+    else if (typeof height.max !== 'number')
+        height.max = period.max * balls.max
+    if (height.min === undefined)
+        height.min = 0
+
+    console.log(balls, period, height)
+
+    for (var b = balls.max; b >= balls.min; --b) {
+        var heightMax, heightMin
+        var periodMin = Math.max(period.min, 2)
+        for (var p = period.max; p >= periodMin; --p) {
+            heightMax = Math.min(height.max, p * b)
+            heightMin = Math.max(height.min, b + 1)
+
+            for (var h = heightMax; h >= heightMin; --h) {
+                specificPatterns(b, p, h, patterns)
+            }
+        }
+        if (period.min <= 1 && 1 <= period.max && height.min <= b && b <= height.max)
+            patterns.push([b])
+    }
+
+    return patterns
+}
+
+function specificPatterns(balls, period, top, patterns) {
+    if (period === 1 && balls === top) {
+        patterns.push([balls])
+    } else {
+        var used = {}
+        used[top % period] = true
+        recursive(period, top, used, {
+            array : [top],
+            index : 0,
+            pos   : 1,
+            rest  : balls * period - top
+        }, patterns)
+    }
+}
+
+function recursive(period, top, used, pattern, patterns) {
+    if (pattern.pos < period) {
+        var n   = period - pattern.pos
+        var val = pattern.array[pattern.index]
+
+        var max = Math.min(val, pattern.rest)
+        var min = pattern.rest - top * (n - 1)
+        if (n > 1) min++
+        min = Math.max(min, 0)
+        for (var i = max; i >= min; --i) {
+            var index = val > i ? 0 : pattern.index + 1
+            var num = (i + pattern.pos) % period
+            if (used[num] === undefined) {
+                var newUsed  = copyObject(used)
+                newUsed[num] = true
+                recursive(period, top, newUsed, {
+                    array: pattern.array.concat([i]),
+                    index: index,
+                    pos:   pattern.pos + 1,
+                    rest:  pattern.rest - i
+                }, patterns)
+            }
+        }
+    } else {
+        if (pattern.index === 0) {
+            patterns.push(pattern.array)
+        }
+    }
+}
+
+module.exports = siteswapGenerator
+},{}],9:[function(require,module,exports){
+var hasOwn = Object.prototype.hasOwnProperty;
+var toString = Object.prototype.toString;
+var undefined;
+
+var isPlainObject = function isPlainObject(obj) {
+	'use strict';
+	if (!obj || toString.call(obj) !== '[object Object]') {
+		return false;
+	}
+
+	var has_own_constructor = hasOwn.call(obj, 'constructor');
+	var has_is_property_of_method = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+	// Not own constructor property must be Object
+	if (obj.constructor && !has_own_constructor && !has_is_property_of_method) {
+		return false;
+	}
+
+	// Own properties are enumerated firstly, so to speed up,
+	// if last one is own, then all properties are own.
+	var key;
+	for (key in obj) {}
+
+	return key === undefined || hasOwn.call(obj, key);
+};
+
+function extend() {
+	'use strict';
+	var options, name, src, copy, copyIsArray, clone,
+		target = arguments[0],
+		i = 1,
+		length = arguments.length,
+		deep = false;
+
+	// Handle a deep copy situation
+	if (typeof target === 'boolean') {
+		deep = target;
+		target = arguments[1] || {};
+		// skip the boolean and the target
+		i = 2;
+	} else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+		target = {};
+	}
+
+	for (; i < length; ++i) {
+		options = arguments[i];
+		// Only deal with non-null/undefined values
+		if (options != null) {
+			// Extend the base object
+			for (name in options) {
+				src = target[name];
+				copy = options[name];
+
+				// Prevent never-ending loop
+				if (target === copy) {
+					continue;
+				}
+
+				// Recurse if we're merging plain objects or arrays
+				if (deep && copy && (isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
+					if (copyIsArray) {
+						copyIsArray = false;
+						clone = src && Array.isArray(src) ? src : [];
+					} else {
+						clone = src && isPlainObject(src) ? src : {};
+					}
+
+					// Never move original objects, clone them
+					target[name] = extend(deep, clone, copy);
+
+				// Don't bring in undefined values
+				} else if (copy !== undefined) {
+					target[name] = copy;
+				}
+			}
+		}
+	}
+
+	// Return the modified object
+	return target;
+};
+
+module.exports = extend
+},{}],10:[function(require,module,exports){
+var Kinema = require('kinemajs')
+var extend = require('./extend.js')
+
+var Juggler = (function () {
+
+    var abc = "abcdefghijklmnopqrstuvwxyz"
+    var nums = {}
+    for (var i = 0; i < 10; ++i) {
+        nums[i] = i
+    }
+    for (var i = 0; i < abc.length; ++i) {
+        nums[abc[i]] = i + 10
+    }
+
+    function recalculate (attrs, maximum) {
+        var juggling = attrs.juggling
+        var stage    = attrs.stage
+        var K = (maximum - juggling.waiting.time) * juggling.interval 
+        var width
+
+        if (stage.width) {
+            var k = (juggling.integer_height - juggling.waiting.time) * juggling.interval
+            var r = k / K //(k * k) / (K * K)
+            width = r * stage.width
+            console.log('uu', r)
+        } else {
+            var k = (3 - juggling.waiting.time) * juggling.interval
+            var r = k / K // (k * k) / (K * K)
+            width = 1.5 * juggling.height * r
+        }
+
+        return {
+            width: 0.5 * width,
+            gravity: 8 * juggling.height / (K * K),
+            shift: juggling.waiting.shift * r,
+            radius: juggling.balls.radius * r
+        }
+    }
+
+    function Juggler(attrs) {
+        console.log(attrs.stage)
+        this.attrs = {}
+        this.attrs = extend(true, this.attrs, {
+            stage: {
+                width:  500,
+                height: 650
+            },
+            juggling: {
+                interval: 500,
+                waiting: {
+                  time: 0.5,
+                  shift: 50,
+                },
+                integer_height: 5,
+                balls: {
+                    radius: 10,
+                    colors: ['red', 'blue', 'green', 'yellow', 'black', 'orange', 'purple']
+                },
+                height: 0.8 * attrs.stage.height,
+                center: {
+                    x: 0.5 * attrs.stage.width,
+                    y: 0.9 * attrs.stage.height
+                }
+            },
+            layer: new Kinema.Layer()
+        }, attrs)
+        this.attrs.stage = new Kinema.Stage(this.attrs.stage)
+        this.attrs.stage.add(this.attrs.layer)
+
+        var juggling = this.attrs.juggling
+        var target = recalculate(this.attrs, this.attrs.juggling.integer_height)
+
+        juggling.width   = target.width
+        juggling.gravity = target.gravity
+    }
+
+    Juggler.toPattern = function (string) {
+        return string.split('').map(function(e) {
+            return nums[e]
+        })
+    }
+
+    Juggler.prototype.setPattern = function (pattern) {
+        if (typeof pattern === 'string') {
+            pattern = Juggler.toPattern(pattern)
+        }
+
+        var attrs = this.attrs
+        var stage    = attrs.stage
+        var juggling = attrs.juggling
+
+        var radius, shift, gravity, width
+        var maximum = Math.max.apply(null, pattern)
+
+        if (maximum > juggling.integer_height) {
+            var target = recalculate(attrs, maximum)
+            width   = target.width
+            gravity = target.gravity
+            shift   = target.shift
+            radius  = target.radius
+        } else {
+            shift   = juggling.waiting.shift
+            width   = juggling.width
+            gravity = juggling.gravity
+            radius  = juggling.balls.radius
+        }
+
+        //console.log(width, gravity, radius, shift)
+        var num_balls = pattern.reduce(function (a, b) {
+          return a + b
+        }, 0)
+
+        if (num_balls % pattern.length != 0) {
+            throw new Error('El patró es irrealitzable. Es necessita un nombre enter de boles. Actualment: ' + num_balls / pattern.length)
+        }
+
+        num_balls /= pattern.length
+
+        var numbers = [] // throws
+
+        for (var i = 0; i < pattern.length; ++i) {
+            var number = {}
+            number.value  = pattern[i]
+            number.next   = (i + number.value) % pattern.length
+            number.period = (number.value - juggling.waiting.time) * juggling.interval 
+            number.velocity = 0.5 * gravity * number.period
+            numbers.push(number)
+        }
+
+        for (var i = 0; i < pattern.length; ++i) {
+            if (!numbers[i].cycle) {
+                var cycle_flags = {}
+                var index = i
+                var cycle = 0
+                while (!cycle_flags[index]) {
+                    cycle_flags[index] = true
+                    index = numbers[index].next
+                    cycle += numbers[index].value
+                }
+                for (var index in cycle_flags) {
+                    numbers[index].cycle = cycle
+                }
+            }
+        }
+
+        var y0 = juggling.center.y
+        shift /= 2
+        var left  = juggling.center.x - (width / 2)
+        var right = juggling.center.x + (width / 2)
+
+        var j = 0
+        var jmod = 0
+        var i = 0
+        var k = 0
+        var begin = {}
+        this.balls = []
+
+        while (i < num_balls) {
+            if (numbers[jmod].value !== 0) {
+                if (begin[j] === undefined) {
+                    begin[j] = i
+                    begin[j + numbers[jmod].value] = i
+                    ++i
+                    var ball = {
+                        figure: new Kinema.Circle({
+                            x: j % 2 === 0 ? left + 15 : right -15,
+                            y: y0,
+                            radius: radius || 10,
+                            fill: juggling.balls.colors[k% juggling.balls.colors.length],
+                        }),
+                        start: j,
+                        cycle: numbers[jmod].cycle
+                    }
+                    this.balls.push(ball)
+                    attrs.layer.add(ball.figure)
+                    ++k
+                } else {
+                    begin[j + numbers[jmod].value] = numbers[jmod].value
+                }
+            }
+            ++j
+            jmod = j % numbers.length
+        }
+
+        var self = this
+
+        //attrs.stage.add(attrs.layer)          
+        attrs.animation = new Kinema.Animation(function(frame) {
+            var steps = Math.floor(frame.time / juggling.interval)
+            //console.log(steps)
+            self.balls.forEach(function (ball) {
+                var t = frame.time - juggling.interval * ball.start
+                if (t >= 0) {
+                    t %= ball.cycle * juggling.interval
+                    var i = ball.start % numbers.length
+                    var pattern
+                    while (true) {
+                        pattern = numbers[i].value
+                        var time = pattern * juggling.interval
+                        if (time > t) {
+                            break
+                        } else {
+                            t -= time
+                        }
+                        i = numbers[i].next
+                    }
+                    var step = steps - Math.floor(t / juggling.interval)
+
+                    var position = {}
+
+                    if (step % 2 === 0) {
+                        position.start = {
+                            x: left + shift,
+                            y: y0
+                        }
+                    } else {
+                        position.start = {
+                            x: right - shift,
+                            y: y0
+                        }
+                    }
+
+                    if ((step + numbers[i].value) % 2 === 0) {
+                        position.middle = {
+                            x: left - shift,
+                            y: y0
+                        }
+                        position.end = {
+                            x: left + shift,
+                            y: y0
+                        }
+                    } else {
+                        position.middle = {
+                            x: right + shift,
+                            y: y0
+                        }
+                        position.end = {
+                            x: right - shift,
+                            y: y0
+                        }
+                    }
+
+                    var f = {
+                        value: numbers[i].value,
+                        time: {
+                            total: juggling.interval,
+                            thrown: numbers[i].period,
+                            caught: juggling.interval * numbers[i].value - numbers[i].period,
+                            now: t
+                        },
+                        left: step % 2 === 0,
+                        gravity: gravity,
+                        position: position
+                    }
+
+                    behaviour(ball.figure, f)
+                }
+            })
+            attrs.layer.draw()
+        })
+    }
+
+    Juggler.prototype.removePattern = function () {
+        var self = this
+        self.attrs.animation.stop()
+        self.attrs.layer.remove()
+    }
+
+    /*Juggler.prototype.resize = function (dimensions) {
+        this.stop()
+        this.attrs.stage.resize(dimensions)
+    }*/
+
+    Juggler.prototype.play = function () {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.play()
+    }
+
+    Juggler.prototype.pause = function () {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.pause()
+    }
+
+    Juggler.prototype.mute = function () {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.mute()
+    }
+
+    Juggler.prototype.stop = function () {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.stop()
+        this.attrs.layer.remove()
+    }
+
+    Juggler.prototype.speed = function (speed) {
+        var animation = this.attrs.animation
+        if (animation)
+            animation.speed(speed)
+    }
+
+    Juggler.prototype.colors = function (colors) {
+        this.stop()
+        this.attrs.juggling.balls.colors = [].concat(colors)
+    }
+
+    return Juggler
+})()
+
+function behaviour(figure, frame) {
+    var time = frame.time
+    var position = frame.position
+    var width
+    var now = time.now
+    if (now < time.thrown) {
+        // thrown
+        width = position.middle.x - position.start.x
+        figure.setX(position.start.x + width * now / time.thrown)
+        var velocity = 0.5 * frame.gravity * time.thrown
+        figure.setY(position.start.y - velocity * now + 0.5 * frame.gravity * now * now)
+    } else {
+        // caught
+        width = position.end.x - position.middle.x
+        figure.setX(position.middle.x + width * (now - time.thrown) / time.caught)
+        figure.setY(position.middle.y)
+    }
+}
+
+module.exports = Juggler
+},{"./extend.js":9,"kinemajs":6}],11:[function(require,module,exports){
+var siteswapGenerator = require('siteswap-generator')
+var scrollTo = require('./scrollTo.js')
+var Juggler = require('./Juggler/juggler.js')
+
+$.fn.keyboard = function (min, max) {
+    var html = '<div class="slow"><ul class="fast">'
+    for (var i = min; i <= max; ++i) {
+        html += '<li>' + i + '</li>'
+    }
+    html += '</ul>'
+    $(this).append(html)
+}
+
+var generateText = {
+    balls: function (text, balls, $output) {
+        text.error = false
+        if (balls.min !== undefined && balls.max !== undefined
+         && balls.min <= balls.max && balls.min > 0) {
+            if (balls.min === balls.max) 
+                text.balls = 'de ' + balls.max + ' boles'
+            else if (balls.min === 1)
+                text.balls = 'de màxim ' + balls.max + ' boles'
+            else if (balls.min < balls.max)
+                text.balls = 'de ' + balls.min + ' a ' + balls.max + ' boles'
+        } else {
+            text.error = 'L\'interval de boles que demanes no es correcte'
+        }
+        $output.text(text.balls)
+    },
+    
+    period: function (text, period, $output) {
+        text.error = false
+        console.log(period)
+        console.log('eooo', text.error)
+        if (period.min !== undefined && period.max !== undefined 
+         && period.min <= period.max && period.min > 0) {
+            if (period.min === period.max) 
+                text.period = 'de període ' + period.max
+            else if (period.min === 1)
+                text.period = 'amb periodes no més grans de ' + period.max
+            else if (period.min < period.max)
+                text.period = 'amb períodes entre ' + period.min + ' i ' + period.max
+        } else {
+            text.error = 'L\'interval de períodes que demanes no es correcte'
+        }
+        $output.text(text.period)
+    },
+
+    height: function (text, height, $output) {
+        text.error = false
+        if (height.min === undefined && height.max === undefined) {
+            text.height = ''
+        } else if (height.min === undefined && height.max >= 0) {
+            text.height = 'amb llançaments no més alts de ' + height.max
+        } else if (height.max === undefined && height.min >= 0) {
+            text.height = 'amb llançaments que continguin alguna alçada major o igual a ' + height.min
+        } else if (height.min <= height.max && height.min >= 0) {
+            if (height.min === height.max) {
+                text.height = 'amb llançaments que continguin alguna alçada de ' + height.min + ' i no més alta'
+            } else {
+                text.height = 'amb llançaments que continguin alguna alçada major o igual a ' + height.min + ' i no continguin cap alçada superior a ' + height.max
+            }
+        } else {
+            text.error = 'L\'interval de periodes que demanes no es correcte'
+        }
+
+        $output.text(text.height)
+    }
+}
+
+var text = {}
+var values = {}
+var error = false
+var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
+
+var scope = {
+    values: {},
+    touch: {},
+    keyboard: {
+        margin: 0,
+        width: 2 * $(window).width()
+    }
+}
+
+$(document).ready(function (event) {
+    scope.inputs = {
+        balls: {
+            min: $('#balls-min'),
+            max: $('#balls-max')
+        },
+        period: {
+            min: $('#period-min'),
+            max: $('#period-max')
+        },
+        height: {
+            min:  $('#height-min'),
+            max:  $('#height-max')
+        }
+    }
+
+    scope.$form   = $('#form')
+    scope.$create = $('#create')
+    scope.$root = $('body, html')
+    scope.$keyboard = $('#keyboard')
+
+    scope.outputs = {
+        balls:  $('#p-balls'),
+        period: $('#p-period'),
+        height:  $('#p-height'),
+    }
+
+    scope.message = {
+        $success: $('#success'),
+        $error:   $('#error')
+    }
+
+    scope.$patterns = $('#patterns')
+
+    scope.$simulator = $('#simulator')
+
+    scope.$create.on('click', scope, function (event) {
+        var scope = event.data
+        event.preventDefault()
+
+        var patterns = siteswapGenerator(values.balls, values.period, values.height)
+        var html = '<ul>\n'
+        for (var i = 0; i < patterns.length; ++i) {
+            var textPattern = patterns[i].map(function (e) {
+                return heightToLetter[e]
+            }).join('')
+            html += '<li><a href="#simulator' + '?pattern=' + textPattern + '">'
+            html += textPattern
+            html += '</a></li>\n'
+        }
+        html += '</ul>'
+
+        var top = scope.$patterns.offset().top
+        console.log($(window).height())
+        scope.$simulator.css('height', 'auto')
+        scope.$simulator.css('min-height', $(window).height())
+
+        scope.$root.animate({scrollTop: top}, '500', 'swing', function() { 
+            //alert("Finished animating");
+        });
+
+        scope.$patterns.html(html)
+    })
+
+    scope.$root.on('click', scope, function (event) {
+        scope.$focus.removeClass('select')
+        scope.$keyboard.addClass('hide')
+    })
+
+    scope.$form.on('click', '.editable', scope, function (event) {
+        event.stopPropagation()
+        var scope = event.data
+        if (scope.$focus) {
+            scope.$focus.removeClass('select')
+        }
+        scope.$focus = $('.contenteditable', this).first()
+        scope.$focus.addClass('select')
+        scope.$keyboard.keyboard(1, 90)
+    })
+
+    scope.$form.on('click', '.contenteditable', scope, function (event) {
+        event.stopPropagation()
+        var scope = event.data
+        if (scope.$focus) {
+            scope.$focus.removeClass('select')
+        }
+        scope.$focus = $(this)
+        scope.$focus.addClass('select')
+        scope.$keyboard.removeClass('hide')
+        scope.$keyboard.keyboard(1, 90)
+    })
+
+    scope.$form.on('input', 'span[contenteditable]', scope, function (event) {
+        var scope = event.data
+        var key = $(this).data('type')
+        values[key] = {
+            min: parseInt(scope.inputs[key].min.text()) || undefined,
+            max: parseInt(scope.inputs[key].max.text()) || undefined
+        }
+        generateText[key](text, values[key], scope.outputs[key])
+        //console.log('error:', error)
+        //console.log('text.error:', text.error)
+        if (!error && text.error) {
+            scope.message.$success.addClass('hide')
+            scope.message.$error.text(text.error)
+            scope.message.$error.removeClass('hide')
+            error = true
+        } else if (error && !text.error) {
+            scope.message.$error.addClass('hide')
+            scope.message.$success.removeClass('hide')
+            error = false
+        }
+        console.log(text)
+        /*div_patterns.style.height = '0px'
+        div_patterns.style.minHeight = '0px'*/
+    })
+
+    
+    for (var key in scope.outputs) {
+        values[key] = {
+            min: parseInt(scope.inputs[key].min.text()) || undefined,
+            max: parseInt(scope.inputs[key].max.text()) || undefined
+        }
+        generateText[key](text, values[key], scope.outputs[key])
+
+        if (!error && text.error) {
+            scope.message.$error.text(text.error)
+        }
+    }
+
+    $(window).on('resize', function () {
+        $('#data-height').text($(this).height())
+    })
+
+    scope.$patterns.on('click', 'a', scope, function (event) {
+        var scope     = event.data
+        var targetTop = scope.$simulator.offset().top
+        if (!scope.juggler) {
+            scope.juggler = new Juggler({
+                stage: {
+                    container: 'juggler-simulator',
+                    width:  scope.$simulator.width(),
+                    height: scope.$simulator.height()
+                }
+            })
+        }
+        scope.$root.animate({scrollTop: targetTop}, '500', 'swing', function() { 
+            //alert("Finished animating");
+        });
+        scope.juggler.stop()
+        scope.juggler.setPattern($(this).text())
+        scope.juggler.play()
+    })
+
+    scope.$keyboard.on('click', function (event) {
+        event.stopPropagation()
+    })
+
+    scope.$keyboard.on('click', 'li', scope, function (event) {
+        event.stopPropagation()
+        var num = parseInt($(this).text())
+        scope.$focus.text(num)
+    })
+
+    scope.$touch = $('#touch')
+
+    scope.$keyboard.on('touchstart', scope, function (event) {
+        var originalEvent = event.originalEvent
+        //console.log(originalEvent.touches[0])
+        console.log(originalEvent.touches[0].screenX)
+        scope.touch.start = {
+            x: originalEvent.touches[0].screenX,
+            time: Date.now()
+        }
+    })
+
+    scope.$root.on('touchmove', scope, function (event) {
+        if (scope.touch.start) {
+            var originalEvent = event.originalEvent
+            //scope.$root.css('background', 'red')
+            var end = scope.touch.end
+            scope.touch.end = {
+                x: originalEvent.touches[0].screenX,
+                time: Date.now()
+            }
+            if (end) {
+                var diff = end.x - scope.touch.end.x
+                scope.keyboard.margin -= diff
+                scope.keyboard.width  += diff
+                console.log(scope.keyboard)
+                $('.slow', scope.$keyboard).css('margin-left', scope.keyboard.margin + 'px')
+                $('.slow', scope.$keyboard).css('width', scope.keyboard.width + 'px')
+            }
+        }
+
+    })
+
+    var average = 0
+    var n = 0
+
+    scope.$root.on('touchend', scope, function (event) {
+        if (scope.touch.start && scope.touch.end) {
+            var dx = scope.touch.end.x - scope.touch.start.x
+            var dt = scope.touch.end.time - scope.touch.start.time
+            console.log(dx/dt)
+            var speed = dx / dt
+            average = average * n / (n + 1) + Math.abs(speed) / (n + 1)
+            ++n
+            if (Math.abs(speed) >= 0.25) {
+                
+                var diff = -400 * speed - 100
+                scope.keyboard.margin -= diff
+                scope.keyboard.width  += diff
+                $('.slow', scope.$keyboard).animate({
+                    'margin-left': scope.keyboard.margin + 'px',
+                    'width': scope.keyboard.width + 'px'
+                }, 300)
+            }
+            scope.$touch.append('<div>' + speed.toFixed(2) + ' ' + average.toFixed(2) + '</div>')
+        }
+        scope.touch.start = scope.touch.end = undefined
+    })
+})
+},{"./Juggler/juggler.js":10,"./scrollTo.js":12,"siteswap-generator":7}],12:[function(require,module,exports){
+module.exports = function scrollTo(element, to, duration) {
+    var start = element.scrollTop,
+        change = to - start,
+        currentTime = 0,
+        increment = 20;
+        
+    var animateScroll = function(){        
+        currentTime += increment;
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        window.scroll(0, val);
+        if(currentTime < duration) {
+            setTimeout(animateScroll, increment);
+        }
+    };
+    animateScroll();
+}
+
+//t = current time
+//b = start value
+//c = change in value
+//d = duration
+Math.easeInOutQuad = function (t, b, c, d) {
+	t /= d/2;
+	if (t < 1) return c/2*t*t + b;
+	t--;
+	return -c/2 * (t*(t-2) - 1) + b;
+};
+},{}]},{},[11]);
