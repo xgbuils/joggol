@@ -128,7 +128,6 @@ $(document).ready(function (event) {
     }
 
     scope.$create = $('#create')
-    scope.$generator = $('#generator')
     scope.$root = $('body, html')
     scope.keyboard = {
         $widget: $('#keyboard'),
@@ -150,37 +149,10 @@ $(document).ready(function (event) {
     }
 
     scope.$header = $('#header')
-    scope.$patterns = $('#patterns')
-
+    scope.$generator = $('#generator')
+    scope.topGenerator = scope.$generator.offset().top
     scope.$simulator = $('#simulator')
-
-    /*scope.$create.on('click', scope, function (event) {
-        var scope = event.data
-        event.preventDefault()
-
-        var patterns = siteswapGenerator(values.balls, values.period, values.height)
-        var html = '<ul>\n'
-        for (var i = 0; i < patterns.length; ++i) {
-            var textPattern = patterns[i].map(function (e) {
-                return heightToLetter[e]
-            }).join('')
-            html += '<li><a href="#simulator' + '?pattern=' + textPattern + '">'
-            html += textPattern
-            html += '</a></li>\n'
-        }
-        html += '</ul>'
-
-        var top = scope.$patterns.offset().top
-        console.log($(window).height())
-        scope.$simulator.css('height', 'auto')
-        scope.$simulator.css('min-height', $(window).height())
-
-        scope.$root.animate({scrollTop: top}, '500', 'swing', function() { 
-            //alert("Finished animating");
-        });
-
-        scope.$patterns.html(html)
-    })*/
+    scope.topSimulator = scope.$simulator.offset().top
 
     scope.$root.on('click', scope, function (event) {
         var scope = event.data
@@ -262,26 +234,6 @@ $(document).ready(function (event) {
         $('#data-height').text($(this).height())
     })
 
-    scope.$patterns.on('click', 'a', scope, function (event) {
-        var scope     = event.data
-        var targetTop = scope.$simulator.offset().top
-        if (!scope.juggler) {
-            scope.juggler = new Juggler({
-                stage: {
-                    container: 'juggler-simulator',
-                    width:  scope.$simulator.width(),
-                    height: scope.$simulator.height()
-                }
-            })
-        }
-        scope.$root.animate({scrollTop: targetTop}, '500', 'swing', function() { 
-            //alert("Finished animating");
-        });
-        scope.juggler.stop()
-        scope.juggler.setPattern($(this).text())
-        scope.juggler.play()
-    })
-
     scope.keyboard.$widget.on('click', function (event) {
         event.stopPropagation()
     })
@@ -314,16 +266,11 @@ $(document).ready(function (event) {
         var targetTop = $(href.fragment).offset().top
         scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
         if (href.fragment === "#header") {
-            scope.$header.removeClass('reduce')
             scope.keyboard.$widget.addClass('hide')
         } else {
-            scope.$header.addClass('reduce')
             if (href.fragment === "#simulator") {
-                //queryString.play 
                 scope.keyboard.$widget.removeClass('hide')
-                //console.log('values: ', values.balls, values.period, values.height)
                 var patterns = siteswapGenerator(values.balls, values.period, values.height)
-                //console.log(patterns)
                 textPatterns = patterns.map(function (pattern) {
                     return pattern.map(function (e) {
                         return heightToLetter[e]
@@ -362,11 +309,15 @@ $(document).ready(function (event) {
         triggerDelegatedEvent('inputeditable', scope.$generator, scope.$focus[0])
     })
 
-    /*$('#header-btn').on('click', function () {
-        $('.header').addClass('reduce')
-        var targetTop = scope.$generator.offset().top
-        scope.$root.animate({scrollTop: targetTop}, '500', 'swing', function() { 
-            //alert("Finished animating");
-        });
-    })*/
+    $(window).on('scroll', scope, function (event) {
+        var scope = event.data
+        var top = $(window).scrollTop()
+        console.log(top, scope.topGenerator - 50)
+        if ( top < scope.topGenerator - 50) {
+            console.log('eoo')
+            scope.$header.removeClass('reduce')
+        } else {
+            scope.$header.addClass('reduce')
+        }
+    })
 })

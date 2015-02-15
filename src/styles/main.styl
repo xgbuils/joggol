@@ -30,6 +30,10 @@ color = {
 	main: #2F9C9A
 }
 
+bar = {
+	height: 50px
+}
+
 num_samples = 2
 
 body
@@ -61,8 +65,7 @@ li
 .generator
 	box-sizing: border-box
 	font-size: 1em
-	//height: 100vh
-	padding: 50px 0
+	padding: bar.height 0
 	position: relative
 	h2
 		//border-bottom: solid 1px color.main
@@ -137,7 +140,7 @@ li
 			text-decoration: none
 	.menu-header
 		display: none
-		height: 50px
+		height: bar.height
 		width: 100%
 		a
 			color: white
@@ -180,8 +183,8 @@ li
 	background: color.main
 	bottom: 0
 	box-sizing: border-box
-	height: 50px
-	line-height: 50px
+	height: bar.height
+	line-height: bar.height
 	//overflow: hidden
 	padding-left: 3em
 	position: fixed
@@ -214,8 +217,8 @@ li
 		color: white
 		display: block
 		font-size: 2em
-		height: 50px
-		line-height: 50px
+		height: bar.height
+		line-height: bar.height
 		position: absolute
 		top: 0
 		width: 60px
@@ -247,7 +250,7 @@ li
 .simulator
 	box-sizing: border-box
 	//height: 100vh
-	padding: 50px 0
+	padding: bar.height 0
 	position: relative
 	width: 100%
 .title
