@@ -36,7 +36,9 @@ body
 	//font-family: 'Sans Serif'
 	font-family: 'Josefin Sans', sans-serif;
 	font-size: body.font.size
+	height: 100vh
 	margin: 0
+	overflow: hidden
 	padding: 0
 ul
 li
@@ -69,24 +71,16 @@ li
 	.fieldset
 		margin: 1em
 .generator
-	left: 0
-	position: absolute
-	top: 0
+	height: 100vh
+	box-sizing: border-box
 .header
 	background: color.main
 	color: white
-	height: 170%
-	height: 100vh
-	left: 0
-	margin: 0 auto
 	overflow: hidden
-	position: absolute
 	text-align: center
 	top: 0
 	transition: height .3s
 	width: 100%
-	z-index: 20
-	-webkit-backface-visibility: hidden
 	.icon-logo
 		vertical-align middle
 		display inline-block
@@ -94,17 +88,23 @@ li
 		margin 0
 		margin-right .1em
 	.menu-header
-		display: none
-	&.reduce
 		height: 50px
-		position: fixed
-		h1
+		width: 100%
+		a
+			color: white
 			font-size: 1em
+			font-weight: bold
 			margin: 0
-		.presentation
-			display: none
+			text-decoration: none
+	.presentation
+		height: 170%
+		height: 100vh
+	&.reduce
 		.menu-header
-			display: block
+			background: color.main
+			left: 0
+			position: fixed
+			top: 0
 .header-btn
 	background: white
 	border-radius: .2em
@@ -236,6 +236,8 @@ li
 	font-family: 'Shadows Into Light', cursive
 .wrapper
 	position: relative
+	&.toGenerator
+		-webkit-transform: translate(0, -100vh)
 #patterns
 	ul
 		margin 0

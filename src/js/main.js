@@ -100,6 +100,7 @@ $(document).ready(function (event) {
 
     scope.$form   = $('#form')
     scope.$create = $('#create')
+    scope.$generator = $('#generator')
     scope.$root = $('body, html')
     scope.keyboard = {
         $widget: $('#keyboard'),
@@ -280,5 +281,9 @@ $(document).ready(function (event) {
 
     $('#header-btn').on('click', function () {
         $('.header').addClass('reduce')
+        var targetTop = scope.$generator.offset().top
+        scope.$root.animate({scrollTop: targetTop}, '500', 'swing', function() { 
+            //alert("Finished animating");
+        });
     })
 })
