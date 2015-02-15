@@ -36,21 +36,27 @@ body
 	//font-family: 'Sans Serif'
 	font-family: 'Josefin Sans', sans-serif;
 	font-size: body.font.size
-	height: 100vh
+	//height: 100vh
 	margin: 0
-	overflow: hidden
+	//overflow: hidden
 	padding: 0
 ul
 li
 	list-style: none
 	margin: 0
 	padding: 0
-
-.content
-	width: 100%
-.form
-	font-size: 1.4em
-	padding: 1em 0
+.btn
+	border-radius: .2em
+	display: inline-block
+	line-height: 2em
+	padding 0 .5em
+	text-decoration: none
+.generator
+	box-sizing: border-box
+	font-size: 1em
+	height: 100vh
+	padding: 50px 0
+	position: relative
 	h2
 		//border-bottom: solid 1px color.main
 		display: inline-block
@@ -69,26 +75,60 @@ li
 		h2
 			display: block
 	.fieldset
-		margin: 1em
-.generator
-	padding: 50px 0
-	height: 100vh
-	box-sizing: border-box
+		margin: .8em
 .header
 	background: color.main
 	color: white
 	overflow: hidden
+	position: relative
 	text-align: center
 	top: 0
 	transition: height .3s
 	width: 100%
+	.languges
+	.header-main
+	.samples
+		position: absolute
+		transform: translate(0, -50%)
+		width: 100%
+	.header-main
+		box-sizing: border-box
+		font-size 1.3em
+		padding: 1em 0
+		top: 45%
+		h1
+			font-size: 2.5em
+			margin: 0
+			padding: 0
+		strong
+			font-weight: normal
+		.description
+			margin .8em 0 .4em
 	.icon-logo
 		vertical-align middle
 		display inline-block
 		font-size 3.3em
 		margin 0
 		margin-right .1em
+	.languages
+		font-size: 0.7em
+		padding: 3em 0 1.5em
+		top: 16%
+		ul
+			margin 0
+			padding 0
+		li
+			display: inline-block
+			border-left: solid white 1px
+			&:first-child
+				border: none
+		a
+			color: white
+			display: block
+			padding 0 .5em
+			text-decoration: none
 	.menu-header
+		display: none
 		height: 50px
 		width: 100%
 		a
@@ -100,50 +140,34 @@ li
 	.presentation
 		height: 170%
 		height: 100vh
+	.samples
+		overflow: hidden
+		top: 85%
+		ul
+			font-size: 0
+			width: num_samples * 100%
+		li
+			display: inline-block
+			font-size: body.font.size
+			vertical-align: top
+			width: (100% / num_samples)
+		p
+			margin: 0
+			padding: 0
 	&.reduce
 		.menu-header
+			display: block
 			background: color.main
 			left: 0
 			position: fixed
 			top: 0
+			z-index: 20
 .header-btn
 	background: white
-	border-radius: .2em
 	color: black
-	display: inline-block
 	height: 2em
-	line-height: 2em
-	padding 0 .5em
-	text-decoration: none
-.header-main
-	font-size 1.3em
-	padding: 1em 0
-	h1
-		font-size: 2.5em
-		margin: 0
-		padding: 0
-	strong
-		font-weight: normal
-	.description
-		margin .2 0
 .hide
 	display: none
-.languages
-	font-size: 0.7em
-	padding: 3em 0 1.5em
-	ul
-		margin 0
-		padding 0
-	li
-		display: inline-block
-		border-left: solid white 1px
-		&:first-child
-			border: none
-	a
-		color: white
-		display: block
-		padding 0 .5em
-		text-decoration: none
 .keyboard
 	background: color.main
 	bottom: 0
@@ -156,6 +180,7 @@ li
 	text-align: left
 	transition: height .3s
 	width: 100%
+	z-index: 20
 	ul
 		//background: color.main
 		display: table-row
@@ -205,38 +230,17 @@ li
 	//margin-top 2em
 	text-align justify
 .create
-	border: none
-	background: transparent
-	box-shadow: none
-	padding: 0 0 .5em
-	button
-		display: block
-		width: 80%
-		height: button.create.height + 8px
-		margin: 0 auto
-		font-size: 1.5em
-		line-height: button.create.height
-.samples
-	overflow: hidden
-	ul
-		font-size: 0
-		margin: 0
-		padding: 0
-		width: num_samples * 100%
-	li
-		display: inline-block
-		font-size: body.font.size
-		vertical-align: top
-		width: (100% / num_samples)
-	p
-		margin: 0
-		padding: 0
+	text-align: center
+	.btn
+		background: color.main
+		color: white
 .select
 	background: #ECA350
 .simulator
 	box-sizing: border-box
 	height: 100vh
 	padding: 50px 0
+	position: relative
 	width: 100%
 .title
 	font-family: 'Shadows Into Light', cursive

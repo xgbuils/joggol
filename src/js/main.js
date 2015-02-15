@@ -127,7 +127,6 @@ $(document).ready(function (event) {
         }
     }
 
-    scope.$form   = $('#form')
     scope.$create = $('#create')
     scope.$generator = $('#generator')
     scope.$root = $('body, html')
@@ -191,40 +190,40 @@ $(document).ready(function (event) {
         }
     })
 
-    scope.$form.on('click', '.editable', scope, function (event) {
+    scope.$generator.on('click', '.editable', scope, function (event) {
         event.stopPropagation()
         var scope = event.data
         if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.$form, scope.$focus[0])
+            triggerDelegatedEvent('blureditable', scope.$generator, scope.$focus[0])
         }
         scope.$focus = $('.contenteditable', this).first()
-        triggerDelegatedEvent('focuseditable', scope.$form, scope.$focus[0])
+        triggerDelegatedEvent('focuseditable', scope.$generator, scope.$focus[0])
     })
 
-    scope.$form.on('click', '.contenteditable', scope, function (event) {
+    scope.$generator.on('click', '.contenteditable', scope, function (event) {
         event.stopPropagation()
         var scope = event.data
         if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.$form, scope.$focus[0])
+            triggerDelegatedEvent('blureditable', scope.$generator, scope.$focus[0])
         }
         scope.$focus = $(this)
-        triggerDelegatedEvent('focuseditable', scope.$form, this)
+        triggerDelegatedEvent('focuseditable', scope.$generator, this)
     })
 
-    scope.$form.on('focuseditable', '.contenteditable', scope, function (event) {
+    scope.$generator.on('focuseditable', '.contenteditable', scope, function (event) {
         var scope = event.data
         $(this).addClass('select')
         scope.keyboard.$widget.removeClass('hide')
         scope.keyboard.$keys.keyboard(range(1, 90))
     })
 
-    scope.$form.on('blureditable', '.contenteditable', scope, function (event) {
+    scope.$generator.on('blureditable', '.contenteditable', scope, function (event) {
         var scope = event.data
         $(this).removeClass('select')
         scope.keyboard.$widget.addClass('hide')
     })
 
-    scope.$form.on('inputeditable', '.contenteditable', scope, function (event) {
+    scope.$generator.on('inputeditable', '.contenteditable', scope, function (event) {
         console.log('dsadsa')
         var scope = event.data
         var key = $(this).data('type')
@@ -316,6 +315,7 @@ $(document).ready(function (event) {
         scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
         if (href.fragment === "#header") {
             scope.$header.removeClass('reduce')
+            scope.keyboard.$widget.addClass('hide')
         } else {
             scope.$header.addClass('reduce')
             if (href.fragment === "#simulator") {
@@ -359,7 +359,7 @@ $(document).ready(function (event) {
         event.stopPropagation()
         var num = parseInt($(this).text())
         scope.$focus.text(num)
-        triggerDelegatedEvent('inputeditable', scope.$form, scope.$focus[0])
+        triggerDelegatedEvent('inputeditable', scope.$generator, scope.$focus[0])
     })
 
     /*$('#header-btn').on('click', function () {
