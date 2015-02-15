@@ -1,19 +1,48 @@
 var siteswapGenerator = require('siteswap-generator')
 var Juggler = require('./Juggler/juggler.js')
 
-$.fn.keyboard = function (min, max) {
-    var html = '<ul>'
+$.fn.keyboard = function (sequence, callback) {
+    callback = callback || function (e) {return e}
+    $(this).html('<ul>'
+        + sequence.map(function (e) {
+            return '<li>' + callback(e) + '</li>'
+        }).join('')
+        + '</ul>')
+}
+
+function range(min, max) {
+    var arr = []
     for (var i = min; i <= max; ++i) {
-        html += '<li>' + i + '</li>'
+        arr.push(i)
     }
-    html += '</ul>'
-    $(this).html(html)
+    return arr
 }
 
 function triggerDelegatedEvent (name, $wrapper, elem) {
     var e = $.Event(name)
     e.target = elem
     $wrapper.trigger(e)
+}
+
+function parseHref(href, config) {
+    console.log(href)
+    var aux = href.split('?')
+    var fragment = aux[0]
+    var queryString = {}
+
+    console.log(aux[1])
+    if (aux[1]) {
+        var q = aux[1].split('&')
+        for (var i in q) {
+            aux = q[i].split('=')
+            queryString[aux[0]] = aux[1]
+        }
+    }
+
+    return {
+        fragment: fragment || config.fragment,
+        queryString: queryString
+    }
 }
 
 var generateText = {
@@ -121,11 +150,12 @@ $(document).ready(function (event) {
         $error:   $('#error')
     }
 
+    scope.$header = $('#header')
     scope.$patterns = $('#patterns')
 
     scope.$simulator = $('#simulator')
 
-    scope.$create.on('click', scope, function (event) {
+    /*scope.$create.on('click', scope, function (event) {
         var scope = event.data
         event.preventDefault()
 
@@ -151,7 +181,7 @@ $(document).ready(function (event) {
         });
 
         scope.$patterns.html(html)
-    })
+    })*/
 
     scope.$root.on('click', scope, function (event) {
         var scope = event.data
@@ -185,7 +215,7 @@ $(document).ready(function (event) {
         var scope = event.data
         $(this).addClass('select')
         scope.keyboard.$widget.removeClass('hide')
-        scope.keyboard.$keys.keyboard(1, 90)
+        scope.keyboard.$keys.keyboard(range(1, 90))
     })
 
     scope.$form.on('blureditable', '.contenteditable', scope, function (event) {
@@ -272,6 +302,59 @@ $(document).ready(function (event) {
         scope.keyboard.$keys.css('left', pos)
     })
 
+    function clickLinkHandler (event) {
+        console.log('hola')
+        var scope = event.data
+        event.preventDefault()
+        event.stopPropagation()
+        //console.log(this)
+        var href = parseHref($(this).attr('href'), {
+            fragment: '#header'
+        })
+        var queryString = href.queryString
+        var targetTop = $(href.fragment).offset().top
+        scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
+        if (href.fragment === "#header") {
+            scope.$header.removeClass('reduce')
+        } else {
+            scope.$header.addClass('reduce')
+            if (href.fragment === "#simulator") {
+                //queryString.play 
+                scope.keyboard.$widget.removeClass('hide')
+                //console.log('values: ', values.balls, values.period, values.height)
+                var patterns = siteswapGenerator(values.balls, values.period, values.height)
+                //console.log(patterns)
+                textPatterns = patterns.map(function (pattern) {
+                    return pattern.map(function (e) {
+                        return heightToLetter[e]
+                    }).join('')
+                })
+                scope.keyboard.$keys.keyboard(textPatterns, function (pattern) {
+                    return '<a href="#simulator?play=' + pattern + '">' + pattern + '</a>'
+                })
+
+                queryString.play = queryString.play || textPatterns[0]
+                console.log('play', queryString.play)
+
+                if (!scope.juggler) {
+                    scope.juggler = new Juggler({
+                        stage: {
+                            container: 'juggler-simulator',
+                            width:  scope.$simulator.width(),
+                            height: scope.$simulator.height()
+                        }
+                    })
+                }
+                scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
+                scope.juggler.stop()
+                scope.juggler.setPattern(queryString.play)
+                scope.juggler.play()
+            }
+        }
+    }
+
+    scope.$root.on('click', 'a', scope, clickLinkHandler)
+    scope.keyboard.$keys.on('click', 'a', scope, clickLinkHandler)
     scope.keyboard.$keys.on('click', 'li', scope, function (event) {
         event.stopPropagation()
         var num = parseInt($(this).text())
@@ -279,11 +362,11 @@ $(document).ready(function (event) {
         triggerDelegatedEvent('inputeditable', scope.$form, scope.$focus[0])
     })
 
-    $('#header-btn').on('click', function () {
+    /*$('#header-btn').on('click', function () {
         $('.header').addClass('reduce')
         var targetTop = scope.$generator.offset().top
         scope.$root.animate({scrollTop: targetTop}, '500', 'swing', function() { 
             //alert("Finished animating");
         });
-    })
+    })*/
 })
