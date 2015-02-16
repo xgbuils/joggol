@@ -343,7 +343,27 @@ $(document).ready(function (event) {
             }
         } else {
             if (href.fragment === "#simulator") {
-
+                if (!simulator.patterns) {
+                    createPatterns({}, scope)
+                }
+                console.log(simulator.patterns)
+                href.queryString.play = href.queryString.play || simulator.patterns[0]
+                console.log('play', href.queryString.play)
+                if (!scope.juggler) {
+                    scope.juggler = new Juggler({
+                        stage: {
+                            container: 'juggler-simulator',
+                            width:  simulator.$item.width(),
+                            height: simulator.$item.height()
+                        }
+                    })
+                }
+                if (!scope.jugglerPlaying) {
+                    scope.juggler.stop()
+                    scope.juggler.setPattern(href.queryString.play)
+                    scope.juggler.play()
+                    scope.jugglerPlaying = true
+                }
             }
         }
     }
@@ -353,7 +373,7 @@ $(document).ready(function (event) {
     scope.keyboard.numbers.$item.on('click', 'li', scope, function (event) {
         var num = parseInt($(this).text())
         scope.$focus.text(num)
-        triggerDelegatedEvent('inputeditable', scope.$generator, scope.$focus[0])
+        triggerDelegatedEvent('inputeditable', scope.generator.$item, scope.$focus[0])
     })
 
     $(window).on('scroll', scope, function (event) {
@@ -430,27 +450,27 @@ $(document).ready(function (event) {
         var keyboard  = scope.keyboard
         var href      = scope.href
         var simulator = scope.simulator
+
         if (!simulator.patterns) {
             createPatterns({}, scope)
         }
-        href.queryString.play = href.queryString.play || simulator.patterns[0]
-        console.log('play', href.queryString.play)
-        if (!scope.juggler) {
-            scope.juggler = new Juggler({
-                stage: {
-                    container: 'juggler-simulator',
-                    width:  simulator.$item.width(),
-                    height: simulator.$item.height()
-                }
-            })
-        }
         if (!scope.jugglerPlaying) {
+            href.queryString.play = href.queryString.play || simulator.patterns[0]
+            console.log('play', href.queryString.play)
+            if (!scope.juggler) {
+                scope.juggler = new Juggler({
+                    stage: {
+                        container: 'juggler-simulator',
+                        width:  simulator.$item.width(),
+                        height: simulator.$item.height()
+                    }
+                })
+            }
             scope.juggler.stop()
             scope.juggler.setPattern(href.queryString.play)
             scope.juggler.play()
             scope.jugglerPlaying = true
         }
-
         keyboard.patterns.$item.removeClass('hide')
         keyboard.$widget.removeClass('hide')
     })
