@@ -109,6 +109,9 @@ var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
 
 var scope = {
     values: {},
+    href: {
+        queryString: {}
+    }
 }
 
 $(document).ready(function (event) {
@@ -125,15 +128,24 @@ $(document).ready(function (event) {
             min:  $('#height-min'),
             max:  $('#height-max')
         }
-    }
+    } 
 
-    scope.$create = $('#create')
     scope.$root = $('body, html')
     scope.keyboard = {
         $widget: $('#keyboard'),
+        $buttons: $('#keyboard-buttons'),
+        numbers: {
+            $item: $('#keyboard-numbers'),
+            active: false
+        },
+        patterns: {
+            $item: $('#keyboard-patterns'),
+            active: false
+        },
         $left: $('#keyboard-left'),
-        $keys: $('#keyboard-keys'),
         $right: $('#keyboard-right'),
+        $shown: undefined,
+        active: undefined,
         position: 0
     }
 
@@ -149,53 +161,109 @@ $(document).ready(function (event) {
     }
 
     scope.$header = $('#header')
-    scope.$generator = $('#generator')
-    scope.topGenerator = scope.$generator.offset().top
-    scope.$simulator = $('#simulator')
-    scope.topSimulator = scope.$simulator.offset().top
+    scope.generator = {
+        $item: $('#generator'),
+        active: false
+    }
+    scope.topGenerator = scope.generator.$item.offset().top
+    scope.$create = $('#create')
+    scope.topCreate = scope.$create.offset().top
+    scope.simulator = {
+        $item: $('#simulator'),
+        active: false
+    }
+    scope.topSimulator = scope.simulator.$item.offset().top
+
+    function createPatterns(event, scope) {
+        scope         = scope || event.data
+        var keyboard  = scope.keyboard
+        var simulator = scope.simulator
+        console.log('CREATE PATTERN')
+        var patterns = siteswapGenerator(values.balls, values.period, values.height)
+        simulator.patterns = patterns.map(function (pattern) {
+            return pattern.map(function (e) {
+                return heightToLetter[e]
+            }).join('')
+        })
+        keyboard.patterns.$item.keyboard(simulator.patterns, function (pattern) {
+            return '<a href="#simulator?play=' + pattern + '">' + pattern + '</a>'
+        })
+        if (scope.juggler) {
+            scope.juggler.stop()
+        }
+        scope.jugglerPlaying = false
+        keyboard.patterns.active = false
+    }
+
+    scope.$create.on('click', scope, createPatterns)
 
     scope.$root.on('click', scope, function (event) {
+        console.log('jijiji')
         var scope = event.data
         if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.$form, scope.$focus[0])
+            triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
             scope.$focus = undefined
         }
     })
 
-    scope.$generator.on('click', '.editable', scope, function (event) {
+    scope.generator.$item.on('click', '.editable', scope, function (event) {
         event.stopPropagation()
         var scope = event.data
         if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.$generator, scope.$focus[0])
+            triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
         }
         scope.$focus = $('.contenteditable', this).first()
-        triggerDelegatedEvent('focuseditable', scope.$generator, scope.$focus[0])
+        triggerDelegatedEvent('focuseditable', scope.generator.$item, scope.$focus[0])
     })
 
-    scope.$generator.on('click', '.contenteditable', scope, function (event) {
+    scope.generator.$item.on('click', '.contenteditable', scope, function (event) {
         event.stopPropagation()
         var scope = event.data
         if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.$generator, scope.$focus[0])
+            triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
         }
         scope.$focus = $(this)
-        triggerDelegatedEvent('focuseditable', scope.$generator, this)
+        triggerDelegatedEvent('focuseditable', scope.generator.$item, this)
     })
 
-    scope.$generator.on('focuseditable', '.contenteditable', scope, function (event) {
-        var scope = event.data
+    scope.generator.$item.on('focuseditable', '.contenteditable', scope.keyboard, function (event) {
+        var keyboard = event.data
+        var $shown   = keyboard.$shown
+        var numbers = keyboard.numbers
         $(this).addClass('select')
-        scope.keyboard.$widget.removeClass('hide')
-        scope.keyboard.$keys.keyboard(range(1, 90))
+        numbers.$item.keyboard(range(1, 90))
+        if ($shown === keyboard.patterns.$item) {
+            console.log('segundo')
+            $shown.addClass('hide')
+            keyboard.$shown = numbers.$item
+            numbers.$item.removeClass('hide')
+        } else if (!$shown) {
+            console.log('primero')
+            keyboard.$widget.removeClass('hide')
+            keyboard.$shown = numbers.$item
+            numbers.$item.removeClass('hide')
+        }
+        numbers.active = true
+        console.log(keyboard.$shown[0])
     })
 
-    scope.$generator.on('blureditable', '.contenteditable', scope, function (event) {
-        var scope = event.data
+    scope.generator.$item.on('blureditable', '.contenteditable', scope.keyboard, function (event) {
+        console.log('blureditable')
+        var keyboard = event.data
+        var numbers  = keyboard.numbers
+        var $shown   = keyboard.$shown
         $(this).removeClass('select')
-        scope.keyboard.$widget.addClass('hide')
+        if ($shown) {
+            keyboard.$widget.addClass('hide')
+            numbers.$item.addClass('hide')
+            numbers.$item = $shown
+            $shown.addClass('hide')
+            keyboard.$shown = undefined
+        }
+        numbers.active = false
     })
 
-    scope.$generator.on('inputeditable', '.contenteditable', scope, function (event) {
+    scope.generator.$item.on('inputeditable', '.contenteditable', scope, function (event) {
         console.log('dsadsa')
         var scope = event.data
         var key = $(this).data('type')
@@ -238,72 +306,51 @@ $(document).ready(function (event) {
         event.stopPropagation()
     })
 
-    scope.keyboard.$left.on('click', scope, function (event) {
-        var scope = event.data
-        var width = scope.keyboard.$widget.width() - 100
-        console.log(width)
-        var pos = scope.keyboard.position += width
-        scope.keyboard.$keys.css('left', pos)
+    scope.keyboard.$left.on('click', scope.keyboard, function (event) {
+        var keyboard = event.data
+        var width = keyboard.$widget.width() - 100
+        var pos = keyboard.position += width
+        keyboard.$buttons.css('left', pos)
     })
 
-    scope.keyboard.$right.on('click', scope, function (event) {
-        var scope = event.data
-        var width = scope.keyboard.$widget.width() - 100
-        var pos = scope.keyboard.position -= width
-        scope.keyboard.$keys.css('left', pos)
+    scope.keyboard.$right.on('click', scope.keyboard, function (event) {
+        var keyboard = event.data
+        var width = keyboard.$widget.width() - 100
+        var pos = keyboard.position -= width
+        keyboard.$buttons.css('left', pos)
     })
 
     function clickLinkHandler (event) {
+        console.log('jojojo')
         console.log('hola')
         var scope = event.data
+        var keyboard = scope.keyboard
         event.preventDefault()
-        event.stopPropagation()
         //console.log(this)
         var href = parseHref($(this).attr('href'), {
             fragment: '#header'
         })
+        scope.href = href
         var queryString = href.queryString
         var targetTop = $(href.fragment).offset().top
         scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
         if (href.fragment === "#header") {
-            scope.keyboard.$widget.addClass('hide')
+            keyboard.$widget.addClass('hide')
+            var $shown = keyboard.$shown
+            if ($shown) {
+                $shown.addClass('hide')
+                keyboard.$shown = undefined
+            }
         } else {
             if (href.fragment === "#simulator") {
-                scope.keyboard.$widget.removeClass('hide')
-                var patterns = siteswapGenerator(values.balls, values.period, values.height)
-                textPatterns = patterns.map(function (pattern) {
-                    return pattern.map(function (e) {
-                        return heightToLetter[e]
-                    }).join('')
-                })
-                scope.keyboard.$keys.keyboard(textPatterns, function (pattern) {
-                    return '<a href="#simulator?play=' + pattern + '">' + pattern + '</a>'
-                })
 
-                queryString.play = queryString.play || textPatterns[0]
-                console.log('play', queryString.play)
-
-                if (!scope.juggler) {
-                    scope.juggler = new Juggler({
-                        stage: {
-                            container: 'juggler-simulator',
-                            width:  scope.$simulator.width(),
-                            height: scope.$simulator.height()
-                        }
-                    })
-                }
-                scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
-                scope.juggler.stop()
-                scope.juggler.setPattern(queryString.play)
-                scope.juggler.play()
             }
         }
     }
 
     scope.$root.on('click', 'a', scope, clickLinkHandler)
-    scope.keyboard.$keys.on('click', 'a', scope, clickLinkHandler)
-    scope.keyboard.$keys.on('click', 'li', scope, function (event) {
-        event.stopPropagation()
+    scope.keyboard.patterns.$item.on('click', 'a', scope, clickLinkHandler)
+    scope.keyboard.numbers.$item.on('click', 'li', scope, function (event) {
         var num = parseInt($(this).text())
         scope.$focus.text(num)
         triggerDelegatedEvent('inputeditable', scope.$generator, scope.$focus[0])
@@ -311,13 +358,111 @@ $(document).ready(function (event) {
 
     $(window).on('scroll', scope, function (event) {
         var scope = event.data
+        var keyboard  = scope.keyboard
+        var generator = scope.generator
+        var simulator = scope.simulator
         var top = $(window).scrollTop()
-        console.log(top, scope.topGenerator - 50)
-        if ( top < scope.topGenerator - 50) {
-            console.log('eoo')
+        
+        if (top < scope.topGenerator - 50) {
             scope.$header.removeClass('reduce')
         } else {
             scope.$header.addClass('reduce')
         }
+
+        console.log(scope.topCreate, top)
+        //console.log(top >= scope.topGenerator - 50 && top < scope.topSimulator - 400)
+        if (generator.active && (top < scope.topGenerator - 50 || top >= scope.topCreate)) {
+            generator.$item.trigger('off')
+            generator.active = false
+        } else if (!generator.active && (top >= scope.topGenerator - 50 && top < scope.topCreate)){
+            generator.$item.trigger('on')
+            generator.active = true
+        }
+
+        //console.log(top, scope.topSimulator - 50)
+        if (simulator.active && top < scope.topSimulator - 50) {
+            simulator.$item.trigger('off')
+            simulator.active = false
+        } else if (!simulator.active && top >= scope.topSimulator - 50) {
+            simulator.$item.trigger('on')
+            simulator.active = true
+        }
+        /*var $shown = keyboard.$shown
+        if ($shown === keyboard.$patterns) {
+            if (top < scope.topSimulator - 50) {
+                keyboard.$widget.addClass('hide')
+                $shown.addClass('hide')
+                keyboard.$shown = undefined
+            }
+        } else {
+            if (top >= scope.topSimulator - 50) {
+                if ($shown === keyboard.$numbers) {
+                    $shown.addClass('hide')
+                }
+                keyboard.$widget.removeClass('hide')
+                $shown = keyboard.$shown = keyboard.$patterns
+                $shown.removeClass('hide')
+            }
+        }*/
     })
+
+    scope.simulator.$item.on('off', scope.keyboard, function (event) {
+        console.log('OFF simulator')
+        var keyboard = event.data
+        keyboard.patterns.$item.addClass('hide')
+        if (!keyboard.numbers.active) {
+            keyboard.$widget.addClass('hide')
+        }
+    })
+
+    scope.generator.$item.on('off', scope.keyboard, function (event) {
+        console.log('OFF generator')
+        var keyboard = event.data
+        keyboard.numbers.$item.addClass('hide')
+        if (!keyboard.patterns.active) {
+            keyboard.$widget.addClass('hide')
+        }
+    })
+
+    scope.simulator.$item.on('on', scope, function (event) {
+        console.log('ON simulator')
+        var scope     = event.data
+        var keyboard  = scope.keyboard
+        var href      = scope.href
+        var simulator = scope.simulator
+        if (!simulator.patterns) {
+            createPatterns({}, scope)
+        }
+        href.queryString.play = href.queryString.play || simulator.patterns[0]
+        console.log('play', href.queryString.play)
+        if (!scope.juggler) {
+            scope.juggler = new Juggler({
+                stage: {
+                    container: 'juggler-simulator',
+                    width:  simulator.$item.width(),
+                    height: simulator.$item.height()
+                }
+            })
+        }
+        if (!scope.jugglerPlaying) {
+            scope.juggler.stop()
+            scope.juggler.setPattern(href.queryString.play)
+            scope.juggler.play()
+            scope.jugglerPlaying = true
+        }
+
+        keyboard.patterns.$item.removeClass('hide')
+        keyboard.$widget.removeClass('hide')
+    })
+
+    scope.generator.$item.on('on', scope.keyboard, function (event) {
+        console.log('ON generator')
+        var keyboard = event.data
+        keyboard.numbers.$item.removeClass('hide')
+        if (keyboard.numbers.active) {
+            keyboard.$widget.removeClass('hide')
+        }
+    })
+
+
 })
