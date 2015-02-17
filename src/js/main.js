@@ -136,15 +136,17 @@ $(document).ready(function (event) {
         $buttons: $('#keyboard-buttons'),
         numbers: {
             $item: $('#keyboard-numbers'),
-            active: false
+            active: false,
+            position: 0
         },
         patterns: {
             $item: $('#keyboard-patterns'),
-            active: false
+            active: false,
+            position: 0
         },
         $left: $('#keyboard-left'),
         $right: $('#keyboard-right'),
-        $shown: undefined,
+        shown: undefined,
         active: undefined,
         position: 0
     }
@@ -202,11 +204,13 @@ $(document).ready(function (event) {
         keyboard.patterns.$item.keyboard(simulator.patterns, function (pattern) {
             return '<a href="#simulator?play=' + pattern + '">' + pattern + '</a>'
         })
+        console.log(simulator.patterns)
         if (scope.juggler) {
             scope.juggler.stop()
         }
         scope.jugglerPlaying = false
         keyboard.patterns.active = false
+        console.log(simulator.patterns)
     }
 
     scope.$create.on('click', scope, createPatterns)
@@ -242,37 +246,38 @@ $(document).ready(function (event) {
 
     scope.generator.$item.on('focuseditable', '.contenteditable', scope.keyboard, function (event) {
         var keyboard = event.data
-        var $shown   = keyboard.$shown
-        var numbers = keyboard.numbers
+        var shown   = keyboard.shown
+        console.log('shown', shown)
+        var numbers  = keyboard.numbers
         $(this).addClass('select')
         numbers.$item.keyboard(range(1, 90))
-        if ($shown === keyboard.patterns.$item) {
-            console.log('segundo')
-            $shown.addClass('hide')
-            keyboard.$shown = numbers.$item
-            numbers.$item.removeClass('hide')
-        } else if (!$shown) {
+        if (!shown) {
             console.log('primero')
             keyboard.$widget.removeClass('hide')
-            keyboard.$shown = numbers.$item
-            numbers.$item.removeClass('hide')
+            keyboard.shown = numbers
+            numbers.$item.addClass('select')
+        } else if (shown.$item === keyboard.patterns.$item) {
+            console.log('segundo')
+            shown.$item.removeClass('select')
+            keyboard.shown = numbers
+            numbers.$item.addClass('select')
         }
         numbers.active = true
-        console.log(keyboard.$shown[0])
+        console.log(keyboard.shown)
     })
 
     scope.generator.$item.on('blureditable', '.contenteditable', scope.keyboard, function (event) {
         console.log('blureditable')
         var keyboard = event.data
         var numbers  = keyboard.numbers
-        var $shown   = keyboard.$shown
+        var shown   = keyboard.shown
         $(this).removeClass('select')
-        if ($shown) {
+        if (shown) {
             keyboard.$widget.addClass('hide')
-            numbers.$item.addClass('hide')
-            numbers.$item = $shown
-            $shown.addClass('hide')
-            keyboard.$shown = undefined
+            numbers.$item.removeClass('select')
+            numbers.$item = shown.$item
+            shown.$item.addClass('hide')
+            keyboard.shown = undefined
         }
         numbers.active = false
     })
@@ -312,10 +317,6 @@ $(document).ready(function (event) {
         }
     }
 
-    $(window).on('resize', function () {
-        $('#data-height').text($(this).height())
-    })
-
     scope.keyboard.$widget.on('click', function (event) {
         event.stopPropagation()
     })
@@ -323,15 +324,16 @@ $(document).ready(function (event) {
     scope.keyboard.$left.on('click', scope.keyboard, function (event) {
         var keyboard = event.data
         var width = keyboard.$widget.width() - 100
-        var pos = keyboard.position += width
-        keyboard.$buttons.css('left', pos)
+        var pos = keyboard.shown.position += width
+        console.log(keyboard.shown)
+        keyboard.shown.$item.css('left', pos)
     })
 
     scope.keyboard.$right.on('click', scope.keyboard, function (event) {
         var keyboard = event.data
         var width = keyboard.$widget.width() - 100
-        var pos = keyboard.position -= width
-        keyboard.$buttons.css('left', pos)
+        var pos = keyboard.shown.position -= width
+        keyboard.shown.$item.css('left', pos)
     })
 
     function clickLinkHandler (event) {
@@ -339,24 +341,24 @@ $(document).ready(function (event) {
         console.log('hola')
         var scope = event.data
         var keyboard = scope.keyboard
+        var simulator = scope.simulator
         event.preventDefault()
-        //console.log(this)
         var href = parseHref($(this).attr('href'), {
             fragment: '#header'
         })
-        scope.href = href
-        var queryString = href.queryString
+        var oldQueryString = scope.href.queryString
+        var newQueryString = href.queryString
         var targetTop = $(href.fragment).offset().top
         scope.$root.animate({scrollTop: targetTop}, 300, 'swing')
         if (href.fragment === "#header") {
             keyboard.$widget.addClass('hide')
-            var $shown = keyboard.$shown
-            if ($shown) {
-                $shown.addClass('hide')
-                keyboard.$shown = undefined
+            var shown = keyboard.shown
+            if (shown) {
+                shown.$item.removeClass('select')
             }
         } else {
             if (href.fragment === "#simulator") {
+                console.log(simulator.patterns)
                 if (!simulator.patterns) {
                     createPatterns({}, scope)
                 }
@@ -372,7 +374,8 @@ $(document).ready(function (event) {
                         }
                     })
                 }
-                if (!scope.jugglerPlaying) {
+                console.log(scope.jugglerPlaying)
+                if (oldQueryString.play !== newQueryString.play) {
                     scope.juggler.stop()
                     scope.juggler.setPattern(href.queryString.play)
                     scope.juggler.play()
@@ -380,6 +383,7 @@ $(document).ready(function (event) {
                 }
             }
         }
+        scope.href = href
     }
 
     scope.$root.on('click', 'a', scope, clickLinkHandler)
@@ -421,38 +425,29 @@ $(document).ready(function (event) {
             simulator.$item.trigger('on')
             simulator.active = true
         }
-        /*var $shown = keyboard.$shown
-        if ($shown === keyboard.$patterns) {
-            if (top < scope.topSimulator - 50) {
-                keyboard.$widget.addClass('hide')
-                $shown.addClass('hide')
-                keyboard.$shown = undefined
-            }
-        } else {
-            if (top >= scope.topSimulator - 50) {
-                if ($shown === keyboard.$numbers) {
-                    $shown.addClass('hide')
-                }
-                keyboard.$widget.removeClass('hide')
-                $shown = keyboard.$shown = keyboard.$patterns
-                $shown.removeClass('hide')
-            }
-        }*/
     })
 
     scope.simulator.$item.on('off', scope.keyboard, function (event) {
         console.log('OFF simulator')
         var keyboard = event.data
-        keyboard.patterns.$item.addClass('hide')
+        console.log('shown', keyboard.shown)
+        if (keyboard.shown) {
+            keyboard.shown.$item.removeClass('select')
+            keyboard.shown = undefined
+        }
         if (!keyboard.numbers.active) {
-            keyboard.$widget.addClass('hide')
+            keyboard.$widget.addClass('hide') 
         }
     })
 
     scope.generator.$item.on('off', scope.keyboard, function (event) {
         console.log('OFF generator')
         var keyboard = event.data
-        keyboard.numbers.$item.addClass('hide')
+        console.log('shown', keyboard.shown)
+        if (keyboard.shown) {
+            keyboard.shown.$item.removeClass('select')
+            keyboard.shown = undefined
+        }
         if (!keyboard.patterns.active) {
             keyboard.$widget.addClass('hide')
         }
@@ -464,6 +459,7 @@ $(document).ready(function (event) {
         var keyboard  = scope.keyboard
         var href      = scope.href
         var simulator = scope.simulator
+        console.log('shown', keyboard.shown)
 
         if (!simulator.patterns) {
             createPatterns({}, scope)
@@ -485,15 +481,25 @@ $(document).ready(function (event) {
             scope.juggler.play()
             scope.jugglerPlaying = true
         }
-        keyboard.patterns.$item.removeClass('hide')
+        if (keyboard.shown) {
+            keyboard.shown.$item.removeClass('select')
+        }
+        keyboard.shown = keyboard.patterns
+        keyboard.shown.$item.addClass('select')
         keyboard.$widget.removeClass('hide')
     })
 
     scope.generator.$item.on('on', scope.keyboard, function (event) {
         console.log('ON generator')
         var keyboard = event.data
-        keyboard.numbers.$item.removeClass('hide')
+        console.log('shown', keyboard.shown)
+        if (keyboard.shown) {
+            keyboard.shown.$item.removeClass('select')
+            keyboard.shown = undefined
+        }
         if (keyboard.numbers.active) {
+            keyboard.shown = keyboard.numbers
+            keyboard.shown.$item.addClass('select')
             keyboard.$widget.removeClass('hide')
         }
     })
