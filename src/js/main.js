@@ -204,19 +204,22 @@ $(document).ready(function (event) {
         keyboard.patterns.$item.keyboard(simulator.patterns, function (pattern) {
             return '<a class="keyboard-btn" href="#simulator?play=' + pattern + '">' + pattern + '</a>'
         })
-        console.log(simulator.patterns)
+        //console.log(simulator.patterns)
         if (scope.juggler) {
             scope.juggler.stop()
         }
         scope.jugglerPlaying = false
         keyboard.patterns.active = false
-        console.log(simulator.patterns)
+        keyboard.patterns.position = 0
+        keyboard.patterns.$item.css('left', 0)
+        keyboard.patterns.width = undefined
+        //console.log(simulator.patterns)
     }
 
     scope.$create.on('click', scope, createPatterns)
 
     scope.$root.on('click', scope, function (event) {
-        console.log('jijiji')
+        //console.log('jijiji')
         var scope = event.data
         if (scope.$focus) {
             triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
@@ -250,9 +253,13 @@ $(document).ready(function (event) {
         console.log('shown', shown)
         var numbers  = keyboard.numbers
         $(this).addClass('select')
-        numbers.$item.keyboard(range(1, 90), function (number) {
-            return '<span class="keyboard-btn">' + number + '</span>'
-        })
+        if (!numbers.width) {
+            numbers.$item.keyboard(range(0, 35), function (number) {
+                return '<span class="keyboard-btn">' + number + '</span>'
+            })
+            numbers.width = numbers.$item.width() - $(window).outerWidth() + 120
+        }
+        //keyboard.patterns.width = undefined
         if (!shown) {
             console.log('primero')
             keyboard.$widget.removeClass('hide')
@@ -325,7 +332,8 @@ $(document).ready(function (event) {
     scope.keyboard.$left.on('click', scope.keyboard, function (event) {
         var keyboard = event.data
         var width = keyboard.$widget.width() - 100
-        var pos = keyboard.shown.position += width
+        var pos = keyboard.shown.position + width
+        pos = keyboard.shown.position = Math.min(pos, 0)
         console.log(keyboard.shown)
         keyboard.shown.$item.css('left', pos)
     })
@@ -333,7 +341,9 @@ $(document).ready(function (event) {
     scope.keyboard.$right.on('click', scope.keyboard, function (event) {
         var keyboard = event.data
         var width = keyboard.$widget.width() - 100
-        var pos = keyboard.shown.position -= width
+        var pos = keyboard.shown.position - width
+        pos = keyboard.shown.position = Math.max(pos, -keyboard.shown.width)
+        console.log(pos)
         keyboard.shown.$item.css('left', pos)
     })
 
@@ -360,11 +370,11 @@ $(document).ready(function (event) {
             }
         } else {
             if (href.fragment === "#simulator") {
-                console.log(simulator.patterns)
+                //console.log(simulator.patterns)
                 if (!simulator.patterns) {
                     createPatterns({}, scope)
                 }
-                console.log(simulator.patterns)
+                //console.log(simulator.patterns)
                 href.queryString.play = href.queryString.play || simulator.patterns[0]
                 console.log('play', href.queryString.play)
                 if (!scope.juggler) {
@@ -376,7 +386,7 @@ $(document).ready(function (event) {
                         }
                     })
                 }
-                console.log(scope.jugglerPlaying)
+                //console.log(scope.jugglerPlaying)
                 if (oldQueryString.play !== newQueryString.play) {
                     scope.juggler.stop()
                     scope.juggler.setPattern(href.queryString.play)
@@ -391,18 +401,12 @@ $(document).ready(function (event) {
     scope.$root.on('click', 'a', scope, clickLinkHandler)
     scope.keyboard.patterns.$item.on('click', 'a', scope, clickLinkHandler)
     scope.keyboard.numbers.$item.on('click', '.keyboard-btn', scope.keyboard.numbers, function (event) {
-        console.log('CLICK NUMBER')
-
         var numbers = event.data
         if (numbers.$select) {
             numbers.$select.removeClass('select')
         }
         numbers.$select = $(this)
-        /*var diff = 0.5 * window.innerWidth - numbers.$select.offset().left - 0.5 * numbers.$select.width() - 11
-        numbers.position += diff
-        numbers.$item.css('left', numbers.position)*/
         numbers.$select.addClass('select')
-        //console.log(numbers.$select[0])
     })
     scope.keyboard.patterns.$item.on('click', '.keyboard-btn', scope.keyboard.patterns, function (event) {
         var patterns = event.data
@@ -410,10 +414,6 @@ $(document).ready(function (event) {
             patterns.$select.removeClass('select')
         }
         patterns.$select = $(this)
-        //console.log(patterns.position, $(window).outerWidth(true), window.innerWidth, patterns.$select.offset().left, patterns.$select.height())
-        /*var diff = 0.5 * window.innerWidth - patterns.$select.offset().left - 0.5 * patterns.$select.width() - 11
-        patterns.position += diff
-        patterns.$item.css('left', patterns.position)*/
         patterns.$select.addClass('select')
     })
     scope.keyboard.numbers.$item.on('click', 'li', scope, function (event) {
@@ -435,7 +435,7 @@ $(document).ready(function (event) {
             scope.$header.addClass('reduce')
         }
 
-        console.log(scope.topCreate, top)
+        //console.log(scope.topCreate, top)
         //console.log(top >= scope.topGenerator - 50 && top < scope.topSimulator - 400)
         if (generator.active && (top < scope.topGenerator - 50 || top >= scope.topCreate)) {
             generator.$item.trigger('off')
@@ -515,6 +515,12 @@ $(document).ready(function (event) {
         keyboard.shown = keyboard.patterns
         keyboard.shown.$item.addClass('select')
         keyboard.$widget.removeClass('hide')
+
+        //console.log('wiiiidth??????????? ', keyboard.patterns.width)
+        if (!keyboard.patterns.width) {
+            keyboard.patterns.width = keyboard.patterns.$item.width() - $(window).outerWidth() + 120
+            console.log('wiiiidth: ', keyboard.patterns.width)
+        }
     })
 
     scope.generator.$item.on('on', scope.keyboard, function (event) {
