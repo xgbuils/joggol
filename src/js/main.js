@@ -202,7 +202,7 @@ $(document).ready(function (event) {
             }).join('')
         })
         keyboard.patterns.$item.keyboard(simulator.patterns, function (pattern) {
-            return '<a href="#simulator?play=' + pattern + '">' + pattern + '</a>'
+            return '<a class="keyboard-btn" href="#simulator?play=' + pattern + '">' + pattern + '</a>'
         })
         console.log(simulator.patterns)
         if (scope.juggler) {
@@ -250,7 +250,9 @@ $(document).ready(function (event) {
         console.log('shown', shown)
         var numbers  = keyboard.numbers
         $(this).addClass('select')
-        numbers.$item.keyboard(range(1, 90))
+        numbers.$item.keyboard(range(1, 90), function (number) {
+            return '<span class="keyboard-btn">' + number + '</span>'
+        })
         if (!shown) {
             console.log('primero')
             keyboard.$widget.removeClass('hide')
@@ -276,7 +278,6 @@ $(document).ready(function (event) {
             keyboard.$widget.addClass('hide')
             numbers.$item.removeClass('select')
             numbers.$item = shown.$item
-            shown.$item.addClass('hide')
             keyboard.shown = undefined
         }
         numbers.active = false
@@ -337,12 +338,13 @@ $(document).ready(function (event) {
     })
 
     function clickLinkHandler (event) {
+        event.preventDefault()
         console.log('jojojo')
         console.log('hola')
         var scope = event.data
         var keyboard = scope.keyboard
         var simulator = scope.simulator
-        event.preventDefault()
+        
         var href = parseHref($(this).attr('href'), {
             fragment: '#header'
         })
@@ -388,6 +390,32 @@ $(document).ready(function (event) {
 
     scope.$root.on('click', 'a', scope, clickLinkHandler)
     scope.keyboard.patterns.$item.on('click', 'a', scope, clickLinkHandler)
+    scope.keyboard.numbers.$item.on('click', '.keyboard-btn', scope.keyboard.numbers, function (event) {
+        console.log('CLICK NUMBER')
+
+        var numbers = event.data
+        if (numbers.$select) {
+            numbers.$select.removeClass('select')
+        }
+        numbers.$select = $(this)
+        var diff = 0.5 * window.innerWidth - numbers.$select.offset().left - 0.5 * numbers.$select.width() - 11
+        numbers.position += diff
+        numbers.$item.css('left', numbers.position)
+        numbers.$select.addClass('select')
+        //console.log(numbers.$select[0])
+    })
+    scope.keyboard.patterns.$item.on('click', '.keyboard-btn', scope.keyboard.patterns, function (event) {
+        var patterns = event.data
+        if (patterns.$select) {
+            patterns.$select.removeClass('select')
+        }
+        patterns.$select = $(this)
+        //console.log(patterns.position, $(window).outerWidth(true), window.innerWidth, patterns.$select.offset().left, patterns.$select.height())
+        var diff = 0.5 * window.innerWidth - patterns.$select.offset().left - 0.5 * patterns.$select.width() - 11
+        patterns.position += diff
+        patterns.$item.css('left', patterns.position)
+        patterns.$select.addClass('select')
+    })
     scope.keyboard.numbers.$item.on('click', 'li', scope, function (event) {
         var num = parseInt($(this).text())
         scope.$focus.text(num)
@@ -503,6 +531,4 @@ $(document).ready(function (event) {
             keyboard.$widget.removeClass('hide')
         }
     })
-
-
 })
