@@ -173,6 +173,20 @@ $(document).ready(function (event) {
         active: false
     }
     scope.topSimulator = scope.simulator.$item.offset().top
+    scope.$samples = $('#samples')
+
+    function rec() {
+        var first = $('li', scope.$samples).slice(0, 1)
+        scope.$samples.animate({
+            'margin-left': - first.width()
+        }, '300', 'swing', function () {
+            scope.$samples.css('margin-left', 0)
+            first.detach()
+            scope.$samples.append(first)
+        })        
+        setTimeout(rec, 10000)
+    }
+    rec()
 
     function createPatterns(event, scope) {
         scope         = scope || event.data
@@ -333,7 +347,7 @@ $(document).ready(function (event) {
         scope.href = href
         var queryString = href.queryString
         var targetTop = $(href.fragment).offset().top
-        scope.$root.animate({scrollTop: targetTop}, '500', 'swing')
+        scope.$root.animate({scrollTop: targetTop}, 300, 'swing')
         if (href.fragment === "#header") {
             keyboard.$widget.addClass('hide')
             var $shown = keyboard.$shown
