@@ -398,9 +398,9 @@ $(document).ready(function (event) {
             numbers.$select.removeClass('select')
         }
         numbers.$select = $(this)
-        var diff = 0.5 * window.innerWidth - numbers.$select.offset().left - 0.5 * numbers.$select.width() - 11
+        /*var diff = 0.5 * window.innerWidth - numbers.$select.offset().left - 0.5 * numbers.$select.width() - 11
         numbers.position += diff
-        numbers.$item.css('left', numbers.position)
+        numbers.$item.css('left', numbers.position)*/
         numbers.$select.addClass('select')
         //console.log(numbers.$select[0])
     })
@@ -411,9 +411,9 @@ $(document).ready(function (event) {
         }
         patterns.$select = $(this)
         //console.log(patterns.position, $(window).outerWidth(true), window.innerWidth, patterns.$select.offset().left, patterns.$select.height())
-        var diff = 0.5 * window.innerWidth - patterns.$select.offset().left - 0.5 * patterns.$select.width() - 11
+        /*var diff = 0.5 * window.innerWidth - patterns.$select.offset().left - 0.5 * patterns.$select.width() - 11
         patterns.position += diff
-        patterns.$item.css('left', patterns.position)
+        patterns.$item.css('left', patterns.position)*/
         patterns.$select.addClass('select')
     })
     scope.keyboard.numbers.$item.on('click', 'li', scope, function (event) {
