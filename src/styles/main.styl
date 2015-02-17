@@ -103,7 +103,7 @@ li
 	top: 0
 	transition: height .3s
 	width: 100%
-	.languges
+	.languages
 	.header-main
 	.samples
 		-webkit-backface-visibility: hidden
@@ -158,7 +158,7 @@ li
 			text-decoration: none
 	.samples
 		overflow: hidden
-		top: 85%
+		top: 90%
 		ul
 			font-size: 0
 			width: num_samples * 100%
@@ -245,7 +245,6 @@ li
 		display: block
 		height: 0
 .patterns
-	//margin-top 2em
 	text-align justify
 .create
 	text-align: center
@@ -279,23 +278,16 @@ li
 		border-radius: 3px
 		background: rgba(color.main, 0.2)
 		
-@media screen and (min-width: 350px)
-	.patterns
-	.dashboard
-		margin: 0 auto
-		width: 350px
-@media screen and (min-width: 800px)
-	fieldset
-		margin: 1em 0
-		padding: .8em .8em
-	.dashboard
-	.patterns
-	.simulator
-		display: inline-block
-		vertical-align: top
-	.dashboard
-		margin-right: 1em
-	.patterns
-		margin-left: 1em
-		margin-top: 1em
+@media screen and (max-height: 420px)
+	.header
+		.languages
+		.header-main
+		.samples
+			-webkit-backface-visibility: hidden
+			position: static
+			transform: none
+			width: 100%
+	.header
+	.generator
+		height: auto
 		
