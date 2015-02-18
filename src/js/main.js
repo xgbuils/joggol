@@ -62,7 +62,7 @@ var generateText = {
         $output.text(text.balls)
     },
     
-    period: function (text, period, $output) {
+    periods: function (text, period, $output) {
         text.error = false
         console.log(period)
         console.log('eooo', text.error)
@@ -80,7 +80,7 @@ var generateText = {
         $output.text(text.period)
     },
 
-    height: function (text, height, $output) {
+    heights: function (text, height, $output) {
         text.error = false
         if (height.min === undefined && height.max === undefined) {
             text.height = ''
@@ -115,21 +115,6 @@ var scope = {
 }
 
 $(document).ready(function (event) {
-    scope.inputs = {
-        balls: {
-            min: $('#balls-min'),
-            max: $('#balls-max')
-        },
-        period: {
-            min: $('#period-min'),
-            max: $('#period-max')
-        },
-        height: {
-            min:  $('#height-min'),
-            max:  $('#height-max')
-        }
-    } 
-
     scope.$root = $('body, html')
     scope.keyboard = {
         $widget: $('#keyboard'),
@@ -138,6 +123,15 @@ $(document).ready(function (event) {
             $item: $('#keyboard-numbers'),
             active: false,
             position: 0
+        },
+        balls: {
+            $item: $('#keyboard-balls'),
+        },
+        periods: {
+            $item: $('#keyboard-periods'),
+        },
+        heights: {
+            $item: $('#keyboard-heights'),
         },
         patterns: {
             $item: $('#keyboard-patterns'),
@@ -152,9 +146,9 @@ $(document).ready(function (event) {
     }
 
     scope.outputs = {
-        balls:  $('#p-balls'),
-        period: $('#p-period'),
-        height:  $('#p-height'),
+        balls:  $('#description-balls'),
+        periods: $('#description-periods'),
+        heights:  $('#description-heights'),
     }
 
     scope.message = {
@@ -165,7 +159,31 @@ $(document).ready(function (event) {
     scope.$header = $('#header')
     scope.generator = {
         $item: $('#generator'),
-        active: false
+        active: false,
+        balls: {
+            min: {
+                $item: $('#balls-min')
+            },
+            max: {
+                $item: $('#balls-max')
+            }
+        },
+        periods: {
+            min: {
+                $item: $('#period-min')
+            },
+            max: {
+                $item: $('#period-max')
+            }
+        },
+        heights: {
+            min: {
+                $item: $('#height-min')
+            },
+            max: {
+                $item: $('#height-max')
+            }
+        }
     }
     scope.topGenerator = scope.generator.$item.offset().top
     scope.$create = $('#create')
@@ -195,7 +213,7 @@ $(document).ready(function (event) {
         var keyboard  = scope.keyboard
         var simulator = scope.simulator
         console.log('CREATE PATTERN')
-        var patterns = siteswapGenerator(values.balls, values.period, values.height)
+        var patterns = siteswapGenerator(values.balls, values.periods, values.heights)
         simulator.patterns = patterns.map(function (pattern) {
             return pattern.map(function (e) {
                 return heightToLetter[e]
@@ -290,15 +308,18 @@ $(document).ready(function (event) {
         numbers.active = false
     })
 
-    scope.generator.$item.on('inputeditable', '.contenteditable', scope, function (event) {
+    function inputHandler (event) {
+        console.log(event.target)
         console.log('dsadsa')
         var scope = event.data
-        var key = $(this).data('type')
-        values[key] = {
-            min: parseInt(scope.inputs[key].min.text()) || undefined,
-            max: parseInt(scope.inputs[key].max.text()) || undefined
-        }
-        generateText[key](text, values[key], scope.outputs[key])
+        var type   = $(this).data('type')
+        var minmax = $(this).data('minmax')
+        console.log(type, minmax)
+        values[type][minmax] =
+            parseInt(scope.generator[type][minmax].$item.text()) || undefined
+        console.log('new values', values)
+
+        generateText[type](text, values[type], scope.outputs[type])
 
         if (!error && text.error) {
             scope.message.$success.addClass('hide')
@@ -311,12 +332,14 @@ $(document).ready(function (event) {
             error = false
         }
         console.log(text)
-    })
+    }
+
+    scope.generator.$item.on('inputeditable', '.contenteditable', scope, inputHandler)
     
     for (var key in scope.outputs) {
         values[key] = {
-            min: parseInt(scope.inputs[key].min.text()) || undefined,
-            max: parseInt(scope.inputs[key].max.text()) || undefined
+            min: parseInt(scope.generator[key].min.$item.text()) || undefined,
+            max: parseInt(scope.generator[key].max.$item.text()) || undefined
         }
         generateText[key](text, values[key], scope.outputs[key])
 
@@ -324,6 +347,7 @@ $(document).ready(function (event) {
             scope.message.$error.text(text.error)
         }
     }
+    console.log('values', values)
 
     scope.keyboard.$widget.on('click', function (event) {
         event.stopPropagation()

@@ -36,6 +36,8 @@ bar = {
 
 num_samples = 2
 
+abbr[title]
+	border-bottom: 0
 body
 html
 	height: 100%
@@ -72,23 +74,28 @@ li
 		display: inline-block
 		font-size: 1em
 		margin: 0
-		text-transform: capitalize
 		&:after
 			content: ":"
 	.contenteditable
+		border: solid 1px color.main
+		border-radius: .4em
 		display: inline-block
 		height: 25px
 		line-height: 25px
 		min-width: 25px
-		padding: .2em
+		padding: 8px
 		text-align: center
 		vertical-align: middle
+		&.select
+			//background: #ECA350
+			border-width: 3px
+			padding: 6px
 	.editable
-		border: solid 1px #ccc
-		border-radius: .2em
 		//box-shadow: 2px 2px 8px #ccc
 		display: inline-block
-		padding: .2em .2em
+		//padding: .2em .2em
+		&>*
+			transition: width .3s
 	.patterns-description
 		h2
 			display: block
@@ -271,8 +278,6 @@ li
 	.btn
 		background: color.main
 		color: white
-.select
-	background: #ECA350
 .simulator
 	box-sizing: border-box
 	//height: 100vh
@@ -297,7 +302,14 @@ li
 		margin: .2em
 		border-radius: 3px
 		background: rgba(color.main, 0.2)
-		
+@media screen and (min-width: 320px)
+	.h2-height
+		text-decoration: none
+		border-bottom: 0
+		span
+			display: none
+		&:before
+			content: attr(title)
 @media screen and (max-height: 420px)
 	.header
 		.languages
