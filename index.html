@@ -57,38 +57,38 @@
       </div>
     </header>
     <section id="generator" class="generator">
-      <div class="fieldset balls">
-        <h2>boles</h2>
-        <div class="editable">
-          <span class="contenteditable" data-type="balls" id="balls-min">3</span>
+      <div class="fieldset">
+        <h2>Boles</h2>
+        <div id="balls" class="editable">
+          <span class="contenteditable" data-type="balls" data-minmax="min" id="balls-min">3</span>
           a
-          <span class="contenteditable" data-type="balls" id="balls-max">3</span>
+          <span class="contenteditable" data-type="balls" data-minmax="max" id="balls-max">3</span>
         </div>
       </div>
-      <div class="fieldset period">
-        <h2>període</h2>
+      <div class="fieldset">
+        <h2>Període</h2>
         <div class="editable">
-          <span class="contenteditable" data-type="period" id="period-min">2</span>
+          <span class="contenteditable" data-type="periods" data-minmax="min" id="period-min">2</span>
           a
-          <span class="contenteditable" data-type="period" id="period-max">3</span>
+          <span class="contenteditable" data-type="periods" data-minmax="max" id="period-max">3</span>
         </div>
       </div>
-      <div class="fieldset height">
-        <h2>alçada</h2>
+      <div class="fieldset">
+        <h2><abbr class="h2-height" title="Alçada màxima"><span>Alçada m<span>àx</span>.</span></abbr></h2>
         <div class="editable">
-          <span class="contenteditable" data-type="height" id="height-min"> </span>
+          <span class="contenteditable" data-type="heights" data-minmax="min" id="height-min"> </span>
           a
-          <span class="contenteditable" data-type="height" id="height-max">5</span>
+          <span class="contenteditable" data-type="heights" data-minmax="max" id="height-max">5</span>
         </div>
       </div>
       <div class="fieldset patterns-description">
-        <h2>descripció</h2>
+        <h2>Descripció</h2>
         <span id="error"></span>
         <span id="success">
           Patrons
-          <span id="p-balls"></span>
-          <span id="p-period"></span>
-          <span id="p-height"></span>
+          <span id="description-balls"></span>
+          <span id="description-periods"></span>
+          <span id="description-heights"></span>
         </span>
       </div>
       <div class="create">
@@ -104,6 +104,9 @@
   <div id="keyboard" class="keyboard hide">
     <div class="icon-left" id="keyboard-left"></div>
     <div class="buttons" id="keyboard-buttons">
+      <div id="keyboard-balls"></div>
+      <div id="keyboard-periods"></div>
+      <div id="keyboard-heights"></div>
       <div class="numbers" id="keyboard-numbers"></div>
       <div class="patterns" id="keyboard-patterns"></div>
     </div>
