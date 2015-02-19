@@ -116,6 +116,7 @@ var scope = {
 
 $(document).ready(function (event) {
     scope.$root = $('body, html')
+
     scope.keyboard = {
         $widget: $('#keyboard'),
         $buttons: $('#keyboard-buttons'),
@@ -157,35 +158,37 @@ $(document).ready(function (event) {
     }
 
     scope.$header = $('#header')
-    scope.generator = {
-        $item: $('#generator'),
-        active: false,
-        balls: {
-            min: {
-                $item: $('#balls-min')
-            },
-            max: {
-                $item: $('#balls-max')
-            }
-        },
-        periods: {
-            min: {
-                $item: $('#period-min')
-            },
-            max: {
-                $item: $('#period-max')
-            }
-        },
-        heights: {
-            min: {
-                $item: $('#height-min')
-            },
-            max: {
-                $item: $('#height-max')
-            }
-        }
-    }
-    scope.topGenerator = scope.generator.$item.offset().top
+
+    var $item
+ 
+    var $generator = scope.$generator = $('#generator')
+    var $focus = null
+    $generator.data('active', false)
+    $generator.data('top', $generator.offset().top)
+    $generator.data('$focus', $focus)
+    $.each(['balls', 'periods', 'heights'], function (index, item) {
+        var $item = $('#' + item)
+        //console.log('#' + item, $item[0])
+        $generator.data('$' + item, $item)
+        $.each(['min', 'max'], function (index, sufix) {
+            var $elem = $('#' + item + '-' + sufix)
+            //console.log('#' + item + '-' + sufix, $elem)
+            $item.data('$' + sufix, $elem)
+            var width    = $elem.width()
+            $elem.width(width)
+            var minWidth = '40px'
+            $elem.data('width', width)
+            $elem.data('min-width', minWidth)
+            $elem.data('type', item)
+            $elem.data('minmax', sufix)
+        })
+    })
+    
+    var $balls   = $generator.data('$balls')
+    var $periods = $generator.data('$periods')
+    var $heights = $generator.data('$heights')
+
+
     scope.$create = $('#create')
     scope.topCreate = scope.$create.offset().top
     scope.simulator = {
@@ -212,8 +215,20 @@ $(document).ready(function (event) {
         scope         = scope || event.data
         var keyboard  = scope.keyboard
         var simulator = scope.simulator
+        var $generator = scope.$generator
+        var array = [
+            $generator.data('$balls'),
+            $generator.data('$periods'),
+            $generator.data('$heights')
+        ]
+        var params = $.map(array, function($item) {
+            return {
+                min: parseInt($item.data('$min').text()) || undefined,
+                max: parseInt($item.data('$max').text()) || undefined
+            }
+        })
         console.log('CREATE PATTERN')
-        var patterns = siteswapGenerator(values.balls, values.periods, values.heights)
+        var patterns = siteswapGenerator.apply(null, params)
         simulator.patterns = patterns.map(function (pattern) {
             return pattern.map(function (e) {
                 return heightToLetter[e]
@@ -236,36 +251,41 @@ $(document).ready(function (event) {
 
     scope.$create.on('click', scope, createPatterns)
 
-    scope.$root.on('click', scope, function (event) {
-        //console.log('jijiji')
-        var scope = event.data
-        if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
-            scope.$focus = undefined
+    scope.$root.on('click', $generator, function (event) {
+        console.log('jijiji')
+        var $generator = event.data
+        var $focus     = $generator.data('$focus')
+        if ($focus) {
+            triggerDelegatedEvent('blureditable', $generator, $focus[0])
+            $generator.data('$focus', null)
         }
     })
 
-    scope.generator.$item.on('click', '.editable', scope, function (event) {
+    $generator.on('click', '.editable', $generator, function (event) {
         event.stopPropagation()
-        var scope = event.data
-        if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
+        var $generator = event.data
+        var $focus     = $generator.data('$focus')
+        if ($focus) {
+            triggerDelegatedEvent('blureditable', $generator, $focus[0])
         }
-        scope.$focus = $('.contenteditable', this).first()
-        triggerDelegatedEvent('focuseditable', scope.generator.$item, scope.$focus[0])
+        $focus = $('.contenteditable', this).first()
+        $generator.data('$focus', $focus)
+        triggerDelegatedEvent('focuseditable', $generator, $focus[0])
     })
 
-    scope.generator.$item.on('click', '.contenteditable', scope, function (event) {
+    $generator.on('click', '.contenteditable', $generator, function (event) {
         event.stopPropagation()
-        var scope = event.data
-        if (scope.$focus) {
-            triggerDelegatedEvent('blureditable', scope.generator.$item, scope.$focus[0])
+        var $generator = event.data
+        var $focus     = $generator.data('$focus')
+        if ($focus) {
+            triggerDelegatedEvent('blureditable', $generator, $focus[0])
         }
-        scope.$focus = $(this)
-        triggerDelegatedEvent('focuseditable', scope.generator.$item, this)
+        $focus = $(this)
+        $generator.data('$focus', $focus)
+        triggerDelegatedEvent('focuseditable', $generator, this)
     })
 
-    scope.generator.$item.on('focuseditable', '.contenteditable', scope.keyboard, function (event) {
+    $generator.on('focuseditable', '.contenteditable', scope.keyboard, function (event) {
         var keyboard = event.data
         var shown   = keyboard.shown
         console.log('shown', shown)
@@ -293,11 +313,23 @@ $(document).ready(function (event) {
         console.log(keyboard.shown)
     })
 
-    scope.generator.$item.on('blureditable', '.contenteditable', scope.keyboard, function (event) {
+    $generator.on('blureditable', '.contenteditable', scope, function (event) {
         console.log('blureditable')
-        var keyboard = event.data
-        var numbers  = keyboard.numbers
-        var shown   = keyboard.shown
+        var $this      = $(this)
+        var scope      = event.data
+        var keyboard   = scope.keyboard
+        var numbers    = keyboard.numbers
+        var shown      = keyboard.shown
+        var $generator = scope.$generator
+        var type       = $(this).data('type')
+        var $item      = $generator.data('$' + type)
+        var minText    = $item.data('$min').text()
+        var maxText    = $item.data('$max').text()
+        if (minText === maxText) {
+            $item.addClass('minEqMax')
+        } else if (minText <= 1 || minText === undefined) {
+            $item.addClass('minLessOrEq1')
+        }
         $(this).removeClass('select')
         if (shown) {
             keyboard.$widget.addClass('hide')
@@ -310,13 +342,13 @@ $(document).ready(function (event) {
 
     function inputHandler (event) {
         console.log(event.target)
-        console.log('dsadsa')
         var scope = event.data
-        var type   = $(this).data('type')
-        var minmax = $(this).data('minmax')
+        var $this = $(this)
+        var type  = $this.data('type')
+        var minmax = $this.data('minmax')
         console.log(type, minmax)
         values[type][minmax] =
-            parseInt(scope.generator[type][minmax].$item.text()) || undefined
+            parseInt($this.text()) || undefined
         console.log('new values', values)
 
         generateText[type](text, values[type], scope.outputs[type])
@@ -334,19 +366,21 @@ $(document).ready(function (event) {
         console.log(text)
     }
 
-    scope.generator.$item.on('inputeditable', '.contenteditable', scope, inputHandler)
-    
-    for (var key in scope.outputs) {
-        values[key] = {
-            min: parseInt(scope.generator[key].min.$item.text()) || undefined,
-            max: parseInt(scope.generator[key].max.$item.text()) || undefined
-        }
-        generateText[key](text, values[key], scope.outputs[key])
+    $generator.on('inputeditable', '.contenteditable', scope, inputHandler)
+    console.log(scope.outputs)
+    var width
 
+    $.each(['balls', 'periods', 'heights'], function (index, type) {
+        var $item = $generator.data('$' + type)
+        values[type] = {
+            min: parseInt($item.data('$min').text()) || undefined,
+            max: parseInt($item.data('$max').text()) || undefined
+        }
+        generateText[type](text, values[type], scope.outputs[type])
         if (!error && text.error) {
             scope.message.$error.text(text.error)
         }
-    }
+    })
     console.log('values', values)
 
     scope.keyboard.$widget.on('click', function (event) {
@@ -372,6 +406,7 @@ $(document).ready(function (event) {
     })
 
     function clickLinkHandler (event) {
+        console.log('uieyirutiu')
         event.preventDefault()
         console.log('jojojo')
         console.log('hola')
@@ -440,33 +475,37 @@ $(document).ready(function (event) {
         patterns.$select = $(this)
         patterns.$select.addClass('select')
     })
-    scope.keyboard.numbers.$item.on('click', 'li', scope, function (event) {
+    scope.keyboard.numbers.$item.on('click', 'li', $generator, function (event) {
         var num = parseInt($(this).text())
-        scope.$focus.text(num)
-        triggerDelegatedEvent('inputeditable', scope.generator.$item, scope.$focus[0])
+        var $generator = event.data
+        var $focus     = $generator.data('$focus')
+        $focus.text(num)
+        triggerDelegatedEvent('inputeditable', $generator, $focus[0])
     })
 
     $(window).on('scroll', scope, function (event) {
         var scope = event.data
-        var keyboard  = scope.keyboard
-        var generator = scope.generator
-        var simulator = scope.simulator
+        var keyboard   = scope.keyboard
+        var $generator = scope.$generator
+        var simulator  = scope.simulator
         var top = $(window).scrollTop()
+        var topGenerator = $generator.offset().top
         
-        if (top < scope.topGenerator - 50) {
+        if (top < topGenerator - 50) {
             scope.$header.removeClass('reduce')
         } else {
             scope.$header.addClass('reduce')
         }
 
-        //console.log(scope.topCreate, top)
-        //console.log(top >= scope.topGenerator - 50 && top < scope.topSimulator - 400)
-        if (generator.active && (top < scope.topGenerator - 50 || top >= scope.topCreate)) {
-            generator.$item.trigger('off')
-            generator.active = false
-        } else if (!generator.active && (top >= scope.topGenerator - 50 && top < scope.topCreate)){
-            generator.$item.trigger('on')
-            generator.active = true
+        
+        var active = $generator.data('active')
+        console.log(top, topGenerator - 50, scope.topCreate, active)
+        if (active && (top < topGenerator - 50 || top >= scope.topCreate)) {
+            $generator.trigger('off')
+            $generator.data('active', false)
+        } else if (!active && (top >= topGenerator - 50 && top < scope.topCreate)){
+            $generator.trigger('on')
+            $generator.data('active', true)
         }
 
         //console.log(top, scope.topSimulator - 50)
@@ -492,7 +531,7 @@ $(document).ready(function (event) {
         }
     })
 
-    scope.generator.$item.on('off', scope.keyboard, function (event) {
+    $generator.on('off', scope.keyboard, function (event) {
         console.log('OFF generator')
         var keyboard = event.data
         console.log('shown', keyboard.shown)
@@ -547,7 +586,7 @@ $(document).ready(function (event) {
         }
     })
 
-    scope.generator.$item.on('on', scope.keyboard, function (event) {
+    $generator.on('on', scope.keyboard, function (event) {
         console.log('ON generator')
         var keyboard = event.data
         console.log('shown', keyboard.shown)

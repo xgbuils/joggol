@@ -79,17 +79,18 @@ li
 	.contenteditable
 		border: solid 1px color.main
 		border-radius: .4em
+		box-sizing: border-box
 		display: inline-block
-		height: 25px
-		line-height: 25px
-		min-width: 25px
-		padding: 8px
+		height: 40px
+		line-height: 40px
+		min-width: 40px
+		overflow: hidden
 		text-align: center
+		transition: width .6s
 		vertical-align: middle
 		&.select
-			//background: #ECA350
 			border-width: 3px
-			padding: 6px
+			line-height: 36px
 	.editable
 		//box-shadow: 2px 2px 8px #ccc
 		display: inline-block
