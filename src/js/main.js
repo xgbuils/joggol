@@ -154,11 +154,11 @@ $(document).ready(function (event) {
         var $keys = $('#keyboard-' + item)
         if (item === 'periods') {
             $keys.keyboard(range(1, 10), function (key) {
-                return '<span class="numbers keyboard-btn">' + key + '</span>'
+                return '<span class="numbers keyboard-btn number-' + key + '">' + key + '</span>'
             })
         } else {
             $keys.keyboard(range(0, 25), function (key) {
-                return '<span class="numbers keyboard-btn">' + key + '</span>'
+                return '<span class="numbers keyboard-btn number-' + key + '">' + key + '</span>'
             })
         }
         $.each(['min', 'max'], function (index, sufix) {
@@ -272,15 +272,36 @@ $(document).ready(function (event) {
         triggerDelegatedEvent('focuseditable', $generator, this)
     })
 
+    function selectButton($button, $context) {
+        $button.addClass('select')
+        $context.data('$select', $button)
+        var width = $context.data('width')
+        var diff  = 0.5 * ($(window).outerWidth() - $button.outerWidth()) - $button.offset().left
+        var pos   = $context.data('position') + diff
+        if (pos < -width) 
+            pos = -width
+        else if (pos > 0)
+            pos = 0
+        $context.data('position', pos)
+        $context.css('left', pos)
+    }
+
+    function deselectButton($button) {
+        $button.removeClass('select')
+    }
+
     $generator.on('focuseditable', '.contenteditable', $keyboard, function (event) {
         var $this     = $(this)
         var $keys = $this.data('$keys')
+        console.log($keys[0])
         //var buttons   = $keyboard.data('buttons')
         var $shown = $keyboard.data('shown')
         /*console.log('$shown', $shown && $shown[0])
         var numbers   = buttonskeyboard.numbers*/
+        // $this, $keys
         $this.addClass('select')
-        var width = $keys.data('width')
+
+        var width     = $keys.data('width')
         if (!width) {
             width = $keys.width() - $(window).outerWidth() + 120
             $keys.data('width', width)
@@ -300,6 +321,13 @@ $(document).ready(function (event) {
             $keys.addClass('select')
         }
         $keys.data('active', true)
+
+        var $select = $keys.data('$select')
+        if ($select && !$select.hasClass(className)) {
+            deselectButton($select)
+        }
+        var className = 'number-' + $this.text()
+        selectButton($('.' + className, $keys), $keys)
     })
 
     $generator.on('blureditable', '.contenteditable', scope, function (event) {
@@ -453,16 +481,10 @@ $(document).ready(function (event) {
             var $item   = event.data
             var $select = $item.data('$select')
             if ($select) {
-                $select.removeClass('select')
+                deselectButton($select)
             }
             $item.data('$select', $this)
-            var diff = 0.5 * ($(window).outerWidth() - $this.outerWidth()) - $this.offset().left
-            var pos  = $item.data('position')
-            pos     += diff
-            $item.data('position', pos)
-            $item.css('left', pos)
-            //console.log(diff) 
-            $this.addClass('select')
+            selectButton($this, $item)
         })
     }
 
