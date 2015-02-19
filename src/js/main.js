@@ -25,12 +25,12 @@ function triggerDelegatedEvent (name, $wrapper, elem) {
 }
 
 function parseHref(href, config) {
-    console.log(href)
+    //console.log(href)
     var aux = href.split('?')
     var fragment = aux[0]
     var queryString = {}
 
-    console.log(aux[1])
+    //console.log(aux[1])
     if (aux[1]) {
         var q = aux[1].split('&')
         for (var i in q) {
@@ -64,8 +64,7 @@ var generateText = {
     
     periods: function (text, period, $output) {
         text.error = false
-        console.log(period)
-        console.log('eooo', text.error)
+        //console.log(period)
         if (period.min !== undefined && period.max !== undefined 
          && period.min <= period.max && period.min > 0) {
             if (period.min === period.max) 
@@ -117,34 +116,19 @@ var scope = {
 $(document).ready(function (event) {
     scope.$root = $('body, html')
 
-    scope.keyboard = {
-        $widget: $('#keyboard'),
-        $buttons: $('#keyboard-buttons'),
-        numbers: {
-            $item: $('#keyboard-numbers'),
-            active: false,
-            position: 0
-        },
-        balls: {
-            $item: $('#keyboard-balls'),
-        },
-        periods: {
-            $item: $('#keyboard-periods'),
-        },
-        heights: {
-            $item: $('#keyboard-heights'),
-        },
-        patterns: {
-            $item: $('#keyboard-patterns'),
-            active: false,
-            position: 0
-        },
-        $left: $('#keyboard-left'),
-        $right: $('#keyboard-right'),
-        shown: undefined,
-        active: undefined,
-        position: 0
-    }
+    var $keyboard = scope.$keyboard = $('#keyboard')
+    var buttons   = {}
+    $keyboard.data('$shown', null)
+    $.each(['balls', 'periods', 'heights', 'patterns'], function (index, item) {
+        var $item = buttons['$' + item] = $('#keyboard-' + item)
+        $item.data('position', 0)
+        $item.data('active', false)
+    })
+    $keyboard.data('buttons', buttons)
+    var $left  = $('#keyboard-left' )
+    var $right = $('#keyboard-right')
+    $keyboard.data('$left',  $left )
+    $keyboard.data('$right', $right)
 
     scope.outputs = {
         balls:  $('#description-balls'),
@@ -159,21 +143,29 @@ $(document).ready(function (event) {
 
     scope.$header = $('#header')
 
-    var $item
- 
     var $generator = scope.$generator = $('#generator')
     var $focus = null
+    var inputs = {}
     $generator.data('active', false)
     $generator.data('top', $generator.offset().top)
     $generator.data('$focus', $focus)
     $.each(['balls', 'periods', 'heights'], function (index, item) {
-        var $item = $('#' + item)
-        //console.log('#' + item, $item[0])
-        $generator.data('$' + item, $item)
+        var $item = inputs['$' + item] = $('#' + item)
+        var $keys = $('#keyboard-' + item)
+        if (item === 'periods') {
+            $keys.keyboard(range(1, 10), function (key) {
+                return '<span class="numbers keyboard-btn">' + key + '</span>'
+            })
+        } else {
+            $keys.keyboard(range(0, 25), function (key) {
+                return '<span class="numbers keyboard-btn">' + key + '</span>'
+            })
+        }
         $.each(['min', 'max'], function (index, sufix) {
             var $elem = $('#' + item + '-' + sufix)
-            //console.log('#' + item + '-' + sufix, $elem)
             $item.data('$' + sufix, $elem)
+
+            $elem.data('$parent', $item)
             var width    = $elem.width()
             $elem.width(width)
             var minWidth = '40px'
@@ -181,21 +173,17 @@ $(document).ready(function (event) {
             $elem.data('min-width', minWidth)
             $elem.data('type', item)
             $elem.data('minmax', sufix)
-        })
+            $elem.data('$keys', $keys)
+        })        
     })
-    
-    var $balls   = $generator.data('$balls')
-    var $periods = $generator.data('$periods')
-    var $heights = $generator.data('$heights')
 
+    var $simulator = scope.$simulator = $('#simulator')
+    $simulator.data('active', false)
+
+    $generator.data('inputs', inputs)
 
     scope.$create = $('#create')
     scope.topCreate = scope.$create.offset().top
-    scope.simulator = {
-        $item: $('#simulator'),
-        active: false
-    }
-    scope.topSimulator = scope.simulator.$item.offset().top
     scope.$samples = $('#samples')
 
     function rec() {
@@ -212,14 +200,14 @@ $(document).ready(function (event) {
     rec()
 
     function createPatterns(event, scope) {
-        scope         = scope || event.data
-        var keyboard  = scope.keyboard
-        var simulator = scope.simulator
+        scope          = scope || event.data
+        var $keyboard  = scope.$keyboard
+        var $simulator = scope.$simulator
         var $generator = scope.$generator
         var array = [
-            $generator.data('$balls'),
-            $generator.data('$periods'),
-            $generator.data('$heights')
+            inputs.$balls,
+            inputs.$periods,
+            inputs.$heights
         ]
         var params = $.map(array, function($item) {
             return {
@@ -227,32 +215,31 @@ $(document).ready(function (event) {
                 max: parseInt($item.data('$max').text()) || undefined
             }
         })
-        console.log('CREATE PATTERN')
+        //console.log('CREATE PATTERN')
         var patterns = siteswapGenerator.apply(null, params)
-        simulator.patterns = patterns.map(function (pattern) {
+        patterns = patterns.map(function (pattern) {
             return pattern.map(function (e) {
                 return heightToLetter[e]
             }).join('')
         })
-        keyboard.patterns.$item.keyboard(simulator.patterns, function (pattern) {
+        $simulator.data('patterns', patterns)
+        buttons.$patterns.keyboard(patterns, function (pattern) {
             return '<a class="keyboard-btn" href="#simulator?play=' + pattern + '">' + pattern + '</a>'
         })
-        //console.log(simulator.patterns)
         if (scope.juggler) {
             scope.juggler.stop()
         }
         scope.jugglerPlaying = false
-        keyboard.patterns.active = false
-        keyboard.patterns.position = 0
-        keyboard.patterns.$item.css('left', 0)
-        keyboard.patterns.width = undefined
-        //console.log(simulator.patterns)
+        buttons.$patterns.data('active', false)
+        buttons.$patterns.data('position', 0)
+        buttons.$patterns.css('left', 0)
+        buttons.$patterns.data('width', null)
     }
 
     scope.$create.on('click', scope, createPatterns)
 
     scope.$root.on('click', $generator, function (event) {
-        console.log('jijiji')
+        //console.log('jijiji')
         var $generator = event.data
         var $focus     = $generator.data('$focus')
         if ($focus) {
@@ -285,71 +272,74 @@ $(document).ready(function (event) {
         triggerDelegatedEvent('focuseditable', $generator, this)
     })
 
-    $generator.on('focuseditable', '.contenteditable', scope.keyboard, function (event) {
-        var keyboard = event.data
-        var shown   = keyboard.shown
-        console.log('shown', shown)
-        var numbers  = keyboard.numbers
-        $(this).addClass('select')
-        if (!numbers.width) {
-            numbers.$item.keyboard(range(0, 35), function (number) {
-                return '<span class="keyboard-btn">' + number + '</span>'
-            })
-            numbers.width = numbers.$item.width() - $(window).outerWidth() + 120
+    $generator.on('focuseditable', '.contenteditable', $keyboard, function (event) {
+        var $this     = $(this)
+        var $keys = $this.data('$keys')
+        //var buttons   = $keyboard.data('buttons')
+        var $shown = $keyboard.data('shown')
+        /*console.log('$shown', $shown && $shown[0])
+        var numbers   = buttonskeyboard.numbers*/
+        $this.addClass('select')
+        var width = $keys.data('width')
+        if (!width) {
+            width = $keys.width() - $(window).outerWidth() + 120
+            $keys.data('width', width)
         }
         //keyboard.patterns.width = undefined
-        if (!shown) {
-            console.log('primero')
-            keyboard.$widget.removeClass('hide')
-            keyboard.shown = numbers
-            numbers.$item.addClass('select')
-        } else if (shown.$item === keyboard.patterns.$item) {
-            console.log('segundo')
-            shown.$item.removeClass('select')
-            keyboard.shown = numbers
-            numbers.$item.addClass('select')
+        //console.log('ummmm', $shown && $shown[0])
+        if (!$shown) {
+            //console.log('primero')
+            $keyboard.removeClass('hide')
+            $keyboard.data('$shown', $keys)
+            $keys.addClass('select')
+        } else {
+            //console.log('segundo')
+            $shown.removeClass('select')
+            $shown = $keys
+            $keyboard.data('$shown', $keys)
+            $keys.addClass('select')
         }
-        numbers.active = true
-        console.log(keyboard.shown)
+        $keys.data('active', true)
     })
 
     $generator.on('blureditable', '.contenteditable', scope, function (event) {
-        console.log('blureditable')
+        //console.log('blureditable')
         var $this      = $(this)
         var scope      = event.data
-        var keyboard   = scope.keyboard
-        var numbers    = keyboard.numbers
-        var shown      = keyboard.shown
-        var $generator = scope.$generator
-        var type       = $(this).data('type')
-        var $item      = $generator.data('$' + type)
-        var minText    = $item.data('$min').text()
-        var maxText    = $item.data('$max').text()
+        var $keyboard  = scope.$keyboard
+        var $keys      = $this.data('$keys')
+        var $shown     = $keyboard.data('$shown')
+        var $parent    = $this.data('$parent')
+        var minText    = $parent.data('$min').text()
+        var maxText    = $parent.data('$max').text()
+
+        if (minText <= 1 || minText === undefined) {
+            $parent.addClass('minLessOrEq1')
+        } else {
+            $parent.removeClass('minLessOrEq1')
+        }
         if (minText === maxText) {
-            $item.addClass('minEqMax')
-        } else if (minText <= 1 || minText === undefined) {
-            $item.addClass('minLessOrEq1')
+            $parent.addClass('minEqMax')
+        } else {
+            $parent.removeClass('minEqMax')
         }
-        $(this).removeClass('select')
-        if (shown) {
-            keyboard.$widget.addClass('hide')
-            numbers.$item.removeClass('select')
-            numbers.$item = shown.$item
-            keyboard.shown = undefined
+
+        $this.removeClass('select')
+        if ($shown) {
+            $keyboard.addClass('hide')
+            $keys.removeClass('select')
+            //numbers.$item = shown.$item
+            //$keyboard.shown = undefined
         }
-        numbers.active = false
+        $keys.data('active', false)
     })
 
     function inputHandler (event) {
-        console.log(event.target)
         var scope = event.data
         var $this = $(this)
         var type  = $this.data('type')
         var minmax = $this.data('minmax')
-        console.log(type, minmax)
-        values[type][minmax] =
-            parseInt($this.text()) || undefined
-        console.log('new values', values)
+        values[type][minmax] = parseInt($this.text()) || undefined
 
         generateText[type](text, values[type], scope.outputs[type])
 
@@ -363,56 +353,54 @@ $(document).ready(function (event) {
             scope.message.$success.removeClass('hide')
             error = false
         }
-        console.log(text)
     }
 
     $generator.on('inputeditable', '.contenteditable', scope, inputHandler)
-    console.log(scope.outputs)
     var width
 
     $.each(['balls', 'periods', 'heights'], function (index, type) {
-        var $item = $generator.data('$' + type)
+        var $item = inputs['$' + type]
+        var $min  = $item.data('$min')
+        var $max  = $item.data('$max')
         values[type] = {
-            min: parseInt($item.data('$min').text()) || undefined,
-            max: parseInt($item.data('$max').text()) || undefined
+            min: parseInt($min.text()) || undefined,
+            max: parseInt($max.text()) || undefined
         }
         generateText[type](text, values[type], scope.outputs[type])
         if (!error && text.error) {
             scope.message.$error.text(text.error)
         }
     })
-    console.log('values', values)
 
-    scope.keyboard.$widget.on('click', function (event) {
+    $keyboard.on('click', function (event) {
         event.stopPropagation()
     })
 
-    scope.keyboard.$left.on('click', scope.keyboard, function (event) {
-        var keyboard = event.data
-        var width = keyboard.$widget.width() - 100
-        var pos = keyboard.shown.position + width
-        pos = keyboard.shown.position = Math.min(pos, 0)
-        console.log(keyboard.shown)
-        keyboard.shown.$item.css('left', pos)
+    $left.on('click', $keyboard, function (event) {
+        var $keyboard = event.data
+        var $shown    = $keyboard.data('$shown')
+        var width = $keyboard.width() - 100
+        var pos = $shown.data('position') + width
+        pos = Math.min(pos, 0)
+        $shown.data('position', pos)
+        $shown.css('left', pos)
     })
 
-    scope.keyboard.$right.on('click', scope.keyboard, function (event) {
-        var keyboard = event.data
-        var width = keyboard.$widget.width() - 100
-        var pos = keyboard.shown.position - width
-        pos = keyboard.shown.position = Math.max(pos, -keyboard.shown.width)
-        console.log(pos)
-        keyboard.shown.$item.css('left', pos)
+    $right.on('click', $keyboard, function (event) {
+        var $keyboard = event.data
+        var $shown    = $keyboard.data('$shown')
+        var width     = $keyboard.width() - 100
+        var pos = $shown.data('position') - width
+        pos = Math.max(pos, -$shown.data('width'))
+        $shown.data('position', pos)
+        $shown.css('left', pos)
     })
 
     function clickLinkHandler (event) {
-        console.log('uieyirutiu')
         event.preventDefault()
-        console.log('jojojo')
-        console.log('hola')
         var scope = event.data
-        var keyboard = scope.keyboard
-        var simulator = scope.simulator
+        var $keyboard  = scope.$keyboard
+        var $simulator = scope.$simulator
         
         var href = parseHref($(this).attr('href'), {
             fragment: '#header'
@@ -422,30 +410,28 @@ $(document).ready(function (event) {
         var targetTop = $(href.fragment).offset().top
         scope.$root.animate({scrollTop: targetTop}, 300, 'swing')
         if (href.fragment === "#header") {
-            keyboard.$widget.addClass('hide')
-            var shown = keyboard.shown
-            if (shown) {
-                shown.$item.removeClass('select')
+            $keyboard.addClass('hide')
+            var $shown = $keyboard.data('shown')
+            if ($shown) {
+                $shown.removeClass('select')
             }
         } else {
             if (href.fragment === "#simulator") {
-                //console.log(simulator.patterns)
-                if (!simulator.patterns) {
+                var patterns = $simulator.data('patterns')
+                if (!patterns) {
                     createPatterns({}, scope)
                 }
-                //console.log(simulator.patterns)
-                href.queryString.play = href.queryString.play || simulator.patterns[0]
+                href.queryString.play = href.queryString.play || patterns[0]
                 console.log('play', href.queryString.play)
                 if (!scope.juggler) {
                     scope.juggler = new Juggler({
                         stage: {
                             container: 'juggler-simulator',
-                            width:  simulator.$item.width(),
-                            height: simulator.$item.height()
+                            width:  $simulator.width(),
+                            height: $simulator.height()
                         }
                     })
                 }
-                //console.log(scope.jugglerPlaying)
                 if (oldQueryString.play !== newQueryString.play) {
                     scope.juggler.stop()
                     scope.juggler.setPattern(href.queryString.play)
@@ -458,24 +444,29 @@ $(document).ready(function (event) {
     }
 
     scope.$root.on('click', 'a', scope, clickLinkHandler)
-    scope.keyboard.patterns.$item.on('click', 'a', scope, clickLinkHandler)
-    scope.keyboard.numbers.$item.on('click', '.keyboard-btn', scope.keyboard.numbers, function (event) {
-        var numbers = event.data
-        if (numbers.$select) {
-            numbers.$select.removeClass('select')
-        }
-        numbers.$select = $(this)
-        numbers.$select.addClass('select')
-    })
-    scope.keyboard.patterns.$item.on('click', '.keyboard-btn', scope.keyboard.patterns, function (event) {
-        var patterns = event.data
-        if (patterns.$select) {
-            patterns.$select.removeClass('select')
-        }
-        patterns.$select = $(this)
-        patterns.$select.addClass('select')
-    })
-    scope.keyboard.numbers.$item.on('click', 'li', $generator, function (event) {
+    buttons.$patterns.on('click', 'a', scope, clickLinkHandler)
+
+    for (var key in buttons) {
+        var $item = buttons[key]
+        $item.on('click', '.keyboard-btn', $item, function (event) {
+            var $this = $(this)
+            var $item   = event.data
+            var $select = $item.data('$select')
+            if ($select) {
+                $select.removeClass('select')
+            }
+            $item.data('$select', $this)
+            var diff = 0.5 * ($(window).outerWidth() - $this.outerWidth()) - $this.offset().left
+            var pos  = $item.data('position')
+            pos     += diff
+            $item.data('position', pos)
+            $item.css('left', pos)
+            //console.log(diff) 
+            $this.addClass('select')
+        })
+    }
+
+    $keyboard.on('click', '.keyboard-btn.numbers', $generator, function (event) {
         var num = parseInt($(this).text())
         var $generator = event.data
         var $focus     = $generator.data('$focus')
@@ -485,21 +476,19 @@ $(document).ready(function (event) {
 
     $(window).on('scroll', scope, function (event) {
         var scope = event.data
-        var keyboard   = scope.keyboard
         var $generator = scope.$generator
-        var simulator  = scope.simulator
+        var $simulator = scope.$simulator
         var top = $(window).scrollTop()
         var topGenerator = $generator.offset().top
+        var topSimulator = $simulator.offset().top
         
         if (top < topGenerator - 50) {
             scope.$header.removeClass('reduce')
         } else {
             scope.$header.addClass('reduce')
         }
-
         
         var active = $generator.data('active')
-        console.log(top, topGenerator - 50, scope.topCreate, active)
         if (active && (top < topGenerator - 50 || top >= scope.topCreate)) {
             $generator.trigger('off')
             $generator.data('active', false)
@@ -508,62 +497,62 @@ $(document).ready(function (event) {
             $generator.data('active', true)
         }
 
-        //console.log(top, scope.topSimulator - 50)
-        if (simulator.active && top < scope.topSimulator - 50) {
-            simulator.$item.trigger('off')
-            simulator.active = false
-        } else if (!simulator.active && top >= scope.topSimulator - 50) {
-            simulator.$item.trigger('on')
-            simulator.active = true
+        active = $simulator.data('active')
+        if (active && top < topSimulator - 50) {
+            $simulator.trigger('off')
+            $simulator.data('active', false)
+        } else if (!active && top >= topSimulator - 50) {
+            $simulator.trigger('on')
+            $simulator.data('active', true)
         }
     })
 
-    scope.simulator.$item.on('off', scope.keyboard, function (event) {
-        console.log('OFF simulator')
-        var keyboard = event.data
-        console.log('shown', keyboard.shown)
-        if (keyboard.shown) {
-            keyboard.shown.$item.removeClass('select')
-            keyboard.shown = undefined
+    $simulator.on('off', $keyboard, function (event) {
+        //console.log('OFF simulator')
+        var $keyboard = event.data
+        var $shown    = $keyboard.data('$shown')
+        var buttons   = $keyboard.data('buttons')
+        buttons.$patterns.removeClass('select')
+        if ($shown) {
+            $shown.removeClass('select')
+            $keyboard.data('$shown', null)
         }
-        if (!keyboard.numbers.active) {
-            keyboard.$widget.addClass('hide') 
-        }
+        $keyboard.addClass('hide')
     })
 
-    $generator.on('off', scope.keyboard, function (event) {
-        console.log('OFF generator')
-        var keyboard = event.data
-        console.log('shown', keyboard.shown)
-        if (keyboard.shown) {
-            keyboard.shown.$item.removeClass('select')
-            keyboard.shown = undefined
+    $generator.on('off', $keyboard, function (event) {
+        //console.log('OFF generator')
+        var $keyboard = event.data
+        var $shown    = $keyboard.data('$shown')
+        if ($shown) {
+            $shown.removeClass('select')
+            $keyboard.data('$shown', null)
         }
-        if (!keyboard.patterns.active) {
-            keyboard.$widget.addClass('hide')
-        }
+        //if (!keyboard.patterns.active) {
+        $keyboard.addClass('hide')
+        //}
     })
 
-    scope.simulator.$item.on('on', scope, function (event) {
-        console.log('ON simulator')
-        var scope     = event.data
-        var keyboard  = scope.keyboard
-        var href      = scope.href
-        var simulator = scope.simulator
-        console.log('shown', keyboard.shown)
-
-        if (!simulator.patterns) {
+    $simulator.on('on', scope, function (event) {
+        //console.log('ON simulator')
+        var scope      = event.data
+        var $keyboard  = scope.$keyboard
+        var $shown     = $keyboard.data('$shown')
+        var buttons    = $keyboard.data('buttons')
+        var href       = scope.href
+        var $simulator = scope.$simulator
+        var patterns   = $simulator.data('patterns')
+        if (!patterns) {
             createPatterns({}, scope)
         }
         if (!scope.jugglerPlaying) {
-            href.queryString.play = href.queryString.play || simulator.patterns[0]
-            console.log('play', href.queryString.play)
+            href.queryString.play = href.queryString.play || patterns[0]
             if (!scope.juggler) {
                 scope.juggler = new Juggler({
                     stage: {
                         container: 'juggler-simulator',
-                        width:  simulator.$item.width(),
-                        height: simulator.$item.height()
+                        width:  $simulator.width(),
+                        height: $simulator.height()
                     }
                 })
             }
@@ -572,32 +561,38 @@ $(document).ready(function (event) {
             scope.juggler.play()
             scope.jugglerPlaying = true
         }
-        if (keyboard.shown) {
-            keyboard.shown.$item.removeClass('select')
+        if ($shown) {
+            $shown.removeClass('select')
         }
-        keyboard.shown = keyboard.patterns
-        keyboard.shown.$item.addClass('select')
-        keyboard.$widget.removeClass('hide')
+        $shown = buttons.$patterns
+        $keyboard.data('$shown', $shown)
+        $shown.addClass('select')
+        $keyboard.removeClass('hide')
 
-        //console.log('wiiiidth??????????? ', keyboard.patterns.width)
-        if (!keyboard.patterns.width) {
-            keyboard.patterns.width = keyboard.patterns.$item.width() - $(window).outerWidth() + 120
-            console.log('wiiiidth: ', keyboard.patterns.width)
+        var width = buttons.$patterns.data('width')
+        if (!width) {
+            width = buttons.$patterns.width() - $(window).outerWidth() + 120
+            buttons.$patterns.data('width', width)
         }
     })
 
-    $generator.on('on', scope.keyboard, function (event) {
-        console.log('ON generator')
-        var keyboard = event.data
-        console.log('shown', keyboard.shown)
-        if (keyboard.shown) {
-            keyboard.shown.$item.removeClass('select')
-            keyboard.shown = undefined
+    $generator.on('on', scope, function (event) {
+        //console.log('ON generator')
+        var scope     = event.data
+        var $focus    = scope.$generator.data('$focus')
+        var $keyboard = scope.$keyboard
+        var $shown    = $keyboard.data('$shown')
+        var buttons   = $keyboard.data('buttons')
+
+        if ($shown) {
+            $shown.removeClass('select')
+            $keyboard.data('$shown', null)
         }
-        if (keyboard.numbers.active) {
-            keyboard.shown = keyboard.numbers
-            keyboard.shown.$item.addClass('select')
-            keyboard.$widget.removeClass('hide')
+        if ($focus) {
+            $shown = $focus.data('$keys')
+            $keyboard.data('$shown', $shown)
+            $shown.addClass('select')
+            $keyboard.removeClass('hide')
         }
     })
 })
