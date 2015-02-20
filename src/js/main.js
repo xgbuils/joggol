@@ -487,6 +487,10 @@ $(document).ready(function (event) {
         generateText[type](text, values[type], scope.outputs[type])
         if (error) {
             scope.$create.addClass('disabled')
+            scope.$wrapper.addClass('simulator-disabled')
+        } else {
+            scope.$create.removeClass('disabled')
+            scope.$wrapper.removeClass('simulator-disabled')
         }
     })
 
