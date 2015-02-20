@@ -61,10 +61,6 @@ li
 	padding 0 .5em
 	text-decoration: none
 .generator
-.header
-.simulator
-	height: 33.33%
-.generator
 	box-sizing: border-box
 	font-size: 1em
 	padding: bar.height 0
@@ -109,7 +105,6 @@ li
 	position: relative
 	text-align: center
 	top: 0
-	transition: height .3s
 	width: 100%
 	.languages
 	.header-main
@@ -278,19 +273,35 @@ li
 	.btn
 		background: color.main
 		color: white
+		&.disabled
+			background: rgba(color.main, .5)
+			cursor: default
 .simulator
 	box-sizing: border-box
 	//height: 100vh
 	padding: bar.height 0
 	position: relative
 	width: 100%
+	&.hide
+		display: block
+		height: 0
 .title
 	font-family: 'Shadows Into Light', cursive
 .wrapper
 	height: 300%
 	position: relative
-	&.toGenerator
-		-webkit-transform: translate(0, -100vh)
+	.generator
+	.header
+	.simulator
+		height: 33.33%
+	&.simulator-disabled
+		height: 200%
+		.generator
+		.header
+		.simulator
+			height: 50%
+		.simulator
+			display: none
 #patterns
 	ul
 		margin 0

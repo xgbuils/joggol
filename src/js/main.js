@@ -45,6 +45,62 @@ function parseHref(href, config) {
     }
 }
 
+function isInt(value) {
+    return !isNaN(value) && value === Math.floor(value)
+}
+
+function capitalize(str) {
+    return str[0].toUpperCase(str) + str.substring(1)
+}
+
+var message = {
+    isNotAInt: function (value) {
+        return value + 'no és un nombre enter'
+    },
+    invalidRange: function (range, type) {
+        type = {
+            balls: 'el nombre de boles',
+            periods: 'el període',
+            heights: 'l\'alçada'
+        }[type]
+        return capitalize(type) + ' menor (' + range.min 
+             + ') no pot sobrepassar ' + type + ' major (' + range.max + ')'
+    },
+    emptyWithBigPeriod: function () {
+        return 'No existeixen patrons vàlids dintre del rang indicat. Prova que l\'alçada màxima sigui menor al nombre màxim de boles'
+    },
+    emptyWithLittlePeriod: function () {
+        return 'No existeixen patrons vàlids dintre del rang indicat. Prova que l\'alçada màxima sigui menor o igual al nombre màxim de boles'
+    }
+}
+
+function validate(values, type, minmax, option) {
+    var range = values[type]
+    var value = range[minmax]
+    if (!isInt(value)) {
+        return message.isNotAInt(value)
+    }
+
+    if (option === 'all' || option === 'range') {
+        if(range.min > range.max) {
+            return message.invalidRange(range, type)
+        }
+    }
+
+    if (option === 'all') {
+        var maxBalls   = values.balls.max
+        var maxHeights = values.heights.max
+        var maxPeriods = values.periods.max
+    
+        if (maxHeights <= maxBalls && maxPeriods > 1) {
+            return message.emptyWithBigPeriod()
+        } else if(maxPeriods === 1 && maxHeights < maxBalls) {
+            return message.emptyWithLittlePeriod()
+        }
+    }
+    return ''
+}
+
 var generateText = {
     balls: function (text, balls, $output) {
         text.error = false
@@ -83,7 +139,7 @@ var generateText = {
         text.error = false
         if (height.min === undefined && height.max === undefined) {
             text.height = ''
-        } else if (height.min === undefined && height.max >= 0) {
+        } else if ((height.min === undefined || height.min <= 1) && height.max >= 0) {
             text.height = 'amb llançaments no més alts de ' + height.max
         } else if (height.max === undefined && height.min >= 0) {
             text.height = 'amb llançaments que continguin alguna alçada major o igual a ' + height.min
@@ -157,7 +213,7 @@ $(document).ready(function (event) {
                 return '<span class="numbers keyboard-btn number-' + key + '">' + key + '</span>'
             })
         } else {
-            $keys.keyboard(range(0, 25), function (key) {
+            $keys.keyboard(range(1, 25), function (key) {
                 return '<span class="numbers keyboard-btn number-' + key + '">' + key + '</span>'
             })
         }
@@ -185,6 +241,8 @@ $(document).ready(function (event) {
     scope.$create = $('#create')
     scope.topCreate = scope.$create.offset().top
     scope.$samples = $('#samples')
+
+    var $wrapper = scope.$wrapper = $('#wrapper')
 
     function rec() {
         var first = $('li', scope.$samples).slice(0, 1)
@@ -367,24 +425,36 @@ $(document).ready(function (event) {
         $keys.data('active', false)
     })
 
-    function inputHandler (event, scope) {
-        scope = event.data || scope
+    function inputHandler (event) {
+        var scope = event.data
         var $this = $(this)
         var type  = $this.data('type')
         var minmax = $this.data('minmax')
         values[type][minmax] = parseInt($this.text()) || undefined
+        var textError = validate(values, type, minmax, 'all')
+        if (error)
+            console.log(error)
 
         generateText[type](text, values[type], scope.outputs[type])
 
-        if (!error && text.error) {
+        if (!error && textError) {
             scope.message.$success.addClass('hide')
-            scope.message.$error.text(text.error)
+            scope.message.$error.text(textError)
             scope.message.$error.removeClass('hide')
             error = true
-        } else if (error && !text.error) {
+        } else if (error && !textError) {
             scope.message.$error.addClass('hide')
             scope.message.$success.removeClass('hide')
             error = false
+        }
+        console.log('error', error)
+
+        if (error) {
+            scope.$create.addClass('disabled')
+            scope.$wrapper.addClass('simulator-disabled')
+        } else {
+            scope.$create.removeClass('disabled')
+            scope.$wrapper.removeClass('simulator-disabled')
         }
     }
 
@@ -395,13 +465,28 @@ $(document).ready(function (event) {
         var $item = inputs['$' + type]
         var $min  = $item.data('$min')
         var $max  = $item.data('$max')
+        var textError
         values[type] = {
             min: parseInt($min.text()) || undefined,
             max: parseInt($max.text()) || undefined
         }
+        textError = validate(values, type, 'min')
+        if (!error && textError) {
+            scope.message.$error.text(textError)
+            scope.message.$success.addClass('hide')
+            error = true
+        }
+        console.log('min', values[type].min)
+        textError = validate(values, type, 'max', index === 2 ? 'all' : 'range')
+        if (!error && textError) {
+            scope.message.$error.text(textError)
+            scope.message.$success.addClass('hide')
+            error = true
+        }
+        console.log('max', values[type].max)
         generateText[type](text, values[type], scope.outputs[type])
-        if (!error && text.error) {
-            scope.message.$error.text(text.error)
+        if (error) {
+            scope.$create.addClass('disabled')
         }
     })
 
@@ -476,8 +561,11 @@ $(document).ready(function (event) {
         scope.href = href
     }
 
-    scope.$root.on('click', 'a', scope, clickLinkHandler)
-    buttons.$patterns.on('click', 'a', scope, clickLinkHandler)
+    scope.$root.on('click', 'a.disabled', function (event) {
+        event.preventDefault()
+    })
+    scope.$root.on('click', 'a:not(.disabled)', scope, clickLinkHandler)
+    buttons.$patterns.on('click', 'a:not(.disabled)', scope, clickLinkHandler)
 
     for (var key in buttons) {
         var $item = buttons[key]
@@ -525,10 +613,11 @@ $(document).ready(function (event) {
         }
 
         active = $simulator.data('active')
+        //console.log(top, topSimulator, active)
         if (active && top < topSimulator - 50) {
             $simulator.trigger('off')
             $simulator.data('active', false)
-        } else if (!active && top >= topSimulator - 50) {
+        } else if (!active && !$wrapper.hasClass('simulator-disabled') && top >= topSimulator - 50) {
             $simulator.trigger('on')
             $simulator.data('active', true)
         }
@@ -561,7 +650,7 @@ $(document).ready(function (event) {
     })
 
     $simulator.on('on', scope, function (event) {
-        //console.log('ON simulator')
+        console.log('ON simulator')
         var scope      = event.data
         var $keyboard  = scope.$keyboard
         var $shown     = $keyboard.data('$shown')
