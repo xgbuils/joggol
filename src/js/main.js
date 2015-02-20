@@ -234,6 +234,8 @@ $(document).ready(function (event) {
         buttons.$patterns.data('position', 0)
         buttons.$patterns.css('left', 0)
         buttons.$patterns.data('width', null)
+
+        return patterns
     }
 
     scope.$create.on('click', scope, createPatterns)
@@ -326,8 +328,11 @@ $(document).ready(function (event) {
         if ($select && !$select.hasClass(className)) {
             deselectButton($select)
         }
-        var className = 'number-' + $this.text()
-        selectButton($('.' + className, $keys), $keys)
+        var num       = $this.text().trim()
+        if (num) {
+            var className = 'number-' + num
+            selectButton($('.' + className, $keys), $keys)
+        }
     })
 
     $generator.on('blureditable', '.contenteditable', scope, function (event) {
@@ -362,8 +367,8 @@ $(document).ready(function (event) {
         $keys.data('active', false)
     })
 
-    function inputHandler (event) {
-        var scope = event.data
+    function inputHandler (event, scope) {
+        scope = event.data || scope
         var $this = $(this)
         var type  = $this.data('type')
         var minmax = $this.data('minmax')
@@ -447,7 +452,7 @@ $(document).ready(function (event) {
             if (href.fragment === "#simulator") {
                 var patterns = $simulator.data('patterns')
                 if (!patterns) {
-                    createPatterns({}, scope)
+                    patterns = createPatterns({}, scope)
                 }
                 href.queryString.play = href.queryString.play || patterns[0]
                 console.log('play', href.queryString.play)
@@ -565,7 +570,7 @@ $(document).ready(function (event) {
         var $simulator = scope.$simulator
         var patterns   = $simulator.data('patterns')
         if (!patterns) {
-            createPatterns({}, scope)
+            patterns = createPatterns({}, scope)
         }
         if (!scope.jugglerPlaying) {
             href.queryString.play = href.queryString.play || patterns[0]
