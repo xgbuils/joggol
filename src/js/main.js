@@ -145,9 +145,9 @@ var generateText = {
             text.height = 'amb llançaments que continguin alguna alçada major o igual a ' + height.min
         } else if (height.min <= height.max && height.min >= 0) {
             if (height.min === height.max) {
-                text.height = 'amb llançaments que continguin alguna alçada de ' + height.min + ' i no més alta'
+                text.height = 'amb algun llançament de ' + height.min + ' i no més alt'
             } else {
-                text.height = 'amb llançaments que continguin alguna alçada major o igual a ' + height.min + ' i no continguin cap alçada superior a ' + height.max
+                text.height = 'amb llançaments majors o iguals a ' + height.min + ' i mai superiors a ' + height.max
             }
         } else {
             text.error = 'L\'interval de periodes que demanes no es correcte'
@@ -171,6 +171,24 @@ var scope = {
 
 $(document).ready(function (event) {
     scope.$root = $('body, html')
+    var DELAY   = 300
+
+    $('.collapsed').each(function (index, item) {
+        var $item = $(item)
+        $item.removeClass('hide')
+        var width = $item.outerWidth()
+        console.log(width)
+        $item.data('width', width)
+        $item.css('width', 0)
+        $item.addClass('hide')
+    })
+
+    $('.expanded').each(function (index, item) {
+        var $item = $(item)
+        var width = $item.outerWidth()
+        $item.data('width', width)
+        $item.css('width', width)
+    })
 
     var $keyboard = scope.$keyboard = $('#keyboard')
     var buttons   = {}
@@ -248,7 +266,7 @@ $(document).ready(function (event) {
         var first = $('li', scope.$samples).slice(0, 1)
         scope.$samples.animate({
             'margin-left': - first.width()
-        }, '300', 'swing', function () {
+        }, DELAY, 'swing', function () {
             scope.$samples.css('margin-left', 0)
             first.detach()
             scope.$samples.append(first)
@@ -351,35 +369,27 @@ $(document).ready(function (event) {
     }
 
     $generator.on('focuseditable', '.contenteditable', $keyboard, function (event) {
-        var $this     = $(this)
-        var $keys = $this.data('$keys')
-        console.log($keys[0])
-        //var buttons   = $keyboard.data('buttons')
-        var $shown = $keyboard.data('shown')
-        /*console.log('$shown', $shown && $shown[0])
-        var numbers   = buttonskeyboard.numbers*/
-        // $this, $keys
+        var $this   = $(this)
+        var $keys   = $this.data('$keys')
+        var $parent = $this.data('$parent')
+        var $shown  = $keyboard.data('$shown')
+
+        if ($parent.hasClass('minEqMax'))
+            visible('minEqMax', $parent)
+        if ($parent.hasClass('minLessOrEq1'))
+            visible('minLessOrEq1', $parent)
+
         $this.addClass('select')
 
-        var width     = $keys.data('width')
+        var width = $keys.data('width')
         if (!width) {
             width = $keys.width() - $(window).outerWidth() + 120
             $keys.data('width', width)
         }
-        //keyboard.patterns.width = undefined
-        //console.log('ummmm', $shown && $shown[0])
-        if (!$shown) {
-            //console.log('primero')
-            $keyboard.removeClass('hide')
-            $keyboard.data('$shown', $keys)
-            $keys.addClass('select')
-        } else {
-            //console.log('segundo')
-            $shown.removeClass('select')
-            $shown = $keys
-            $keyboard.data('$shown', $keys)
-            $keys.addClass('select')
-        }
+
+        $keyboard.removeClass('hide')
+        $keyboard.data('$shown', $keys)
+        $keys.addClass('select')
         $keys.data('active', true)
 
         var $select = $keys.data('$select')
@@ -393,8 +403,24 @@ $(document).ready(function (event) {
         }
     })
 
+    function visible (className, $context) {
+        $context.removeClass(className)
+        $('.collapsed', $context).each( function (index, item) {
+            var $item = $(item)
+            var width = $item.data('width')
+            $item.css('width', width)
+        })
+    }
+
+    function collapse (className, $context) {
+        $context.addClass(className)
+        /*setTimeout(function () {
+            $context.removeClass(className)
+        }, DELAY)*/
+    }
+
     $generator.on('blureditable', '.contenteditable', scope, function (event) {
-        //console.log('blureditable')
+        console.log('blureditable')
         var $this      = $(this)
         var scope      = event.data
         var $keyboard  = scope.$keyboard
@@ -405,14 +431,14 @@ $(document).ready(function (event) {
         var maxText    = $parent.data('$max').text()
 
         if (minText <= 1 || minText === undefined) {
-            $parent.addClass('minLessOrEq1')
+            collapse('minLessOrEq1', $parent)
         } else {
-            $parent.removeClass('minLessOrEq1')
+            visible('minLessOrEq1', $parent)
         }
         if (minText === maxText) {
-            $parent.addClass('minEqMax')
+            collapse('minEqMax', $parent)
         } else {
-            $parent.removeClass('minEqMax')
+            visible('minEqMax', $parent)
         }
 
         $this.removeClass('select')
@@ -426,9 +452,9 @@ $(document).ready(function (event) {
     })
 
     function inputHandler (event) {
-        var scope = event.data
-        var $this = $(this)
-        var type  = $this.data('type')
+        var scope  = event.data
+        var $this  = $(this)
+        var type   = $this.data('type')
         var minmax = $this.data('minmax')
         values[type][minmax] = parseInt($this.text()) || undefined
         var textError = validate(values, type, minmax, 'all')
@@ -530,10 +556,10 @@ $(document).ready(function (event) {
         var oldQueryString = scope.href.queryString
         var newQueryString = href.queryString
         var targetTop = $(href.fragment).offset().top
-        scope.$root.animate({scrollTop: targetTop}, 300, 'swing')
+        scope.$root.animate({scrollTop: targetTop}, DELAY, 'swing')
         if (href.fragment === "#header") {
             $keyboard.addClass('hide')
-            var $shown = $keyboard.data('shown')
+            var $shown = $keyboard.data('$shown')
             if ($shown) {
                 $shown.removeClass('select')
             }

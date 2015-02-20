@@ -76,23 +76,52 @@ li
 		border: solid 1px color.main
 		border-radius: .4em
 		box-sizing: border-box
-		display: inline-block
 		height: 40px
 		line-height: 40px
 		min-width: 40px
-		overflow: hidden
 		text-align: center
-		transition: width .6s
-		vertical-align: middle
 		&.select
 			border-width: 3px
 			line-height: 36px
 	.editable
-		//box-shadow: 2px 2px 8px #ccc
 		display: inline-block
-		//padding: .2em .2em
-		&>*
-			transition: width .3s
+		.contenteditable
+		.expanded
+			display: inline-block
+			overflow: hidden
+			transition: width .3s, min-width .3s
+			vertical-align: middle
+		&.minEqMax
+		&.minLessOrEq1
+			&>.of
+				display: inline-block
+			&>.contenteditable
+				min-width: 0
+		&.minEqMax
+			&>.expanded
+				width: 0 !important
+			&.balls
+			&.periods
+				&>.max
+					border: 0
+					width: 0 !important
+				&>.maximum
+					width: 0 !important
+			&.heights
+				&>.min
+					border: 0
+					width: 0 !important
+				&>.just
+					display: inline-block
+		&.minLessOrEq1
+			.maximum
+				display: inline-block
+			.just
+				width: 0 !important
+			.min
+			.expanded
+				border: none
+				width: 0 !important
 	.patterns-description
 		h2
 			display: block
@@ -313,7 +342,7 @@ li
 		margin: .2em
 		border-radius: 3px
 		background: rgba(color.main, 0.2)
-@media screen and (min-width: 320px)
+@media screen and (min-width: 360px)
 	.h2-height
 		text-decoration: none
 		border-bottom: 0
