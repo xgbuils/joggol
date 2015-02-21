@@ -1,6 +1,34 @@
 var siteswapGenerator = require('siteswap-generator')
 var Juggler = require('./Juggler/juggler.js')
 
+function ErrorHandler() {
+    this._length = 0
+    this._errors = {}
+}
+
+ErrorHandler.prototype = {
+    ok: function () {
+        return this._length === 0
+    },
+    add: function (type, message) {
+        if (!(type in this._errors)) {
+            ++this._length
+        }
+        this._errors[type] = message
+    },
+    remove: function (type) {
+        if (type in this._errors) {
+            delete this._errors[type]
+            --this._length
+        }
+    },
+    message: function () {
+        for (var key in this._errors) {
+            return this._errors[key]
+        }
+    }
+}
+
 $.fn.keyboard = function (sequence, callback) {
     callback = callback || function (e) {return e}
     $(this).html('<ul>'
@@ -75,15 +103,22 @@ var message = {
 }
 
 function validate (values, type, minmax, option) {
+    console.log('validate')
     var range = values[type]
     var value = range[minmax]
     if (!isInt(value)) {
-        return message.isNotAInt(value)
+        errorHandler.add(minmax + type, message.isNotAInt(value))
+    } else {
+        errorHandler.remove(minmax + type)
     }
 
     if (option === 'all' || option === 'range') {
         if(range.min > range.max) {
-            return message.invalidRange(range, type)
+            console.log('min > max')
+            errorHandler.add(type, message.invalidRange(range, type))
+            console.log(errorHandler.ok())
+        } else {
+            errorHandler.remove(type)
         }
     }
 
@@ -93,12 +128,13 @@ function validate (values, type, minmax, option) {
         var minPeriods = values.periods.min
     
         if (maxHeights <= minBalls && minPeriods > 1) {
-            return message.emptyWithBigPeriod()
+            errorHandler.add('all', message.emptyWithBigPeriod())
         } else if(minPeriods === 1 && maxHeights < minBalls) {
-            return message.emptyWithLittlePeriod()
+            errorHandler.add('all', message.emptyWithLittlePeriod())
+        } else {
+            errorHandler.remove('all')
         }
     }
-    return ''
 }
 
 var generateText = {
@@ -159,7 +195,7 @@ var generateText = {
 
 var text = {}
 var values = {}
-var error = false
+var errorHandler = new ErrorHandler()
 var heightToLetter = "0123456789abcdefghijklmnopqrstuvxyz"
 
 var scope = {
@@ -470,25 +506,22 @@ $(document).ready(function (event) {
         var type   = $this.data('type')
         var minmax = $this.data('minmax')
         values[type][minmax] = parseInt($this.text()) || undefined
-        var textError = validate(values, type, minmax, 'all')
-        if (error)
-            console.log(error)
+        validate(values, type, minmax, 'all')
+        if (!errorHandler.ok())
+            console.log(errorHandler.message())
 
         generateText[type](text, values[type], scope.outputs[type])
 
-        if (!error && textError) {
+        if (!errorHandler.ok()) {
             scope.message.$success.addClass('hide')
-            scope.message.$error.text(textError)
+            scope.message.$error.text(errorHandler.message())
             scope.message.$error.removeClass('hide')
-            error = true
-        } else if (error && !textError) {
+        } else {
             scope.message.$error.addClass('hide')
             scope.message.$success.removeClass('hide')
-            error = false
         }
-        console.log('error', error)
 
-        if (error) {
+        if (!errorHandler.ok()) {
             scope.$create.addClass('disabled')
             scope.$wrapper.addClass('simulator-disabled')
         } else {
@@ -511,22 +544,20 @@ $(document).ready(function (event) {
             min: parseInt(minText) || undefined,
             max: parseInt(maxText) || undefined
         }
-        textError = validate(values, type, 'min')
-        if (!error && textError) {
+        validate(values, type, 'min')
+        if (!errorHandler.ok()) {
             scope.message.$error.text(textError)
             scope.message.$success.addClass('hide')
-            error = true
         }
-        console.log('min', values[type].min)
-        textError = validate(values, type, 'max', index === 2 ? 'all' : 'range')
-        if (!error && textError) {
+        //console.log('min', values[type].min)
+        validate(values, type, 'max', index === 2 ? 'all' : 'range')
+        if (!errorHandler.ok()) {
             scope.message.$error.text(textError)
             scope.message.$success.addClass('hide')
-            error = true
         }
-        console.log('max', values[type].max)
+        //console.log('max', values[type].max)
         generateText[type](text, values[type], scope.outputs[type])
-        if (error) {
+        if (!errorHandler.ok()) {
             scope.$create.addClass('disabled')
             scope.$wrapper.addClass('simulator-disabled')
         } else {
