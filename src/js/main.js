@@ -434,8 +434,10 @@ $(document).ready(function (event) {
         } else {
             visible('minLessOrEq1', $context)
         }
-        if(added) {
+        if (added) {
             $context.removeClass('expanded')
+        } else {
+            $context.addClass('expanded')
         }
     }
 
@@ -499,12 +501,15 @@ $(document).ready(function (event) {
     var width
 
     function validatorHandler($item, type, index) {
-        var $min  = $item.data('$min')
-        var $max  = $item.data('$max')
+        var $min    = $item.data('$min')
+        var $max    = $item.data('$max')
+        var minText = $min.text()
+        var maxText = $max.text()
         var textError
+        editableHandler(minText, maxText, $item)
         values[type] = {
-            min: parseInt($min.text()) || undefined,
-            max: parseInt($max.text()) || undefined
+            min: parseInt(minText) || undefined,
+            max: parseInt(maxText) || undefined
         }
         textError = validate(values, type, 'min')
         if (!error && textError) {
