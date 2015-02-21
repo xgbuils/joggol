@@ -165,7 +165,7 @@ var generateText = {
             if (period.min === period.max) 
                 text.period = 'de període ' + period.max
             else if (period.min === 1)
-                text.period = 'amb periodes no més grans de ' + period.max
+                text.period = 'amb períodes no més grans de ' + period.max
             else if (period.min < period.max)
                 text.period = 'amb períodes entre ' + period.min + ' i ' + period.max
         } else {
@@ -189,7 +189,7 @@ var generateText = {
                 text.height = 'amb llançaments majors o iguals a ' + height.min + ' i mai superiors a ' + height.max
             }
         } else {
-            text.error = 'L\'interval de periodes que demanes no es correcte'
+            text.error = 'L\'interval de períodes que demanes no es correcte'
         }
 
         $output.text(text.height)
