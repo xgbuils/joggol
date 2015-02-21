@@ -179,11 +179,11 @@ $(document).ready(function (event) {
         var width = $item.outerWidth()
         console.log(width)
         $item.data('width', width)
-        $item.css('width', 0)
-        $item.addClass('hide')
+        $item.css('width', width)
+        //$item.addClass('hide')
     })
 
-    $('.expanded').each(function (index, item) {
+    $('.word-expanded').each(function (index, item) {
         var $item = $(item)
         var width = $item.outerWidth()
         $item.data('width', width)
@@ -215,6 +215,10 @@ $(document).ready(function (event) {
         $error:   $('#error')
     }
 
+    var $wrapper = scope.$wrapper = $('#wrapper')
+    scope.$create = $('#create')
+    scope.topCreate = scope.$create.offset().top
+    scope.$samples = $('#samples')
     scope.$header = $('#header')
 
     var $generator = scope.$generator = $('#generator')
@@ -248,7 +252,8 @@ $(document).ready(function (event) {
             $elem.data('type', item)
             $elem.data('minmax', sufix)
             $elem.data('$keys', $keys)
-        })        
+        })
+        validatorHandler($item, item, index)       
     })
 
     var $simulator = scope.$simulator = $('#simulator')
@@ -256,11 +261,6 @@ $(document).ready(function (event) {
 
     $generator.data('inputs', inputs)
 
-    scope.$create = $('#create')
-    scope.topCreate = scope.$create.offset().top
-    scope.$samples = $('#samples')
-
-    var $wrapper = scope.$wrapper = $('#wrapper')
 
     function rec() {
         var first = $('li', scope.$samples).slice(0, 1)
@@ -374,6 +374,7 @@ $(document).ready(function (event) {
         var $parent = $this.data('$parent')
         var $shown  = $keyboard.data('$shown')
 
+        $parent.addClass('expanded')
         if ($parent.hasClass('minEqMax'))
             visible('minEqMax', $parent)
         if ($parent.hasClass('minLessOrEq1'))
@@ -404,8 +405,10 @@ $(document).ready(function (event) {
     })
 
     function visible (className, $context) {
+        console.log('visible')
         $context.removeClass(className)
         $('.collapsed', $context).each( function (index, item) {
+            console.log(item)
             var $item = $(item)
             var width = $item.data('width')
             $item.css('width', width)
@@ -413,10 +416,27 @@ $(document).ready(function (event) {
     }
 
     function collapse (className, $context) {
+        console.log('collapse')
         $context.addClass(className)
-        /*setTimeout(function () {
-            $context.removeClass(className)
-        }, DELAY)*/
+    }
+
+    function editableHandler (min, max, $context) {
+        var added = false
+        if (!added && min === max) {
+            collapse('minEqMax', $context)
+            added = true
+        } else {
+            visible('minEqMax', $context)
+        }
+        if (!added && min <= 1 || min === undefined) {
+            collapse('minLessOrEq1', $context)
+            added = true
+        } else {
+            visible('minLessOrEq1', $context)
+        }
+        if(added) {
+            $context.removeClass('expanded')
+        }
     }
 
     $generator.on('blureditable', '.contenteditable', scope, function (event) {
@@ -430,16 +450,7 @@ $(document).ready(function (event) {
         var minText    = $parent.data('$min').text()
         var maxText    = $parent.data('$max').text()
 
-        if (minText <= 1 || minText === undefined) {
-            collapse('minLessOrEq1', $parent)
-        } else {
-            visible('minLessOrEq1', $parent)
-        }
-        if (minText === maxText) {
-            collapse('minEqMax', $parent)
-        } else {
-            visible('minEqMax', $parent)
-        }
+        editableHandler(minText, maxText, $parent)
 
         $this.removeClass('select')
         if ($shown) {
@@ -487,8 +498,7 @@ $(document).ready(function (event) {
     $generator.on('inputeditable', '.contenteditable', scope, inputHandler)
     var width
 
-    $.each(['balls', 'periods', 'heights'], function (index, type) {
-        var $item = inputs['$' + type]
+    function validatorHandler($item, type, index) {
         var $min  = $item.data('$min')
         var $max  = $item.data('$max')
         var textError
@@ -518,7 +528,12 @@ $(document).ready(function (event) {
             scope.$create.removeClass('disabled')
             scope.$wrapper.removeClass('simulator-disabled')
         }
-    })
+    }
+
+    /*$.each(['balls', 'periods', 'heights'], function (index, type) {
+        var $item = inputs['$' + type]
+
+    })*/
 
     $keyboard.on('click', function (event) {
         event.stopPropagation()

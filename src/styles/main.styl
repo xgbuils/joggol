@@ -86,40 +86,36 @@ li
 	.editable
 		display: inline-block
 		.contenteditable
-		.expanded
+		.word-expanded
+		.collapsed
 			display: inline-block
 			overflow: hidden
 			transition: width .3s, min-width .3s
 			vertical-align: middle
+		&.expanded
+			&>.collapsed
+				width: 0 !important
 		&.minEqMax
 		&.minLessOrEq1
-			&>.of
-				display: inline-block
 			&>.contenteditable
 				min-width: 0
 		&.minEqMax
-			&>.expanded
+			&>.word-minLessOrEq1
+			&>.word-expanded
 				width: 0 !important
 			&.balls
 			&.periods
 				&>.max
 					border: 0
 					width: 0 !important
-				&>.maximum
-					width: 0 !important
 			&.heights
 				&>.min
 					border: 0
 					width: 0 !important
-				&>.just
-					display: inline-block
 		&.minLessOrEq1
-			.maximum
-				display: inline-block
-			.just
-				width: 0 !important
 			.min
-			.expanded
+			.word-minEqMax
+			.word-expanded
 				border: none
 				width: 0 !important
 	.patterns-description
