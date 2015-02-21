@@ -443,12 +443,12 @@ $(document).ready(function (event) {
     function visible (className, $context) {
         console.log('visible')
         $context.removeClass(className)
-        $('.collapsed', $context).each( function (index, item) {
+        /*$('.collapsed', $context).each( function (index, item) {
             console.log(item)
             var $item = $(item)
             var width = $item.data('width')
             $item.css('width', width)
-        })
+        })*/
     }
 
     function collapse (className, $context) {
