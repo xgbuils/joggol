@@ -1,6 +1,9 @@
 var siteswapGenerator = require('siteswap-generator')
 var Juggler = require('./Juggler/juggler.js')
 
+var ua = window.navigator.userAgent
+var native_android_browser = /android/i.test(ua) && ua.indexOf('534.30')
+
 function ErrorHandler() {
     this._length = 0
     this._errors = {}
@@ -265,6 +268,8 @@ $(document).ready(function (event) {
     $generator.data('$focus', $focus)
     $.each(['balls', 'periods', 'heights'], function (index, item) {
         var $item = inputs['$' + item] = $('#' + item)
+        if (native_android_browser)
+            $item.addClass('android-browser')
         var $keys = $('#keyboard-' + item)
         if (item === 'periods') {
             $keys.keyboard(range(1, 10), function (key) {
@@ -443,12 +448,6 @@ $(document).ready(function (event) {
     function visible (className, $context) {
         console.log('visible')
         $context.removeClass(className)
-        /*$('.collapsed', $context).each( function (index, item) {
-            console.log(item)
-            var $item = $(item)
-            var width = $item.data('width')
-            $item.css('width', width)
-        })*/
     }
 
     function collapse (className, $context) {
