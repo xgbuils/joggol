@@ -67,14 +67,14 @@ var message = {
              + ') no pot sobrepassar ' + type + ' major (' + range.max + ')'
     },
     emptyWithBigPeriod: function () {
-        return 'No existeixen patrons vàlids dintre del rang indicat. Prova que l\'alçada màxima sigui menor al nombre màxim de boles'
+        return 'No existeixen patrons vàlids dintre del rang indicat. Prova que l\'alçada màxima sigui major al nombre mínim de boles'
     },
     emptyWithLittlePeriod: function () {
-        return 'No existeixen patrons vàlids dintre del rang indicat. Prova que l\'alçada màxima sigui menor o igual al nombre màxim de boles'
+        return 'No existeixen patrons vàlids dintre del rang indicat. Prova que l\'alçada màxima sigui major o igual al nombre mínim de boles'
     }
 }
 
-function validate(values, type, minmax, option) {
+function validate (values, type, minmax, option) {
     var range = values[type]
     var value = range[minmax]
     if (!isInt(value)) {
@@ -88,13 +88,13 @@ function validate(values, type, minmax, option) {
     }
 
     if (option === 'all') {
-        var maxBalls   = values.balls.max
+        var minBalls   = values.balls.min
         var maxHeights = values.heights.max
-        var maxPeriods = values.periods.max
+        var minPeriods = values.periods.min
     
-        if (maxHeights <= maxBalls && maxPeriods > 1) {
+        if (maxHeights <= minBalls && minPeriods > 1) {
             return message.emptyWithBigPeriod()
-        } else if(maxPeriods === 1 && maxHeights < maxBalls) {
+        } else if(minPeriods === 1 && maxHeights < minBalls) {
             return message.emptyWithLittlePeriod()
         }
     }
