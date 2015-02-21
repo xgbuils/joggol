@@ -68,8 +68,12 @@ li
 	h2
 		//border-bottom: solid 1px color.main
 		display: inline-block
+		float: left
 		font-size: 1em
+		height: 42px
+		line-height: 42px
 		margin: 0
+		padding-right: .2em
 		&:after
 			content: ":"
 	.contenteditable
@@ -85,6 +89,7 @@ li
 			line-height: 36px
 	.editable
 		display: inline-block
+		float: left
 		.contenteditable
 		.word-expanded
 		.collapsed
@@ -123,6 +128,7 @@ li
 			display: block
 	.fieldset
 		margin: .8em
+		overflow: hidden
 .header
 	background: color.main
 	color: white
