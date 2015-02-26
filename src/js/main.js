@@ -663,10 +663,10 @@ $(document).ready(function (event) {
         scope.href = href
     }
 
-    scope.$root.on('click', 'a.disabled', function (event) {
+    scope.$root.on('click', '.internal-link.disabled', function (event) {
         event.preventDefault()
     })
-    scope.$root.on('click', 'a:not(.disabled)', scope, clickLinkHandler)
+    scope.$root.on('click', '.internal-link:not(.disabled)', scope, clickLinkHandler)
     buttons.$patterns.on('click', 'a:not(.disabled)', scope, clickLinkHandler)
 
     $keyboard.on('click', '.keyboard-btn.numbers', $generator, function (event) {

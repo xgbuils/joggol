@@ -28,25 +28,25 @@
           <p class="description">
             <%= header.description %>
           </p>
-          <a href="#generator" class="header-btn btn" id="header-btn"><%- header.tryit %></a></a>
+          <a href="#generator" class="internal-link header-btn btn" id="header-btn"><%- header.tryit %></a></a>
         </div>
         <div class="samples-wrapper">
           <div class="samples">
             <ul id="samples">
               <li>
                 <p><%- header.samples[0].ask %></p>
-                <a href="#"><%- header.samples[0].answer %></a>
+                <a href="#" class="internal-link"><%- header.samples[0].answer %></a>
               </li>
               <li>
                 <p><%- header.samples[1].ask %></p>
-                <a href="#"><%- header.samples[1].answer %></a>
+                <a href="#" class="internal-link"><%- header.samples[1].answer %></a>
               </li>
             </ul>
           </div>
         </div>
       </div>
       <div class="menu-header">
-        <a href="#header" class="title">joggol</a>
+        <a href="#header" class="internal-link title">joggol</a>
       </div>
     </header>
     <section id="generator" class="generator">
@@ -90,7 +90,7 @@
         </span>
       </div>
       <div class="create">
-        <a id="create" class="btn" href="#simulator"><%- generator.generate %></a>
+        <a id="create" class="internal-link btn" href="#simulator"><%- generator.generate %></a>
       </div>
     </section>
     <section class="simulator" id="simulator">
