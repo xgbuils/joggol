@@ -1,7 +1,6 @@
 @import '../../bower_components/normalize.styl/normalize.styl'
 @import 'joggol_icons.styl'
 @import 'shadowsintolight_font.styl'
-@import 'mixins/mixins.styl'
 //@import 'nib/normalize'
 @import 'nib'
 /*
@@ -228,12 +227,15 @@ li
 	box-sizing: border-box
 	height: bar.height
 	line-height: bar.height
+	overflow: hidden
 	padding-left: 3em
 	position: fixed
 	text-align: left
 	transition: height .3s
 	width: 100%
 	z-index: 20
+	a
+		text-decoration: none
 	ul
 		//background: color.main
 		display: table-row
@@ -363,8 +365,50 @@ li
 			position: static
 			transform: none
 			width: 100%
+		.samples
+			padding: 2em 0
 	.wrapper
 		.header
 		.generator
 			height: auto
-		
+@media screen and (min-width: 500px)
+	.generator
+	.simulator
+		width: 500px
+		margin: 0 auto
+@media screen and (min-width: 800px)
+	.generator
+		width: 90%
+		margin: 0 auto
+	.generator
+		text-align: center
+		h2
+			border-bottom: solid 2px color.main
+			display: inline-block
+			padding: 0 .5em
+		h2
+		.editable
+			margin: 0 auto 1em
+			vertical-align: top
+		.editable
+			display: block
+			margin-top: .5em
+		.fieldset
+			display: inline-block
+			margin: .4em
+			width: 28%
+		.patterns-description
+			width: 40%
+			h2
+				margin-bottom: 1em
+	.keyboard
+		border-radius: .5em .5em 0 0
+		left: 20%
+		width: 60%
+@media screen and (min-width: 930px)
+	.generator
+		h2
+			padding: 0 1em
+		.fieldset
+			margin: 1em
+			width: 25%

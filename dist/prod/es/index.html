@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Generador i simulador de malabars" />
+  <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="styles/main.css" />
+  <title>joggol</title>
+</head>
+<body>
+  <div id="wrapper" class="wrapper simulator-disabled">
+    <header id="header" class="header">
+      <div class="presentation">
+        <nav class="languages links">
+          <ul>
+            <li>
+              <a lang="ca" href="http://xgbuils.github.io/ca-joggol/">Català</a>
+            </li>
+            <li>
+              <a lang="en" href="http://xgbuils.github.io/en-joggol/">English</a>
+            </li>
+          </ul>
+        </nav>
+        <!--<div class="icon-logo"></div>-->
+        <div class="header-main">
+          <h1 class="title">joggol</h1>
+          <p class="description">
+            <strong>Generador</strong> y <strong>simulador</strong> de <strong>malabares</strong>
+          </p>
+          <a href="#generator" class="header-btn btn" id="header-btn">Pruébalo!</a></a>
+        </div>
+        <div class="samples-wrapper">
+          <div class="samples">
+            <ul id="samples">
+              <li>
+                <p>Se te resiste algun patrón?</p>
+                <a href="#">Obsérvalo a cámara lenta</a>
+              </li>
+              <li>
+                <p>Conoces todos los patrones de malabares con tres bolas?</p>
+                <a href="#">Compruébalo!</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="menu-header">
+        <a href="#header" class="title">joggol</a>
+      </div>
+    </header>
+    <section id="generator" class="generator">
+      <div class="fieldset">
+        <h2>Bolas</h2>
+        <div id="balls" class="editable balls">
+          <span class="word-expanded">entre</span>
+          <span class="contenteditable min" id="balls-min">3</span>
+          <span class="collapsed word-minLessOrEq1 hide">máximo</span><span class="word-expanded">y</span>
+          <span class="contenteditable max" id="balls-max">3</span>
+        </div>
+      </div>
+      <div class="fieldset">
+        <h2>Periodos</h2>
+         <div id="periods" class="editable periods">
+          <span class="word-expanded">entre</span><span class="collapsed hide">de</span>
+          <span class="contenteditable min" id="periods-min">2</span>
+          <span class="collapsed word-minLessOrEq1 hide">máximo</span><span class="word-expanded">i</span>
+          <span class="contenteditable max" id="periods-max">3</span>
+        </div>
+      </div>
+      <div class="fieldset">
+        <!--Alçada màxima-->
+        <h2><abbr class="h2-height" title="Altura máxima"><span>Altura m<span>áx</span>.</span></abbr></h2>
+        <div id="heights" class="editable heights">
+          <span class="collapsed word-minEqMax hide">sólo</span>
+          de
+          <span class="contenteditable min" id="heights-min">1</span>
+          <span class="word-expanded">a</span>
+          <span class="contenteditable max" id="heights-max">5</span>
+        </div>
+      </div>
+      <div class="fieldset patterns-description">
+        <h2>Descripción</h2>
+        <span id="error"></span>
+        <span id="success">
+          Patrones
+          <span id="description-balls"></span>
+          <span id="description-periods"></span>
+          <span id="description-heights"></span>
+        </span>
+      </div>
+      <div class="create">
+        <a id="create" class="btn" href="#simulator">Genera!</a>
+      </div>
+    </section>
+    <section class="simulator" id="simulator">
+      <div id="juggler-simulator">
+      </div>
+    </section>
+  </div>
+  <div id="touch"></div>
+  <div id="keyboard" class="keyboard hide">
+    <div class="icon-left" id="keyboard-left"></div>
+    <div class="buttons-container" id="keyboard-buttons">
+      <div class="buttons" id="keyboard-balls"></div>
+      <div class="buttons" id="keyboard-periods"></div>
+      <div class="buttons" id="keyboard-heights"></div>
+      <div class="buttons" id="keyboard-patterns"></div>
+    </div>
+    <div class="icon-right" id="keyboard-right"></div>
+  </div>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
