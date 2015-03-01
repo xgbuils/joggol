@@ -34,12 +34,16 @@
           <div class="samples">
             <ul id="samples">
               <li>
-                <p><%- header.samples[0].ask %></p>
-                <a href="#" class="internal-link"><%- header.samples[0].answer %></a>
+                <p class="ask"><%- header.samples[0].ask %></p>
+                <div class="hint">
+                  <a href="#" class="internal-link"><%- header.samples[0].answer %></a>
+                </div>
               </li>
               <li>
-                <p><%- header.samples[1].ask %></p>
-                <a href="#" class="internal-link"><%- header.samples[1].answer %></a>
+                <p class="ask"><%- header.samples[1].ask %></p>
+                <div class="hint">
+                  <a href="#" class="internal-link"><%- header.samples[1].answer %></a>
+                </div>
               </li>
             </ul>
           </div>

@@ -138,6 +138,10 @@ li
 	text-align: center
 	top: 0
 	width: 100%
+	.ask
+	.hint
+		display: block
+		margin: .8em
 	.languages
 	.header-main
 	.samples
@@ -177,10 +181,15 @@ li
 			&:first-child
 				border: none
 		a
+			border-radius: .2em
 			color: white
 			display: block
-			padding 0 .5em
+			margin 0 .5em
+			padding: .2em .2em .1em .2em
 			text-decoration: none
+			&:hover
+				background: white
+				color: color.main
 	.menu-header
 		display: none
 		height: bar.height
@@ -204,9 +213,17 @@ li
 			float: left
 			font-size: body.font.size
 			width: (100% / num_samples)
-		p
-			margin: 0
-			padding: 0
+		a
+			background: rgba(white, 0.8)
+			border: solid 2px white
+			border-radius: .3em
+			color: color.main
+			padding: .3em
+			text-decoration: none
+			&:hover
+				background: white
+				border: solid 2px white
+				color: color.main
 	&.reduce
 		.menu-header
 			display: block
