@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="initial-scale=1, maximum-scale=1">
   <meta name="description" content="Generador i simulador de malabars" />
-  <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>
+  <!--<link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>-->
   <link rel="stylesheet" href="styles/main.css" />
   <title>joggol</title>
 </head>
