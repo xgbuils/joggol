@@ -2,14 +2,14 @@ var gulp        = require('gulp');
 var gutil       = require('gulp-util');
 var browserify  = require('browserify');
 var browserSync = require('browser-sync');
-var buffer      = require('vinyl-buffer');
 var nib         = require('nib')
 var rename      = require('gulp-rename')
-var source      = require('vinyl-source-stream');
 var streamify   = require('gulp-streamify')
 var stylus      = require('gulp-stylus')
 var template    = require('gulp-template');
 var uglify      = require('gulp-uglify');
+var buffer      = require('vinyl-buffer');
+var source      = require('vinyl-source-stream');
 var watchify    = require('watchify');
 
 var reload      = browserSync.reload;

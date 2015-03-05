@@ -22,5 +22,9 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "normalize.styl": "~3.0.2",
+    "jquery": "~2.1.3"
+  }
 }
