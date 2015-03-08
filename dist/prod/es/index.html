@@ -10,9 +10,9 @@
 </head>
 <body>
   <div id="wrapper" class="wrapper simulator-disabled">
-    <header id="header" class="header">
+    <header id="header" class="view view--header">
       <div class="presentation">
-        <nav class="languages links">
+        <nav class="view__absolute-block view__absolute-block--languages links">
           <ul>
             <li>
               <a lang="ca" href="http://xgbuils.github.io/ca-joggol/">Català</a>
@@ -23,67 +23,65 @@
           </ul>
         </nav>
         <!--<div class="icon-logo"></div>-->
-        <div class="header-main">
+        <div class="view__absolute-block view__absolute-block--header-main">
           <h1 class="title">joggol</h1>
           <p class="description">
             <strong>Generador</strong> y <strong>simulador</strong> de <strong>malabares</strong>
           </p>
           <a href="#generator" class="internal-link header-btn btn" id="header-btn">Pruébalo!</a></a>
         </div>
-        <div class="samples-wrapper">
-          <div class="samples">
-            <ul id="samples">
-              <li>
-                <p class="ask">Se te resiste algun patrón?</p>
-                <div class="hint">
-                  <a href="#" class="internal-link">Obsérvalo a cámara lenta</a>
-                </div>
-              </li>
-              <li>
-                <p class="ask">Conoces todos los patrones de malabares con tres bolas?</p>
-                <div class="hint">
-                  <a href="#" class="internal-link">Compruébalo!</a>
-                </div>
-              </li>
-            </ul>
-          </div>
+        <div class="view__absolute-block view__absolute-block--samples">
+          <ul id="samples">
+            <li>
+              <p class="ask">Se te resiste algun patrón?</p>
+              <div class="hint">
+                <a href="#" class="internal-link">Obsérvalo a cámara lenta</a>
+              </div>
+            </li>
+            <li>
+              <p class="ask">Conoces todos los patrones de malabares con tres bolas?</p>
+              <div class="hint">
+                <a href="#" class="internal-link">Compruébalo!</a>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
       <div class="menu-header">
         <a href="#header" class="internal-link title">joggol</a>
       </div>
     </header>
-    <section id="generator" class="generator">
-      <div class="fieldset">
+    <section id="generator" class="view view--generator">
+      <div class="view__block">
         <h2>Bolas</h2>
         <div id="balls" class="editable balls">
           <span class="word-expanded">entre</span>
           <span class="contenteditable min" id="balls-min">3</span>
-          <span class="collapsed word-minLessOrEq1 hide">máximo</span><span class="word-expanded">y</span>
+          <span class="collapsed word-minLessOrEq1 js-hide">máximo</span><span class="word-expanded">y</span>
           <span class="contenteditable max" id="balls-max">3</span>
         </div>
       </div>
-      <div class="fieldset">
+      <div class="view__block">
         <h2>Periodos</h2>
          <div id="periods" class="editable periods">
-          <span class="word-expanded">entre</span><span class="collapsed hide">de</span>
+          <span class="word-expanded">entre</span><span class="collapsed js-hide">de</span>
           <span class="contenteditable min" id="periods-min">2</span>
-          <span class="collapsed word-minLessOrEq1 hide">máximo</span><span class="word-expanded">y</span>
+          <span class="collapsed word-minLessOrEq1 js-hide">máximo</span><span class="word-expanded">y</span>
           <span class="contenteditable max" id="periods-max">3</span>
         </div>
       </div>
-      <div class="fieldset">
+      <div class="view__block">
         <!--Alçada màxima-->
-        <h2><abbr class="h2-height" title="Altura máxima"><span>Altura m<span>áx</span>.</span></abbr></h2>
+        <h2><abbr class="view__block__abbr" title="Altura máxima"><span>Altura m<span>áx</span>.</span></abbr></h2>
         <div id="heights" class="editable heights">
-          <span class="collapsed word-minEqMax hide">sólo</span>
+          <span class="collapsed word-minEqMax js-hide">sólo</span>
           de
           <span class="contenteditable min" id="heights-min">1</span>
           <span class="word-expanded">a</span>
           <span class="contenteditable max" id="heights-max">5</span>
         </div>
       </div>
-      <div class="fieldset patterns-description">
+      <div class="view__block patterns-description">
         <h2>Descripción</h2>
         <span id="error"></span>
         <span id="success">
@@ -97,13 +95,13 @@
         <a id="create" class="internal-link btn" href="#simulator">Genera!</a>
       </div>
     </section>
-    <section class="simulator" id="simulator">
+    <section class="view view--simulator" id="simulator">
       <div id="juggler-simulator">
       </div>
     </section>
   </div>
   <div id="touch"></div>
-  <div id="keyboard" class="keyboard hide">
+  <div id="keyboard" class="keyboard js-hide">
     <div class="icon-left" id="keyboard-left"></div>
     <div class="buttons-container" id="keyboard-buttons">
       <div class="buttons" id="keyboard-balls"></div>

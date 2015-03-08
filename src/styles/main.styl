@@ -4,10 +4,6 @@
 @import 'JosefinSans-Regular.styl'
 //@import 'nib/normalize'
 @import 'nib'
-/*
-orangeColor = #ff8000
-grayColor   = #474747
-*/
 
 article = {
 	margin: .5em
@@ -34,21 +30,144 @@ bar = {
 	height: 50px
 }
 
+contenteditable = {
+	width: 40px
+	borderWidth: 1px
+	select: {
+		incrBorderWidth: 2px
+	}
+}
+
 num_samples = 2
 
+/*
+ * RESET
+ * =====
+ */
 abbr[title]
 	border-bottom: 0
 body
+	margin: 0
+	padding: 0
+
+/*
+ * LAYOUT
+ * ======
+ */
+
+body
 html
 	height: 100%
+/*
+ * ^view
+ */
+.wrapper
+	height: 300%
+	height: 300vh
+	position: relative
+.simulator-disabled
+	height: 200%
+	height: 200vh
+	.view
+		height: 50%
+		height: 100vh
+	.view--simulator
+		display: none
+.view
+	height: 33.33%
+	height: 100vh
+
+/*
+ * ^header
+ */
+.view--header
+	overflow: hidden
+	position: relative
+
+.view__block
+	margin: .2em
+	overflow: hidden
+.view__absolute-block
+	-webkit-backface-visibility: hidden
+	position: absolute
+	transform: translate(0, -50%)
+	width: 100%
+.view__absolute-block--languages
+	top: 4%
+.view__absolute-block--header-main
+	top: 40%
+
+/*
+ * ^samples
+ */
+.view__absolute-block--samples
+	top: 83%
+	.ask
+	.hint
+		display: block
+		margin: .8em
+
+
+/*
+ * STYLES
+ * ======
+ */
+h1
+	font-size: 2em
+	margin: 0
+	padding: 0
+.view__absolute-block--languages
+	font-size: 0.7em
+	padding: 3em 0 1.5em
+	ul
+		margin 0
+		padding 0
+	li
+		display: inline-block
+		border-left: solid white 1px
+		&:first-child
+			border: none
+	a
+		border-radius: .2em
+		color: white
+		display: block
+		margin 0 .5em
+		padding: .2em .2em .1em .2em
+		text-decoration: none
+		&:hover
+			background: white
+			color: color.main
+			
+.view__absolute-block--samples
+	overflow: hidden
+	ul
+		font-size: 0
+		width: num_samples * 100%
+		//margin-left: -100%
+		//margin-right: - (num_samples - 1) * 100%
+	li
+		display: block
+		float: left
+		font-size: body.font.size
+		width: (100% / num_samples)
+	a
+		background: rgba(white, 0.8)
+		border: solid 2px white
+		border-radius: .3em
+		color: color.main
+		padding: .3em
+		text-decoration: none
+		&:hover
+			background: white
+			border: solid 2px white
+			color: color.main
+
+/*
+ * ^other
+ */
 body
-	//font-family: 'Sans Serif'
 	font-family: 'Josefin Sans', sans-serif;
 	font-size: body.font.size
-	//height: 100vh
-	margin: 0
-	//overflow: hidden
-	padding: 0
 ul
 li
 	list-style: none
@@ -60,137 +179,82 @@ li
 	line-height: 2em
 	padding 0 .5em
 	text-decoration: none
-.generator
+.view--generator
 	box-sizing: border-box
 	font-size: 1em
 	padding: bar.height 0
 	position: relative
 	h2
-		//border-bottom: solid 1px color.main
 		display: inline-block
-		//float: left
 		font-size: 1em
 		height: 42px
 		line-height: 42px
 		margin: 0
-		//vertical-align: bottom
 		&:after
 			content: ":"
-	.contenteditable
-		border: solid 1px color.main
-		border-radius: .4em
-		box-sizing: border-box
-		height: 40px
-		line-height: 40px
-		min-width: 40px
-		text-align: center
-		&.select
-			border-width: 3px
-			line-height: 36px
-	.editable
-		&.android-browser
-			margin-right: -70px
-		//background: red
-		display: inline-block
-		.contenteditable
-		.word-expanded
-		.collapsed
-			display: inline-block
-			overflow: hidden !important
-			transition: width .3s, min-width .3s
-			vertical-align: middle
-		&.expanded
-			&>.collapsed
-				width: 0 !important
-		&.minEqMax
-		&.minLessOrEq1
-			&>.contenteditable
-				min-width: 0
-		&.minEqMax
-			&>.word-minLessOrEq1
-			&>.word-expanded
-				width: 0 !important
-			&.balls
-			&.periods
-				&>.max
-					border: 0
-					width: 0 !important
-			&.heights
-				&>.min
-					border: 0
-					width: 0 !important
-		&.minLessOrEq1
-			.min
-			.word-minEqMax
-			.word-expanded
-				border: none
-				width: 0 !important
 	.patterns-description
 		h2
 			display: block
-	.fieldset
-		margin: .8em
-		overflow: hidden
-.header
+.contenteditable
+	border: solid contenteditable.borderWidth color.main
+	border-radius: .4em
+	box-sizing: border-box
+	height: contenteditable.width
+	line-height: contenteditable.width
+	min-width: contenteditable.width
+	text-align: center
+
+.editable
+	&.android-browser
+		margin-right: -70px
+	//background: red
+	display: inline-block
+	.contenteditable
+	.word-expanded
+	.collapsed
+		display: inline-block
+		overflow: hidden !important
+		transition: width .3s, min-width .3s
+		vertical-align: middle
+	&.expanded
+		&>.collapsed
+			width: 0 !important
+	&.minEqMax
+	&.minLessOrEq1
+		&>.contenteditable
+			min-width: 0
+	&.minEqMax
+		&>.word-minLessOrEq1
+		&>.word-expanded
+			width: 0 !important
+		&.balls
+		&.periods
+			&>.max
+				border: 0
+				width: 0 !important
+		&.heights
+			&>.min
+				border: 0
+				width: 0 !important
+	&.minLessOrEq1
+		.min
+		.word-minEqMax
+		.word-expanded
+			border: none
+			width: 0 !important
+
+.view--header
 	background: color.main
 	color: white
-	overflow: hidden
-	position: relative
 	text-align: center
-	top: 0
-	width: 100%
-	.ask
-	.hint
-		display: block
-		margin: .8em
-	.languages
-	.header-main
-	.samples
-		-webkit-backface-visibility: hidden
-		position: absolute
-		transform: translate(0, -50%)
-		width: 100%
-	.header-main
-		box-sizing: border-box
-		font-size 1.3em
-		padding: 0
-		top: 45%
-		h1
-			font-size: 2.5em
-			margin: 0
-			padding: 0
-		strong
-			font-weight: normal
-		.description
-			margin .8em 0 .4em
+	.description
+		margin .4em 0 .4em
 	.icon-logo
 		vertical-align middle
 		display inline-block
 		font-size 3.3em
 		margin 0
 		margin-right .1em
-	.languages
-		font-size: 0.7em
-		padding: 3em 0 1.5em
-		top: 10%
-		ul
-			margin 0
-			padding 0
-		li
-			display: inline-block
-			border-left: solid white 1px
-			&:first-child
-				border: none
-		a
-			border-radius: .2em
-			color: white
-			display: block
-			margin 0 .5em
-			padding: .2em .2em .1em .2em
-			text-decoration: none
-			&:hover
-				background: white
-				color: color.main
 	.menu-header
 		display: none
 		height: bar.height
@@ -201,30 +265,6 @@ li
 			font-weight: bold
 			margin: 0
 			text-decoration: none
-	.samples
-		overflow: hidden
-		top: 90%
-		ul
-			font-size: 0
-			width: num_samples * 100%
-			//margin-left: -100%
-			//margin-right: - (num_samples - 1) * 100%
-		li
-			display: block
-			float: left
-			font-size: body.font.size
-			width: (100% / num_samples)
-		a
-			background: rgba(white, 0.8)
-			border: solid 2px white
-			border-radius: .3em
-			color: color.main
-			padding: .3em
-			text-decoration: none
-			&:hover
-				background: white
-				border: solid 2px white
-				color: color.main
 	&.reduce
 		.menu-header
 			display: block
@@ -233,12 +273,16 @@ li
 			position: fixed
 			top: 0
 			z-index: 20
+.view__absolute-block--header-main
+	box-sizing: border-box
+	font-size 1.3em
+	padding: 0
+	strong
+		font-weight: normal
 .header-btn
 	background: white
 	color: black
 	height: 2em
-.hide
-	display: none
 .keyboard
 	background: color.main
 	bottom: 0
@@ -275,24 +319,6 @@ li
 		position: absolute
 		top: 0
 		transition: left .3s
-		&.select
-			background: transparent
-			display: block
-		.keyboard-btn
-			background: white
-			border-radius: .2em
-			//box-sizing: border-box
-			display: block
-			height: 30px
-			line-height: 30px
-			padding: 0 .5em
-			transition: margin .05s, padding .3s
-			//width: 100%
-			&.select
-				background: white
-				font-size: 1.2em
-				margin: -.2em
-				padding: .2em .7em
 	.icon-right
 	.icon-left
 		box-sizing: border-box
@@ -316,9 +342,16 @@ li
 		padding-right: .2em
 		right: 0px
 		text-align: right
-	&.hide
-		display: block
-		height: 0
+.keyboard-btn
+	background: white
+	border-radius: .2em
+	//box-sizing: border-box
+	display: block
+	height: 30px
+	line-height: 30px
+	padding: 0 .5em
+	transition: margin .05s, padding .3s
+	//width: 100%
 .patterns
 	text-align justify
 .create
@@ -329,49 +362,17 @@ li
 		&.disabled
 			background: rgba(color.main, .5)
 			cursor: default
-.simulator
+.view--simulator
 	box-sizing: border-box
 	//height: 100vh
 	padding: bar.height 0
 	position: relative
 	width: 100%
-	&.hide
-		display: block
-		height: 0
 .title
 	font-family: 'Shadows Into Light', cursive
-.wrapper
-	height: 300%
-	height: 300vh
-	position: relative
-	.generator
-	.header
-	.simulator
-		height: 33.33%
-		height: 100vh
-	&.simulator-disabled
-		height: 200%
-		height: 200vh
-		.generator
-		.header
-		.simulator
-			height: 50%
-			height: 100vh
-		.simulator
-			display: none
-#patterns
-	ul
-		margin 0
-		padding 0
-	li
-		display: inline-block
-		list-style-type: none
-		padding: .5em
-		margin: .2em
-		border-radius: 3px
-		background: rgba(color.main, 0.2)
+
 @media screen and (min-width: 360px)
-	.h2-height
+	.view__block__abbr
 		text-decoration: none
 		border-bottom: 0
 		span
@@ -379,30 +380,41 @@ li
 		&:before
 			content: attr(title)
 @media screen and (max-height: 420px)
-	.header
-		.languages
-		.header-main
-		.samples
-			-webkit-backface-visibility: hidden
-			position: static
-			transform: none
-			width: 100%
-		.samples
+	.view__absolute-block
+		position: static
+		transform: none
+		width: 100%
+	.view__absolute-block--samples
 			padding: 2em 0
-	.wrapper
-		.header
-		.generator
-			height: auto
+	.view--header
+	.view--generator
+		height: auto
+@media screen and (min-height: 450px)
+	h1
+		font-size: 2.5em
+	.view__block
+		margin: .4em
+@media screen and (min-height: 500px)
+	.description
+		margin .8em 0 .4em
+	.view__block
+		margin: .8em
+	.view__absolute-block--languages
+		top: 10%
+	.view__absolute-block--header-main
+		top: 45%
+	.view__absolute-block--samples
+		top: 85%
 @media screen and (min-width: 500px)
-	.generator
-	.simulator
+	.view--generator
+	.view--simulator
 		width: 500px
 		margin: 0 auto
 @media screen and (min-width: 800px)
-	.generator
+	.view--generator
 		width: 90%
 		margin: 0 auto
-	.generator
+	.view--generator
 		text-align: center
 		h2
 			border-bottom: solid 2px color.main
@@ -415,22 +427,50 @@ li
 		.editable
 			display: block
 			margin-top: .5em
-		.fieldset
+		.view__block
 			display: inline-block
 			margin: .4em
 			width: 28%
 		.patterns-description
 			width: 40%
 			h2
+				display: block
 				margin-bottom: 1em
 	.keyboard
 		border-radius: .5em .5em 0 0
 		left: 20%
 		width: 60%
 @media screen and (min-width: 930px)
-	.generator
+	.view--generator
 		h2
 			padding: 0 1em
-		.fieldset
+		.view__block
 			margin: 1em
 			width: 25%
+
+/*
+ * JAVASCRIPT STYLES
+ * =================
+ */
+
+.js-hide
+	display: none
+.keyboard
+	&.js-hide
+		display: block
+		height: 0
+	.buttons
+		&.js-select
+			background: transparent
+			display: block
+.contenteditable
+	&.js-select
+		line-height: contenteditable.width - 2 * contenteditable.select.incrBorderWidth
+		border-width: contenteditable.borderWidth + contenteditable.select.incrBorderWidth
+.keyboard-btn
+	&.js-select
+		background: white
+		font-size: 1.2em
+		margin: -.2em
+		padding: .2em .7em
+

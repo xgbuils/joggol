@@ -190,12 +190,11 @@ $(document).ready(function (event) {
 
     $('.collapsed').each(function (index, item) {
         var $item = $(item)
-        $item.removeClass('hide')
+        $item.removeClass('js-hide')
         var width = $item.outerWidth()
         console.log(width)
         $item.data('width', width)
         $item.css('width', width)
-        //$item.addClass('hide')
     })
 
     $('.word-expanded').each(function (index, item) {
@@ -382,7 +381,7 @@ $(document).ready(function (event) {
 
     function selectButton($button, $context, onlymove) {
         if (!onlymove) {
-            $button.addClass('select')
+            $button.addClass('js-select')
             $context.data('$select', $button)
         }
         var minmax = $button.data('minmax')
@@ -403,7 +402,7 @@ $(document).ready(function (event) {
 
     function deselectButton($button, onlymove) {
         if (!onlymove) {
-            $button.removeClass('select')
+            $button.removeClass('js-select')
         }
     }
 
@@ -421,7 +420,7 @@ $(document).ready(function (event) {
         if ($parent.hasClass('minLessOrEq1'))
             visible('minLessOrEq1', $parent)
 
-        $this.addClass('select')
+        $this.addClass('js-select')
 
         var width = $keys.data('width')
         if (!width) {
@@ -429,9 +428,9 @@ $(document).ready(function (event) {
             $keys.data('width', width)
         }
 
-        $keyboard.removeClass('hide')
+        $keyboard.removeClass('js-hide')
         $keyboard.data('$shown', $keys)
-        $keys.addClass('select')
+        $keys.addClass('js-select')
         $keys.data('active', true)
 
         var num = parseInt($this.text().trim())
@@ -507,10 +506,10 @@ $(document).ready(function (event) {
 
         editableHandler(minText, maxText, $parent)
 
-        $this.removeClass('select')
+        $this.removeClass('js-select')
         if ($shown) {
-            $keyboard.addClass('hide')
-            $keys.removeClass('select')
+            $keyboard.addClass('js-hide')
+            $keys.removeClass('js-select')
             //numbers.$item = shown.$item
             //$keyboard.shown = undefined
         }
@@ -530,12 +529,12 @@ $(document).ready(function (event) {
         generateText[type](text, values[type], scope.outputs[type])
 
         if (!errorHandler.ok()) {
-            scope.message.$success.addClass('hide')
+            scope.message.$success.addClass('js-hide')
             scope.message.$error.text(errorHandler.message())
-            scope.message.$error.removeClass('hide')
+            scope.message.$error.removeClass('js-hide')
         } else {
-            scope.message.$error.addClass('hide')
-            scope.message.$success.removeClass('hide')
+            scope.message.$error.addClass('js-hide')
+            scope.message.$success.removeClass('js-hide')
         }
 
         if (!errorHandler.ok()) {
@@ -564,13 +563,13 @@ $(document).ready(function (event) {
         validate(values, type, 'min')
         if (!errorHandler.ok()) {
             scope.message.$error.text(textError)
-            scope.message.$success.addClass('hide')
+            scope.message.$success.addClass('js-hide')
         }
         //console.log('min', values[type].min)
         validate(values, type, 'max', index === 2 ? 'all' : 'range')
         if (!errorHandler.ok()) {
             scope.message.$error.text(textError)
-            scope.message.$success.addClass('hide')
+            scope.message.$success.addClass('js-hide')
         }
         //console.log('max', values[type].max)
         generateText[type](text, values[type], scope.outputs[type])
@@ -630,10 +629,10 @@ $(document).ready(function (event) {
         var targetTop = $(href.fragment).offset().top
         scope.$root.animate({scrollTop: targetTop}, DELAY, 'swing')
         if (href.fragment === "#header") {
-            $keyboard.addClass('hide')
+            $keyboard.addClass('js-hide')
             var $shown = $keyboard.data('$shown')
             if ($shown) {
-                $shown.removeClass('select')
+                $shown.removeClass('js-select')
             }
         } else {
             if (href.fragment === "#simulator") {
@@ -716,12 +715,12 @@ $(document).ready(function (event) {
         var $keyboard = event.data
         var $shown    = $keyboard.data('$shown')
         var buttons   = $keyboard.data('buttons')
-        buttons.$patterns.removeClass('select')
+        buttons.$patterns.removeClass('js-select')
         if ($shown) {
-            $shown.removeClass('select')
+            $shown.removeClass('js-select')
             $keyboard.data('$shown', null)
         }
-        $keyboard.addClass('hide')
+        $keyboard.addClass('js-hide')
     })
 
     $generator.on('off', $keyboard, function (event) {
@@ -729,10 +728,10 @@ $(document).ready(function (event) {
         var $keyboard = event.data
         var $shown    = $keyboard.data('$shown')
         if ($shown) {
-            $shown.removeClass('select')
+            $shown.removeClass('js-select')
             $keyboard.data('$shown', null)
         }
-        $keyboard.addClass('hide')
+        $keyboard.addClass('js-hide')
 
     })
 
@@ -765,12 +764,12 @@ $(document).ready(function (event) {
             scope.jugglerPlaying = true
         }
         if ($shown) {
-            $shown.removeClass('select')
+            $shown.removeClass('js-select')
         }
         $shown = buttons.$patterns
         $keyboard.data('$shown', $shown)
-        $shown.addClass('select')
-        $keyboard.removeClass('hide')
+        $shown.addClass('js-select')
+        $keyboard.removeClass('js-hide')
 
         var width = buttons.$patterns.data('width')
         if (!width) {
@@ -788,14 +787,14 @@ $(document).ready(function (event) {
         var buttons   = $keyboard.data('buttons')
 
         if ($shown) {
-            $shown.removeClass('select')
+            $shown.removeClass('js-select')
             $keyboard.data('$shown', null)
         }
         if ($focus) {
             $shown = $focus.data('$keys')
             $keyboard.data('$shown', $shown)
-            $shown.addClass('select')
-            $keyboard.removeClass('hide')
+            $shown.addClass('js-select')
+            $keyboard.removeClass('js-hide')
         }
     })
 })
