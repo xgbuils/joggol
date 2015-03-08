@@ -68,7 +68,7 @@
          <div id="periods" class="editable periods">
           <span class="word-expanded"><%- generator.word.between %></span><span class="collapsed hide"><%- generator.word.of %></span>
           <span class="contenteditable min" id="periods-min">2</span>
-          <span class="collapsed word-minLessOrEq1 hide"><%- generator.word.maximum %></span><span class="word-expanded">i</span>
+          <span class="collapsed word-minLessOrEq1 hide"><%- generator.word.maximum %></span><span class="word-expanded"><%- generator.word.and %></span>
           <span class="contenteditable max" id="periods-max">3</span>
         </div>
       </div>
