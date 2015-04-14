@@ -6,7 +6,7 @@
   <meta name="description" content="Generador i simulador de malabars" />
   <!--<link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>-->
   <link rel="stylesheet" href="styles/main.css" />
-  <title>joggol</title>
+  <title>juggol</title>
 </head>
 <body>
   <div id="wrapper" class="wrapper simulator-disabled">
@@ -15,16 +15,16 @@
         <nav class="view__absolute-block view__absolute-block--languages links">
           <ul>
             <li>
-              <a lang="<%- header.languages[0].code %>" href="http://xgbuils.github.io/<%- header.languages[0].code %>-joggol/"><%- header.languages[0].name %></a>
+              <a lang="<%- header.languages[0].code %>" href="http://<%- header.languages[0].code %>.juggol.com"><%- header.languages[0].name %></a>
             </li>
             <li>
-              <a lang="<%- header.languages[1].code %>" href="http://xgbuils.github.io/<%- header.languages[1].code %>-joggol/"><%- header.languages[1].name %></a>
+              <a lang="<%- header.languages[1].code %>" href="http://<%- header.languages[1].code %>.juggol.com"><%- header.languages[1].name %></a>
             </li>
           </ul>
         </nav>
         <!--<div class="icon-logo"></div>-->
         <div class="view__absolute-block view__absolute-block--header-main">
-          <h1 class="title">joggol</h1>
+          <h1 class="title">juggol</h1>
           <p class="description">
             <%= header.description %>
           </p>
@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="menu-header">
-        <a href="#header" class="internal-link title">joggol</a>
+        <a href="#header" class="internal-link title">juggol</a>
       </div>
     </header>
     <section id="generator" class="view view--generator">

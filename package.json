@@ -1,6 +1,6 @@
 {
-  "name": "ca-joggol",
-  "version": "0.0.1",
+  "name": "juggol",
+  "version": "0.1.0",
   "description": "aplicació web de malabars",
   "main": "dist/index.html",
   "dependencies": {
@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xgbuils/ca-joggol.git"
+    "url": "https://github.com/xgbuils/juggol.git"
   },
   "keywords": [
     "juggling",
@@ -40,7 +40,7 @@
   "author": "Xavier Garcia Buils <xgbuils@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xgbuils/ca-joggol/issues"
+    "url": "https://github.com/xgbuils/juggol/issues"
   },
-  "homepage": "https://github.com/xgbuils/ca-joggol"
+  "homepage": "https://github.com/xgbuils/juggol"
 }
