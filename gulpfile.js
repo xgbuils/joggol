@@ -22,6 +22,10 @@ ENV.forEach(function (env) {
     var path  = env + '/' + lang
     var sufix = env + '-' + lang
 
+    gulp.task('cname:' + sufix, function () {
+       require('fs').writeFile('dist/' + path + '/CNAME', lang + '.juggol.com')
+    })
+
     gulp.task('copyfonts:' + sufix, function() {
        gulp.src('./src/fonts/**/*.{ttf,woff,eot,svg}', { base: 'src/fonts/'})
        .pipe(gulp.dest('./dist/' + path + '/fonts'));
@@ -73,11 +77,12 @@ ENV.forEach(function (env) {
     }
     
     gulp.task('serve:' + sufix, [
-    	'copyfonts:' + sufix,
-    	'copyjquery:' + sufix,
-    	'js:' + sufix,
-    	'stylus:' + sufix, 
-    	'template:' + sufix,
+      'copyfonts:' + sufix,
+      'copyjquery:' + sufix,
+      'js:' + sufix,
+      'stylus:' + sufix, 
+      'template:' + sufix,
+      'cname:' + sufix,
       ], function() {
       browserSync({
         server: {
