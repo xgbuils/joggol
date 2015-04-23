@@ -1,4 +1,4 @@
-var siteswapGenerator = require('siteswap-generator')
+var siteswap = require('siteswap-generator')
 var Juggler = require('./Juggler/juggler.js')
 var lang = require('language')
 
@@ -309,19 +309,20 @@ $(document).ready(function (event) {
         var $keyboard  = scope.$keyboard
         var $simulator = scope.$simulator
         var $generator = scope.$generator
-        var array = [
-            inputs.$balls,
-            inputs.$periods,
-            inputs.$heights
-        ]
-        var params = $.map(array, function($item) {
-            return {
-                min: parseInt($item.data('$min').text()) || undefined,
-                max: parseInt($item.data('$max').text()) || undefined
+        var items = {
+            balls : inputs.$balls,
+            period: inputs.$periods,
+            height: inputs.$heights
+        }
+        var options = {}
+        for (var key in items) {
+            options[key] = {
+                min: parseInt(items[key].data('$min').text()) || undefined,
+                max: parseInt(items[key].data('$max').text()) || undefined
             }
-        })
-        //console.log('CREATE PATTERN')
-        var patterns = siteswapGenerator.apply(null, params)
+        }
+
+        var patterns = siteswap.Generator(options)
         patterns = patterns.map(function (pattern) {
             return pattern.map(function (e) {
                 return heightToLetter[e]
