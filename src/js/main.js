@@ -1,37 +1,14 @@
-var siteswap = require('siteswap-generator')
-var Juggler = require('./Juggler/juggler.js')
-var lang = require('language')
+var siteswap     = require('siteswap-generator')
+var Juggler      = require('./Juggler/juggler.js')
+var generateText = require('./messages/generate-text')
+var lang         = require('language')
+var ErrorHandler = require('./validation/ErrorHandler.js')
+var utils        = require('./utils.js')
+var validate     = require('./validation/validate.js')
+                   require('./jQuery-plugins/plugins.js')
 
 var ua = window.navigator.userAgent
 var native_android_browser = /android/i.test(ua) && ua.indexOf('534.30')
-
-function ErrorHandler() {
-    this._length = 0
-    this._errors = {}
-}
-
-ErrorHandler.prototype = {
-    ok: function () {
-        return this._length === 0
-    },
-    add: function (type, message) {
-        if (!(type in this._errors)) {
-            ++this._length
-        }
-        this._errors[type] = message
-    },
-    remove: function (type) {
-        if (type in this._errors) {
-            delete this._errors[type]
-            --this._length
-        }
-    },
-    message: function () {
-        for (var key in this._errors) {
-            return this._errors[key]
-        }
-    }
-}
 
 $.fn.keyboard = function (sequence, callback) {
     callback = callback || function (e) {return e}
@@ -40,136 +17,6 @@ $.fn.keyboard = function (sequence, callback) {
             return '<li>' + callback(e) + '</li>'
         }).join('')
         + '</ul>')
-}
-
-function range(min, max) {
-    var arr = []
-    for (var i = min; i <= max; ++i) {
-        arr.push(i)
-    }
-    return arr
-}
-
-function triggerDelegatedEvent (name, $wrapper, elem) {
-    var e = $.Event(name)
-    e.target = elem
-    $wrapper.trigger(e)
-}
-
-function parseHref(href, config) {
-    //console.log(href)
-    var aux = href.split('?')
-    var fragment = aux[0]
-    var queryString = {}
-
-    //console.log(aux[1])
-    if (aux[1]) {
-        var q = aux[1].split('&')
-        for (var i in q) {
-            aux = q[i].split('=')
-            queryString[aux[0]] = aux[1]
-        }
-    }
-
-    return {
-        fragment: fragment || config.fragment,
-        queryString: queryString 
-    }
-}
-
-function isInt(value) {
-    return !isNaN(value) && value === Math.floor(value)
-}
-
-function validate (values, type, minmax, option) {
-    var message = lang.message
-    var range = values[type]
-    var value = range[minmax]
-    if (!isInt(value)) {
-        errorHandler.add(minmax + type, message.isNotAInt(value))
-    } else {
-        errorHandler.remove(minmax + type)
-    }
-
-    if (option === 'all' || option === 'range') {
-        if(range.min > range.max) {
-            console.log('min > max')
-            errorHandler.add(type, message.invalidRange(range, type))
-            console.log(errorHandler.ok())
-        } else {
-            errorHandler.remove(type)
-        }
-    }
-
-    if (option === 'all') {
-        var minBalls   = values.balls.min
-        var maxHeights = values.heights.max
-        var minPeriods = values.periods.min
-    
-        if (maxHeights <= minBalls && minPeriods > 1) {
-            errorHandler.add('all', message.emptyWithBigPeriod())
-        } else if(minPeriods === 1 && maxHeights < minBalls) {
-            errorHandler.add('all', message.emptyWithLittlePeriod())
-        } else {
-            errorHandler.remove('all')
-        }
-    }
-}
-
-var generateText = {
-    balls: function (text, balls, $output) {
-        text.error = false
-        if (balls.min !== undefined && balls.max !== undefined
-         && balls.min <= balls.max && balls.min > 0) {
-            if (balls.min === balls.max) 
-                text.balls = lang.balls[0](balls.min, balls.max)
-            else if (balls.min === 1)
-                text.balls = lang.balls[1](balls.min, balls.max)
-            else if (balls.min < balls.max)
-                text.balls = lang.balls[2](balls.min, balls.max)
-        } else {
-            text.error = lang.balls[3](balls.min, balls.max)
-        }
-        $output.text(text.balls)
-    },
-    
-    periods: function (text, period, $output) {
-        text.error = false
-        //console.log(period)
-        if (period.min !== undefined && period.max !== undefined 
-         && period.min <= period.max && period.min > 0) {
-            if (period.min === period.max) 
-                text.period = lang.periods[0](period.min, period.max)
-            else if (period.min === 1)
-                text.period = lang.periods[1](period.min, period.max)
-            else if (period.min < period.max)
-                text.period = lang.periods[2](period.min, period.max)
-        } else {
-            text.error = lang.periods[3](period.min, period.max)
-        }
-        $output.text(text.period)
-    },
-
-    heights: function (text, height, $output) {
-        text.error = false
-        if (height.min === undefined && height.max === undefined) {
-            text.height = ''
-        } else if ((height.min === undefined || height.min <= 1) && height.max >= 0) {
-            text.height = lang.heights[0](height.min, height.max)
-        } else if (height.max === undefined && height.min >= 0) {
-            text.height = lang.heights[1](height.min, height.max)
-        } else if (height.min <= height.max && height.min >= 0) {
-            if (height.min === height.max) {
-                text.height = lang.heights[2](height.min, height.max)
-            } else {
-                text.height = lang.heights[3](height.min, height.max)
-            }
-        } else {
-            text.error = lang.heights[4](height.min, height.max)
-        }
-
-        $output.text(text.height)
-    }
 }
 
 var text = {}
@@ -247,11 +94,11 @@ $(document).ready(function (event) {
             $item.addClass('android-browser')
         var $keys = $('#keyboard-' + item)
         if (item === 'periods') {
-            $keys.keyboard(range(1, 10), function (key) {
+            $keys.keyboard(utils.range(1, 10), function (key) {
                 return '<span class="numbers keyboard-btn number-' + key + '">' + key + '</span>'
             })
         } else {
-            $keys.keyboard(range(1, 25), function (key) {
+            $keys.keyboard(utils.range(1, 25), function (key) {
                 return '<span class="numbers keyboard-btn number-' + key + '">' + key + '</span>'
             })
         }
@@ -351,7 +198,7 @@ $(document).ready(function (event) {
         var $generator = event.data
         var $focus     = $generator.data('$focus')
         if ($focus) {
-            triggerDelegatedEvent('blureditable', $generator, $focus[0])
+            $focus.triggerDelegated('blureditable', $generator)
             $generator.data('$focus', null)
         }
     })
@@ -361,11 +208,11 @@ $(document).ready(function (event) {
         var $generator = event.data
         var $focus     = $generator.data('$focus')
         if ($focus) {
-            triggerDelegatedEvent('blureditable', $generator, $focus[0])
+            $focus.triggerDelegated('blureditable', $generator)
         }
         $focus = $('.contenteditable', this).first()
         $generator.data('$focus', $focus)
-        triggerDelegatedEvent('focuseditable', $generator, $focus[0])
+        $focus.triggerDelegated('focuseditable', $generator)
     })
 
     $generator.on('click', '.contenteditable', $generator, function (event) {
@@ -373,11 +220,11 @@ $(document).ready(function (event) {
         var $generator = event.data
         var $focus     = $generator.data('$focus')
         if ($focus) {
-            triggerDelegatedEvent('blureditable', $generator, $focus[0])
+            $focus.triggerDelegated('blureditable', $generator)
         }
         $focus = $(this)
         $generator.data('$focus', $focus)
-        triggerDelegatedEvent('focuseditable', $generator, this)
+        $(this).triggerDelegated('focuseditable', $generator)
     })
 
     function selectButton($button, $context, onlymove) {
@@ -523,11 +370,11 @@ $(document).ready(function (event) {
         var type   = $this.data('type')
         var minmax = $this.data('minmax')
         values[type][minmax] = parseInt($this.text()) || undefined
-        validate(values, type, minmax, 'all')
+        validate(errorHandler, values, type, minmax, 'all')
         if (!errorHandler.ok())
             console.log(errorHandler.message())
 
-        generateText[type](text, values[type], scope.outputs[type])
+        generateText[type](text, values[type], scope.outputs[type], lang)
 
         if (!errorHandler.ok()) {
             scope.message.$success.addClass('js-hide')
@@ -561,19 +408,19 @@ $(document).ready(function (event) {
             min: parseInt(minText) || undefined,
             max: parseInt(maxText) || undefined
         }
-        validate(values, type, 'min')
+        validate(errorHandler, values, type, 'min')
         if (!errorHandler.ok()) {
             scope.message.$error.text(textError)
             scope.message.$success.addClass('js-hide')
         }
         //console.log('min', values[type].min)
-        validate(values, type, 'max', index === 2 ? 'all' : 'range')
+        validate(errorHandler, values, type, 'max', index === 2 ? 'all' : 'range')
         if (!errorHandler.ok()) {
             scope.message.$error.text(textError)
             scope.message.$success.addClass('js-hide')
         }
         //console.log('max', values[type].max)
-        generateText[type](text, values[type], scope.outputs[type])
+        generateText[type](text, values[type], scope.outputs[type], lang)
         if (!errorHandler.ok()) {
             scope.$create.addClass('disabled')
             scope.$wrapper.addClass('simulator-disabled')
@@ -622,7 +469,7 @@ $(document).ready(function (event) {
         var $keyboard  = scope.$keyboard
         var $simulator = scope.$simulator
         
-        var href = parseHref($(this).attr('href'), {
+        var href = utils.parseHref($(this).attr('href'), {
             fragment: '#header'
         })
         var oldQueryString = scope.href.queryString
@@ -674,7 +521,7 @@ $(document).ready(function (event) {
         var $generator = event.data
         var $focus     = $generator.data('$focus')
         $focus.text(num)
-        triggerDelegatedEvent('inputeditable', $generator, $focus[0])
+        $focus.triggerDelegated('inputeditable', $generator)
     })
 
     $(window).on('scroll', scope, function (event) {

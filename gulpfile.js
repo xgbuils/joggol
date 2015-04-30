@@ -55,7 +55,7 @@ ENV.forEach(function (env) {
 
     var aliasify = require('aliasify').configure({
       aliases: {
-        'language': './src/js/lang/' + lang + '.js'
+        'language': './src/js/messages/lang/' + lang + '.js'
       },
       configDir: __dirname,
       verbose: false
