@@ -5,6 +5,9 @@ var lang         = require('language')
 var ErrorHandler = require('./validation/ErrorHandler.js')
 var utils        = require('./utils.js')
 var validate     = require('./validation/validate.js')
+//var PatternsColeccion = require('./backbone/collections/PatternsCollection')
+//var KeyboardView = require('./backbone/views/KeyboardView')
+require('./backbone/init.js')
                    require('./jQuery-plugins/plugins.js')
 
 var ua = window.navigator.userAgent

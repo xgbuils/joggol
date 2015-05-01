@@ -9,7 +9,7 @@
   <title>juggol</title>
 </head>
 <body>
-  <div id="wrapper" class="wrapper simulator-disabled">
+  <div id="wrapper" class="wrapper">
     <header id="header" class="view view--header">
       <div class="presentation">
         <nav class="view__absolute-block view__absolute-block--languages links">
@@ -111,7 +111,9 @@
     </div>
     <div class="icon-right" id="keyboard-right"></div>
   </div>
-  <script src="js/jquery.min.js"></script>
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/underscore-min.js"></script>
+  <script src="js/vendor/backbone.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

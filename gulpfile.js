@@ -30,10 +30,21 @@ ENV.forEach(function (env) {
        gulp.src('./src/fonts/**/*.{ttf,woff,eot,svg}', { base: 'src/fonts/'})
        .pipe(gulp.dest('./dist/' + path + '/fonts'));
     });
+
+    gulp.task('copybackbone:' + sufix, function() {
+       gulp.src('bower_components/backbone/backbone.js')
+       .pipe(streamify(uglify()))
+       .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
+    });
+
+    gulp.task('copyunderscore:' + sufix, function() {
+       gulp.src('bower_components/underscore/underscore-min.js')
+       .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
+    });
     
     gulp.task('copyjquery:' + sufix, function() {
        gulp.src('bower_components/jquery/dist/jquery.min.js')
-       .pipe(gulp.dest('./dist/' + path + '/js/'));
+       .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
     });
     
     gulp.task('template:' + sufix, function() {
@@ -50,23 +61,46 @@ ENV.forEach(function (env) {
             .pipe(gulp.dest('./dist/' + path + '/styles/'))
             .pipe(reload({ stream: true }))
     });
-    
-    var bundler = watchify(browserify('./src/js/main.js', watchify.args));
 
-    var aliasify = require('aliasify').configure({
-      aliases: {
-        'language': './src/js/messages/lang/' + lang + '.js'
-      },
-      configDir: __dirname,
-      verbose: false
+    gulp.task('js:' + sufix, function(){
+      browserifyShare();
     });
-    
-    // add any other browserify options or transforms here
-    bundler.transform(aliasify);
-    
-    gulp.task('js:' + sufix, bundle); // so you can run `gulp js` to build the file
-    bundler.on('update', bundle); // on any dep update, runs the bundler
-    
+
+    function browserifyShare() {
+      // create transform
+      var aliasify = require('aliasify').configure({
+        aliases: {
+          'language': './src/js/messages/lang/' + lang + '.js'
+        },
+        configDir: __dirname,
+        verbose: false
+      })
+
+      // create browserify bundle
+      var b = browserify({
+        cache: {},
+        packageCache: {},
+        fullPaths: true
+      })
+      b = watchify(b)
+
+      b.transform(aliasify)
+      b.on('update', function () {
+        bundleShare(b);
+      })
+
+      b.add('./src/js/main.js');
+      bundleShare(b);
+    }
+
+    function bundleShare (b) {
+      b.bundle()
+        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+        .pipe(source('main.js'))
+        //.pipe(streamify(uglify()))
+        .pipe(gulp.dest('./dist/' + path + '/js/'));
+    }
+   
     function bundle() {
       return bundler.bundle()
         // log errors if they happen
@@ -78,6 +112,8 @@ ENV.forEach(function (env) {
     
     gulp.task('serve:' + sufix, [
       'copyfonts:' + sufix,
+      'copybackbone:' + sufix,
+      'copyunderscore:' + sufix,
       'copyjquery:' + sufix,
       'js:' + sufix,
       'stylus:' + sufix, 
