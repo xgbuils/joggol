@@ -7,9 +7,10 @@ var utils        = require('./utils.js')
 var validate     = require('./validation/validate.js')
 //var PatternsColeccion = require('./backbone/collections/PatternsCollection')
 //var KeyboardView = require('./backbone/views/KeyboardView')
+require('./backbone/models/SiteswapOptions.js')
 require('./backbone/init.js')
                    require('./jQuery-plugins/plugins.js')
-
+/*
 var ua = window.navigator.userAgent
 var native_android_browser = /android/i.test(ua) && ua.indexOf('534.30')
 
@@ -314,12 +315,12 @@ $(document).ready(function (event) {
     })
 
     function visible (className, $context) {
-        console.log('visible')
+        //console.log('visible')
         $context.removeClass(className)
     }
 
     function collapse (className, $context) {
-        console.log('collapse')
+        //console.log('collapse')
         $context.addClass(className)
     }
 
@@ -345,7 +346,7 @@ $(document).ready(function (event) {
     }
 
     $generator.on('blureditable', '.contenteditable', scope, function (event) {
-        console.log('blureditable')
+        //console.log('blureditable')
         var $this      = $(this)
         var scope      = event.data
         var $keyboard  = scope.$keyboard
@@ -432,12 +433,12 @@ $(document).ready(function (event) {
             scope.$wrapper.removeClass('simulator-disabled')
         }
     }
-
+*/
     /*$.each(['balls', 'periods', 'heights'], function (index, type) {
         var $item = inputs['$' + type]
 
     })*/
-
+/*
     $keyboard.on('click', function (event) {
         event.stopPropagation()
     })
@@ -648,4 +649,4 @@ $(document).ready(function (event) {
             $keyboard.removeClass('js-hide')
         }
     })
-})
+})*/

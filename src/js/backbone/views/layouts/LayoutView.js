@@ -1,9 +1,11 @@
 var LayoutView = Backbone.View.extend({
 	initialize: function (options) {
+        this.name = 'generator'
         var $el = this.$el = $(options.el)
         this.el = $el[0]
 
-        this.buttonsView = options.buttonsView
+        this.controlBarView = options.controlBarView
+        this.appRouter      = options.appRouter
 
         this.height = $el.outerHeight()
         //console.log('height', this.height, options.el)
@@ -11,7 +13,12 @@ var LayoutView = Backbone.View.extend({
         this.bottom = $el.offset().top + this.height
 
         this.on('active', function () {
-            console.log(this.el.id + ' activo!')
+            this.controlBarView.trigger('change-layout', this.name)
+            console.log(this.name + ' activo!')
+            if (Backbone.history.getFragment() !== '' || this.name !== 'header') {
+                console.log('eo')
+                this.appRouter.navigate('!' + this.name)
+            }
         })
 	}
 })

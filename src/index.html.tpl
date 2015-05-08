@@ -28,7 +28,7 @@
           <p class="description">
             <%= header.description %>
           </p>
-          <a href="#generator" class="internal-link header-btn btn" id="header-btn"><%- header.tryit %></a></a>
+          <a href="#!generator" class="internal-link header-btn btn" id="header-btn"><%- header.tryit %></a></a>
         </div>
         <div class="view__absolute-block view__absolute-block--samples">
           <ul id="samples">
@@ -52,7 +52,7 @@
       </div>
     </header>
     <section id="generator" class="view view--generator">
-      <div class="view__block">
+      <div id="fieldset-balls" class="view__block">
         <h2><%- generator.balls %></h2>
         <div id="balls" class="editable balls">
           <span class="word-expanded"><%- generator.word.between %></span>
@@ -61,7 +61,7 @@
           <span class="contenteditable max" id="balls-max">3</span>
         </div>
       </div>
-      <div class="view__block">
+      <div id="fieldset-period" class="view__block">
         <h2><%- generator.periods %></h2>
          <div id="periods" class="editable periods">
           <span class="word-expanded"><%- generator.word.between %></span><span class="collapsed js-hide"><%- generator.word.of %></span>
@@ -70,7 +70,7 @@
           <span class="contenteditable max" id="periods-max">3</span>
         </div>
       </div>
-      <div class="view__block">
+      <div id="fieldset-height" class="view__block">
         <!--Alçada màxima-->
         <h2><abbr class="view__block__abbr" title="<%- generator.heights.title %>"><span><%= generator.heights.content %></span></abbr></h2>
         <div id="heights" class="editable heights">
@@ -92,7 +92,7 @@
         </span>
       </div>
       <div class="create">
-        <a id="create" class="internal-link btn" href="#simulator"><%- generator.generate %></a>
+        <a id="create" class="internal-link btn" href="#!simulator"><%- generator.generate %></a>
       </div>
     </section>
     <section class="view view--simulator" id="simulator">

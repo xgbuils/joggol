@@ -1,15 +1,18 @@
 var LayoutView    = require('./LayoutView')
+
 var GeneratorView = LayoutView.extend({
     initialize: function (options) {
-        LayoutView.call(this, options)
+        LayoutView.prototype.initialize.call(this, options)
 
         this.keyboardView   = options.keyboardView
         this.controlBarView = options.controlBarView
 
         this.on('active', function () {
-            if (this.keyboardView.active) {
-                this.controlBarView.trigger('active', this.keyboardView)
+            if (this.controlBarView.currentKB[this.name]) {
+                this.controlBarView.trigger('active')
             }
         })
     }
 })
+
+module.exports = GeneratorView
