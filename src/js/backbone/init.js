@@ -9,6 +9,7 @@ var ControlBarView       = require('./views/keyboard/ControlBarView')
 var DashboardView        = require('./views/dashboard/DashboardView')
 var FieldView            = require('./views/dashboard/FieldView')
 var FieldsetView         = require('./views/dashboard/FieldsetView')
+var CreateButtonView     = require('./views/dashboard/CreateButtonView')
 var SiteswapOptions      = require('./models/SiteswapOptions')
 
 // Routing
@@ -21,34 +22,21 @@ appRouter.on('route:header'   , callbacks.header   )
 appRouter.on('route:generator', callbacks.generator)
 appRouter.on('route:simulator', callbacks.simulator)
 
-Backbone.history.start();
-
-// Models
-var siteswapOptions = new SiteswapOptions({
-    balls : {min: 3, max: 3},
-    period: {min: 1, max: 3},
-    height: {max: 5}
-})
-
 // Views 
 var keyboard = {
     balls: new KeyboardView({
         el: '#keyboard-balls',
-        model: siteswapOptions.get('balls'),
         start: 1
     }),
     period: new KeyboardView({
         el: '#keyboard-periods',
-        model: siteswapOptions.get('period'),
     }),
     height: new KeyboardView({
         el: '#keyboard-heights',
-        model: siteswapOptions.get('height'),
         start: 1
     }),
     patterns: new PatternsKeyboardView({
         el: '#keyboard-patterns',
-        model: siteswapOptions
     })
 }
 
@@ -92,21 +80,18 @@ var fieldsets = {
         el: '#fieldset-balls',
         minView: fields.balls.minView,
         maxView: fields.balls.maxView,
-        model: siteswapOptions.get('balls'),
         keyboardView: keyboard.balls,
     }),
     period: new FieldsetView({
         el: '#fieldset-period',
         minView: fields.period.minView,
         maxView: fields.period.maxView,
-        model: siteswapOptions.get('period'),
         keyboardView: keyboard.period,
     }),
     height: new FieldsetView({
         el: '#fieldset-height',
         minView: fields.height.minView,
         maxView: fields.height.maxView,
-        model: siteswapOptions.get('height'),
         keyboardView: keyboard.height,
     })
 }
@@ -114,6 +99,10 @@ var fieldsets = {
 var dashboard = new DashboardView({
     el: '#generator',
     fieldsetViews: fieldsets,
+    createButtonView: new CreateButtonView({
+        el: '#create',
+        keyboardView: keyboard.patterns
+    }),
     controlBarView: controlBar
 })
 
@@ -139,7 +128,21 @@ var layouts = {
 
 var appView = new AppView({
     layouts: layouts,
+    dashboard: dashboard,
     appRouter: appRouter
 })
+
+// routing start
+Backbone.history.start();
+
+// Model
+if (!appView.model) {
+    console.log('no existe modelo: ¡a crear uno por defecto!')
+    appView.trigger('create-model', new SiteswapOptions({
+        balls : {min: 3, max: 3},
+        period: {min: 1, max: 3},
+        height: {max: 5}
+    }))
+}
 
 

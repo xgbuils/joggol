@@ -27,14 +27,14 @@ var ControlBarView = Backbone.View.extend({
 
         this.on('active', function() {
             this.active = true
-            console.log('controlBar active')
+            //console.log('controlBar active')
             this.$el.removeClass('js-hide')
             //console.log('id: ', newKeyboardView.el.id, 'key: ', key)
         })
 
         this.on('inactive', function() {
             this.active = false
-            console.log('controlBar inactive')
+            //console.log('controlBar inactive')
             this.$el.addClass('js-hide')
             //console.log('id: ', newKeyboardView.el.id, 'key: ', key)
         })
@@ -57,25 +57,30 @@ var ControlBarView = Backbone.View.extend({
         })
 
         this.on('change-layout', function (name) {
+            //console.log('change-layout ControlBarView')
             var oldKeyboard = this.currentKB[this.layout]
-            if (oldKeyboard) {
-                // if change layout: header <--> generator, no inactive oldKeyboard
-                if (this.layout !== 'header' && name !== 'header') {
-                    oldKeyboard.trigger('inactive')
+            var newKeyboard = this.currentKB[name]
+            if (newKeyboard !== oldKeyboard) {
+                if (oldKeyboard) {
+                    // if change layout: header <--> generator, no inactive oldKeyboard
+                    if (this.layout !== 'header' && name !== 'header') {
+                        oldKeyboard.trigger('inactive')
+                    }
+                }
+                this.layout = name === 'header' ? 'generator' : name
+                //console.log(this.layout)
+                
+                if (newKeyboard) {
+                    //console.log('activando teclado')
+                    newKeyboard.trigger('active')
+                } else if (oldKeyboard){
+                    this.trigger('inactive')
                 }
             }
-            this.layout = name === 'header' ? 'generator' : name
-            var newKeyboard = this.currentKB[name]
-            if (newKeyboard) {
-                console.log('b')
-                newKeyboard.trigger('active')
-            } else if (oldKeyboard){
-                console.log('c')
-                this.trigger('inactive')
-            }            
         })
 
         view.on('keyboard-active', function (keyboard) {
+            //console.log('keyboard-active')
             view.currentKB[this.layout] = keyboard
         })
     },

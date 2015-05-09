@@ -23,11 +23,21 @@ var SiteswapOptions = Backbone.Model.extend({
     initialize: function (attr, opt) {
         this.set('balls' , new BallsOptions (attr.balls ))
         this.set('period', new PeriodOptions(attr.period))
+        var model = this
         var balls  = this.get('balls')
         var period = this.get('period')
         attr.height     || (attr.height = {})
-        attr.height.max || (attr.height.max = period.get('max') * height.get('max'))
+        attr.height.max || (attr.height.max = balls.get('max') * period.get('max'))
         this.set('height', new HeightOptions(attr.height))
+
+        ;['balls', 'period', 'height'].forEach(function (field) {
+            var modelField = model.get(field)
+            modelField.on('change', function () {
+                console.log('eooeoeoooeoooe', model.toJSON())
+                model.trigger('change')
+                model.trigger('change:' + field)
+            })
+        })
     },
     toJSON: function () {
         return globalToJSON(this)

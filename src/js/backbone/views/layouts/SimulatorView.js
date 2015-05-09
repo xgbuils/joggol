@@ -15,6 +15,12 @@ var SimulatorView = LayoutView.extend({
             this.controlBarView.trigger('inactive')
             this.patternsKeyboardView.$el.removeClass('js-select')
         })
+
+        this.on('create', function (options) {
+            // set pattern 
+            this.patternsKeyboardView.lazyListOptions = options
+            this.patternsKeyboardView.create()
+        })
     },
     /*render: function (options) {
         if (!this.keyboardView.)

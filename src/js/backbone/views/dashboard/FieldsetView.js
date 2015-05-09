@@ -10,15 +10,16 @@ var FieldsetView = Backbone.View.extend({
         this.maxField      = options.maxView
         this.minField.type = 'min'
         this.maxField.type = 'max'
-        this.model         = options.model
-        this.focusField = undefined
+        this.focusField    = undefined
 
         if (options.keyboardView) {
             this.keyboardView = options.keyboardView
             this.keyboardView.fieldsetView = this
         }
 
-        this.render()
+        if (options.model) {
+            this.trigger('create-model', options.model)
+        }
 
         this.computeStyles()
 
@@ -26,23 +27,32 @@ var FieldsetView = Backbone.View.extend({
 
         this.minField.parent = this.maxField.parent = this
 
-        view.$el.on('click', function (event) {
+        this.$el.on('click', function (event) {
             event.preventDefault()
             event.stopPropagation()
             view.trigger('click-field', view.minField)
         })
 
-        view.model.on('change:min', function () {
-            console.log('modelo cambiado')
-            console.log(view.model)
-            view.minField.$el.text(view.model.get('min'))
+        this.on('create-model', function (model) {
+            console.log('Fieldset')
+            this.model = model
+
+            this.model.on('change:min', function () {
+                console.log('modelo cambiado')
+                console.log(view.model)
+                view.minField.$el.text(view.model.get('min'))
+            })
+    
+            this.model.on('change:max', function () {
+                console.log('modelo cambiado')
+                console.log(view.model.get('max'))
+                view.maxField.$el.text(view.model.get('max'))
+            })
+
+            this.keyboardView.trigger('create-model', model)
         })
 
-        view.model.on('change:max', function () {
-            console.log('modelo cambiado')
-            console.log(view.model.get('max'))
-            view.maxField.$el.text(view.model.get('max'))
-        })
+        
 
         view.on('click-field', function (field) {
             view.parent.trigger('click-dashboard', view, field)
@@ -52,7 +62,7 @@ var FieldsetView = Backbone.View.extend({
             //var key = field.$el.text()
             view.keyboardView.trigger('active')
 
-            console.log(view.el.id, ' focus')
+            //console.log(view.el.id, ' focus')
             //field.trigger('focus', view.keyboardView)
             //this.focusField = field
             $item = $('.editable', view.$el)
@@ -66,7 +76,7 @@ var FieldsetView = Backbone.View.extend({
                 view.focusField = undefined
             }*/
             view.keyboardView.trigger('inactive')
-            console.log('fieldset ', view.el.id, ' blur')
+            //console.log('fieldset ', view.el.id, ' blur')
             var $item = $('.editable', view.$el)
             var min = this.model.get('min')
             var max = this.model.get('max')

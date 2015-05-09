@@ -9,17 +9,20 @@ var KeyboardView = Backbone.View.extend({
             this.fieldsetView = options.fieldsetView
             this.fieldsetView.keyboardView = this
         }
-        if (options.model) {
-            this.model = options.model
-        }
+
+        this.on('create-model', function (model) {
+            console.log('KeyboardView')
+            this.model  = model
+            var options = model.toJSON()
+            this.lazyListOptions = options
+            this.create()
+        })
 
         options.start || (options.start = 0)
-        this.index = 0
 
         this.position  = 0
-        this.maxWidth  = Infinity
         this.transform           = options.transform || function (e) {return e} 
-        this.lazyListOptions     = options.lazyListOptions
+        
         this.lazyListConstructor = options.lazyListConstructor || function () {
             return new LazyArray({
                 get: function (index) {
@@ -28,16 +31,17 @@ var KeyboardView = Backbone.View.extend({
                 maxLength: 100
             })
         }
-        this.keys_list = this.lazyListConstructor(this.lazyListOptions)
 
-        this.append()
+         // necessari?
         
         view.on('active', function () {
             view.parent.trigger('keyboard-active', view)
+            //console.log(view.$el[0].id, 'ACTIVE')
             view.$el.addClass('js-select')
         })
 
         view.on('inactive', function () {
+            //console.log(view.$el[0].id, 'INACTIVE')
             view.$el.removeClass('js-select')
         })
 
@@ -96,12 +100,24 @@ var KeyboardView = Backbone.View.extend({
         var transform = this.transform
         var begin     = this.index
         this.index   += 30
-        $.fn.append.apply(this.$el, this.keys_list
-            .slice(begin, this.index)
+        var keys_list = this.keys_list.slice(begin, this.index)
+        //console.log(keys_list)
+        $.fn.append.apply(this.$el, keys_list
             .map(function (key) {
+                //console.log(key)
                 return '<li><span class="numbers keyboard-btn number-' + transform(key) + '">' + transform(key) + '</span></li>'
             })
         )
+    },
+    create: function () {
+        this.index = 0
+        this.maxWidth = Infinity
+        //console.log('lazyOptions', this.lazyListOptions)
+        this.keys_list = this.lazyListConstructor(this.lazyListOptions)
+        //console.log(this.keys_list)
+        this.$el.empty()
+        //console.log('append!!')
+        this.append()
     }
 })
 

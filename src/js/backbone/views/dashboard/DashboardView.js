@@ -4,8 +4,10 @@ var DashboardView = Backbone.View.extend({
         this.$el = $(options.el)
         this.el  = this.$el[0]
 
-        this.fieldsetViews  = options.fieldsetViews
-        this.controlBarView = options.controlBarView
+        this.fieldsetViews    = options.fieldsetViews
+        //console.log(this.fieldsetViews)
+        this.createButtonView = options.createButtonView
+        this.controlBarView   = options.controlBarView
         for (var name in options.fieldsetViews) {
             //console.log(view.fieldsetViews[name].parent)
             this.fieldsetViews[name].parent = this
@@ -25,6 +27,16 @@ var DashboardView = Backbone.View.extend({
                 oldFieldset.focusField = undefined
             }
             view.controlBarView.trigger('inactive')
+        })
+
+        this.on('create-model', function (model) {
+            console.log('DashboardView')
+            this.model = model
+            for (var name in options.fieldsetViews) {
+                this.fieldsetViews[name].trigger('create-model', model.get(name))
+            }
+            this.createButtonView.trigger('create-model', model)
+            this.render()
         })
 
         this.on('click-dashboard', function (newFieldset, newField) {
@@ -51,6 +63,12 @@ var DashboardView = Backbone.View.extend({
                 view.controlBarView.trigger('active')
             }
         })
+    },
+    render: function () {
+        ;['balls', 'period', 'height'].forEach(function (field) {
+            this.fieldsetViews[field].render()
+        }, this)
+        this.createButtonView.render()
     }
 })
 
