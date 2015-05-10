@@ -11,7 +11,7 @@ var KeyboardView = Backbone.View.extend({
         }
 
         this.on('create-model', function (model) {
-            console.log('KeyboardView')
+            //console.log('KeyboardView')
             this.model  = model
             var options = model.toJSON()
             this.lazyListOptions = options

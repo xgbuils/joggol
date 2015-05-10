@@ -30,7 +30,7 @@ var DashboardView = Backbone.View.extend({
         })
 
         this.on('create-model', function (model) {
-            console.log('DashboardView')
+            //console.log('DashboardView')
             this.model = model
             for (var name in options.fieldsetViews) {
                 this.fieldsetViews[name].trigger('create-model', model.get(name))

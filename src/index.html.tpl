@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="menu-header">
-        <a href="#header" class="internal-link title">juggol</a>
+        <a href="#!header" class="internal-link title">juggol</a>
       </div>
     </header>
     <section id="generator" class="view view--generator">

@@ -9,7 +9,7 @@ var CreateButtonView = Backbone.View.extend({
         this.keyboardView = options.keyboardView
 
         this.on('create-model', function (model) {
-            console.log('CreateButtonView')
+            //console.log('CreateButtonView')
             this.model = model
             this.keyboardView.trigger('create-model', model)
 

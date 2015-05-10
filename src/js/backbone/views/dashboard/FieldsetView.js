@@ -17,6 +17,7 @@ var FieldsetView = Backbone.View.extend({
             this.keyboardView.fieldsetView = this
         }
 
+        // necesario?
         if (options.model) {
             this.trigger('create-model', options.model)
         }
@@ -34,7 +35,7 @@ var FieldsetView = Backbone.View.extend({
         })
 
         this.on('create-model', function (model) {
-            console.log('Fieldset')
+            //console.log('Fieldset')
             this.model = model
 
             this.model.on('change:min', function () {

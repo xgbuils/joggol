@@ -8,10 +8,7 @@ function simulator (_, qs) {
     var simulatorView = appView.layouts.simulator
     simulatorView.trigger('create', options)
     
-    //console.log('SCROLL')
-    appView.scroll('simulator', function () {
-        simulatorView.trigger('active')
-    })
+    appView.scroll('simulator')
 }
 
 module.exports = simulator

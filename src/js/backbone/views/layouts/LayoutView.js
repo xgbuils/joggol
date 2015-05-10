@@ -13,7 +13,7 @@ var LayoutView = Backbone.View.extend({
         this.bottom = $el.offset().top + this.height
 
         this.on('active', function () {
-            //console.log('active LayoutView')
+            console.log(this.name, 'active')
             this.controlBarView.trigger('change-layout', this.name)
             //console.log(this.name + ' activo!')
             var fragment = Backbone.history.getFragment().substring(1, this.name.length + 1)
@@ -22,6 +22,10 @@ var LayoutView = Backbone.View.extend({
                 //console.log('NAVIGATE')
                 this.appRouter.navigate('!' + this.name)
             }
+        })
+
+        this.on('inactive', function () {
+            console.log(this.name, 'inactive')
         })
     }
 })

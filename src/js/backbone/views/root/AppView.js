@@ -28,11 +28,11 @@ var AppView = Backbone.View.extend({
             return a.bottom - b.bottom
         })
 
-        this.layoutOn = undefined
+        this.layoutOn = this.layouts.header
         this.scrollState = 2
 
         this.on('create-model', function (model) {
-            console.log('AppView')
+            //console.log('AppView')
             this.model = model
             this.dashboard.trigger('create-model', model)
         })
@@ -50,14 +50,7 @@ var AppView = Backbone.View.extend({
                     var e = bottoms[i]
                     var layout = view.layouts[e.name]
                     if (e.bottom - 60 >= top) {
-                        if (layout !== layoutOn) {
-                            if (layoutOn) {
-                                layoutOn.trigger('inactive')
-                            }
-                            view.layoutOn = layout
-                            //console.log('SCROLL ACTIVATE')
-                            layout.trigger('active')
-                        }
+                        view.changeLayout(layout)
                         break
                     }
                 }
@@ -80,18 +73,27 @@ var AppView = Backbone.View.extend({
             view.appRouter.navigate(href, {trigger: true})
         })
     },
+    changeLayout: function (newLayout) {
+        var oldLayout = this.layoutOn
+        if (oldLayout !== newLayout) {
+            if (oldLayout) {
+                oldLayout.trigger('inactive')
+            }
+            this.layoutOn = newLayout
+            newLayout.trigger('active')
+        }
+    },
     scroll: function (layoutName, callback) {
         var view      = this
-        var targetTop = view.layouts[layoutName].$el.offset().top
-        view.scrollState = 0
-        //console.log('jijijiji')
+        var newLayout = this.layouts[layoutName]
+        var targetTop = newLayout.$el.offset().top
+        this.scrollState = 0
+
         $('body, html').animate({scrollTop: targetTop}, 300, 'swing', function () {
-            //console.log('jujuju')
             //console.log(Backbone.history.getFragment())
             view.scrollState = 1
             //console.log(Backbone.history.getFragment())
-            if (callback)
-                callback()
+            view.changeLayout(newLayout)
         })
     },
     domCompute: function () {
