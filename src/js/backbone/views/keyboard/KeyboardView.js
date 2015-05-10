@@ -53,12 +53,19 @@ var KeyboardView = Backbone.View.extend({
             this.right(0.6 * this.width)
         })
 
-        this.$el.on('click', '.keyboard-btn', function () {
-            var num  = parseInt($(this).text())
-            view.center($(this))
+        this.on('click-key', function ($key) {
+            var num  = parseInt($key.text())
+            this.center($key)
 
-            var type = view.fieldsetView.focusField.type
-            view.model.set(type, num)
+            if (this.fieldsetView) {
+                var type = this.fieldsetView.focusField.type
+                this.model.set(type, num)
+            }          
+
+        })
+
+        this.$el.on('click', '.keyboard-btn', function () {
+            view.trigger('click-key', $(this))
         })
     },
     left: function (incr) {

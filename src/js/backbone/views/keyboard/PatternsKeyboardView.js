@@ -19,6 +19,12 @@ var PatternsKeyboardView = KeyboardView.extend({
             return buffer
         }
         KeyboardView.prototype.initialize.call(this, options)
+
+        this.on('click-key', function ($key) {
+            var pattern = $key.text()
+            var simulatorView = this.simulatorView
+            simulatorView.render(pattern)
+        })
     },
     
 })
