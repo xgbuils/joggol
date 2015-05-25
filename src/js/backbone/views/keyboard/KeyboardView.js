@@ -10,18 +10,13 @@ var KeyboardView = Backbone.View.extend({
             this.fieldsetView.keyboardView = this
         }
 
-        this.on('create-model', function (model) {
-            //console.log('KeyboardView')
-            this.model  = model
-            var options = model.toJSON()
-            this.lazyListOptions = options
-            this.create()
-        })
+        this.model  = options.model
+        this.lazyListOptions = this.model.get()
 
         options.start || (options.start = 0)
 
         this.position  = 0
-        this.transform           = options.transform || function (e) {return e} 
+        this.transform = options.transform || function (e) {return e} 
         
         this.lazyListConstructor = options.lazyListConstructor || function () {
             return new LazyArray({
@@ -32,7 +27,7 @@ var KeyboardView = Backbone.View.extend({
             })
         }
 
-         // necessari?
+        this.create()
         
         view.on('active', function () {
             view.parent.trigger('keyboard-active', view)

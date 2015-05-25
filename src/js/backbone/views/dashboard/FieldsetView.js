@@ -17,11 +17,6 @@ var FieldsetView = Backbone.View.extend({
             this.keyboardView.fieldsetView = this
         }
 
-        // necesario?
-        if (options.model) {
-            this.trigger('create-model', options.model)
-        }
-
         this.computeStyles()
 
         //console.log('keyboard: ', view.keyboardView)
@@ -34,61 +29,44 @@ var FieldsetView = Backbone.View.extend({
             view.trigger('click-field', view.minField)
         })
 
-        this.on('create-model', function (model) {
-            //console.log('Fieldset')
-            this.model = model
 
-            this.model.on('change:min', function () {
-                console.log('modelo cambiado')
-                console.log(view.model)
-                view.minField.$el.text(view.model.get('min'))
-            })
-    
-            this.model.on('change:max', function () {
-                console.log('modelo cambiado')
-                console.log(view.model.get('max'))
-                view.maxField.$el.text(view.model.get('max'))
-            })
-
-            this.keyboardView.trigger('create-model', model)
+        this.model = options.model
+        this.model.on('change:min', function () {
+            console.log('modelo cambiado')
+            console.log(view.model)
+            view.minField.$el.text(view.model.get('min'))
         })
-
-        
+        this.model.on('change:max', function () {
+            console.log('modelo cambiado')
+            console.log(view.model.get('max'))
+            view.maxField.$el.text(view.model.get('max'))
+        })
+        this.model.on('invalid', function () {
+            console.log('MODELO INVALIDO')
+        })
 
         view.on('click-field', function (field) {
             view.parent.trigger('click-dashboard', view, field)
         })
 
         view.on('focus', function () {
-            //var key = field.$el.text()
             view.keyboardView.trigger('active')
 
-            //console.log(view.el.id, ' focus')
-            //field.trigger('focus', view.keyboardView)
-            //this.focusField = field
             $item = $('.editable', view.$el)
             $item.addClass('expanded')
             $item.removeClass('minEqMax minLessOrEq1')
         })
 
-        view.on('blur', function () {
-            /*if (view.focusField !== undefined) {
-                view.focusField.trigger('blur')
-                view.focusField = undefined
-            }*/
+        this.on('blur', function () {
             view.keyboardView.trigger('inactive')
             //console.log('fieldset ', view.el.id, ' blur')
-            var $item = $('.editable', view.$el)
-            var min = this.model.get('min')
-            var max = this.model.get('max')
-            if (min === max) {
-                $item.removeClass('expanded')
-                $item.addClass('minEqMax')
-            } else if (min === 1) {
-                $item.removeClass('expanded')
-                $item.addClass('minLessOrEq1')
-            }
+            this.blur()
         })
+
+        $item = $('.editable', view.$el)
+        $item.addClass('expanded')
+        //$item.removeClass('minEqMax minLessOrEq1')
+        this.blur()
     },
     render: function () {
         var min = this.model.get('min')
@@ -99,6 +77,32 @@ var FieldsetView = Backbone.View.extend({
     computeStyles: function () {
         if (native_android_browser) {
             $('.editable', this.$el).addClass('android-browser')
+        }
+        $('.collapsed', this.$el).each(function (index, item) {
+            var $item = $(item)
+            $item.removeClass('js-hide')
+            var width = $item.outerWidth()
+            $item.data('width', width)
+            $item.css('width', width)
+        })
+
+        $('.word-expanded', this.$el).each(function (index, item) {
+            var $item = $(item)
+            var width = $item.outerWidth()
+            $item.data('width', width)
+            $item.css('width', width)
+        })
+    },
+    blur: function () {
+        var $item = $('.editable', this.$el)
+        var min = this.model.get('min')
+        var max = this.model.get('max')
+        if (min === max) {
+            $item.removeClass('expanded')
+            $item.addClass('minEqMax')
+        } else if (min === 1) {
+            $item.removeClass('expanded')
+            $item.addClass('minLessOrEq1')
         }
     }
 })

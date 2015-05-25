@@ -1,46 +1,25 @@
-var BallsOptions  = require('./BallsOptions')
-var PeriodOptions = require('./PeriodOptions')
-var HeightOptions = require('./HeightOptions')
+var message = require('language').message
+var ErrorHandler   = require('../../validation/ErrorHandler.js')
+var RecursiveModel = require('frontpiece.recursive-model')
 
-var BBModel  = Backbone.Model
-var BBtoJSON = BBModel.prototype.toJSON
-var globalToJSON = function (model) {
-    //console.log('aa')
-    var object = model instanceof BBModel ? BBtoJSON.call(model) : model
-    //console.log(object)
-    if (object && typeof object === 'object') {
-        var json   = {}
-        for (var key in object) {
-            json[key] = globalToJSON(object[key])
-        }
-        return json
-    } else {
-        return object
-    }
-}
-
-var SiteswapOptions = Backbone.Model.extend({
-    initialize: function (attr, opt) {
-        this.set('balls' , new BallsOptions (attr.balls ))
-        this.set('period', new PeriodOptions(attr.period))
+var SiteswapOptions = RecursiveModel.extend({
+    initialize: function (attrs, opt) {
         var model = this
-        var balls  = this.get('balls')
-        var period = this.get('period')
-        attr.height     || (attr.height = {})
-        attr.height.max || (attr.height.max = balls.get('max') * period.get('max'))
-        this.set('height', new HeightOptions(attr.height))
+        var balls  = attrs.balls
+          , period = attrs.period
+          , height = attrs.height
 
-        ;['balls', 'period', 'height'].forEach(function (field) {
-            var modelField = model.get(field)
-            modelField.on('change', function () {
-                console.log('eooeoeoooeoooe', model.toJSON())
-                model.trigger('change')
-                model.trigger('change:' + field)
-            })
-        })
+        this.set('balls' , balls)
+        this.set('period', period)
+        height.get('max') || (height.set('max', balls.get('max') * period.get('max')))
+        this.set('height', height)
     },
-    toJSON: function () {
-        return globalToJSON(this)
+    validate: function (attrs) {
+        if (attrs.height.max <= attrs.balls.min && attrs.period.min > 1) {
+            return message.emptyWithBigPeriod()
+        } else if(attrs.period.min === 1 && attrs.height.max < attrs.balls.min) {
+            return message.emptyWithLittlePeriod()
+        }
     }
 })
 

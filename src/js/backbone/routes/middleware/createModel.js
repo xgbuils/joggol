@@ -1,5 +1,6 @@
 var decode = require('../../../utils/siteswapOptionsDecode')
 var SiteswapOptions = require('../../models/SiteswapOptions')
+var objectAssign = require('object-assign')
 
 function createModel(qs, defaults) {
     var options = decode(qs)
@@ -14,10 +15,7 @@ function createModel(qs, defaults) {
 
     console.log('CREATE')
 
-    if (!this.model) {
-        this.model = new SiteswapOptions(options)
-        this.appView.trigger('create-model', this.model)
-    }
+    this.model.set(options)
 
     return options
 }

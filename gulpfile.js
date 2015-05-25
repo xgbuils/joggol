@@ -33,7 +33,7 @@ ENV.forEach(function (env) {
 
     gulp.task('copybackbone:' + sufix, function() {
        gulp.src('bower_components/backbone/backbone.js')
-       .pipe(streamify(uglify()))
+       //.pipe(streamify(uglify()))
        .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
     });
 

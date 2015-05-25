@@ -1,7 +1,10 @@
-var BallsOptions = Backbone.Model.extend({
-    initialize: function (attr, opt) {
-        Backbone.Model.prototype.initialize.call(this, attr, opt)
-        this.get('min')  || this.set('min', this.get('max'))
+var RangeOptions = require('./RangeOptions')
+
+var BallsOptions = RangeOptions.extend({
+    initialize: function (attrs) {
+    	this.name = 'balls'
+        RangeOptions.prototype.initialize.apply(this, arguments)
+        this.get('min') || this.set('min', this.get('max'))
     }
 })
 

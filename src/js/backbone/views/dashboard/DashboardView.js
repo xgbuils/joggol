@@ -7,6 +7,7 @@ var DashboardView = Backbone.View.extend({
         this.fieldsetViews    = options.fieldsetViews
         //console.log(this.fieldsetViews)
         this.createButtonView = options.createButtonView
+        this.descriptionView  = options.descriptionView
         this.controlBarView   = options.controlBarView
         for (var name in options.fieldsetViews) {
             //console.log(view.fieldsetViews[name].parent)
@@ -29,15 +30,7 @@ var DashboardView = Backbone.View.extend({
             view.controlBarView.trigger('inactive')
         })
 
-        this.on('create-model', function (model) {
-            //console.log('DashboardView')
-            this.model = model
-            for (var name in options.fieldsetViews) {
-                this.fieldsetViews[name].trigger('create-model', model.get(name))
-            }
-            this.createButtonView.trigger('create-model', model)
-            this.render()
-        })
+        this.render()
 
         this.on('click-dashboard', function (newFieldset, newField) {
             var oldFieldset = this.currentFieldset

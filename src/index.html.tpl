@@ -87,8 +87,8 @@
         <span id="success">
           <%- generator.description.patterns %>
           <span id="description-balls"></span>
-          <span id="description-periods"></span>
-          <span id="description-heights"></span>
+          <span id="description-period"></span>
+          <span id="description-height"></span>
         </span>
       </div>
       <div class="create">

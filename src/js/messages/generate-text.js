@@ -15,7 +15,7 @@ module.exports = {
         $output.text(text.balls)
     },
     
-    periods: function (text, period, $output, lang) {
+    period: function (text, period, $output, lang) {
         text.error = false
         //console.log(period)
         if (period.min !== undefined && period.max !== undefined 
@@ -32,7 +32,7 @@ module.exports = {
         $output.text(text.period)
     },
 
-    heights: function (text, height, $output, lang) {
+    height: function (text, height, $output, lang) {
         text.error = false
         if (height.min === undefined && height.max === undefined) {
             text.height = ''

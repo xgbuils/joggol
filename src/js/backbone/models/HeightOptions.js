@@ -1,6 +1,13 @@
-var HeightOptions = Backbone.Model.extend({
-    defaults: {
-    	min: 1
+var RangeOptions = require('./RangeOptions')
+
+var HeightOptions = RangeOptions.extend({
+    initialize: function () {
+    	this.name = 'height'
+        RangeOptions.prototype.initialize.apply(this, arguments)
+
+        if (!this.get('min')) {
+        	this.set('min', 1)
+        }
     }
 })
 

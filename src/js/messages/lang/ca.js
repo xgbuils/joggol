@@ -57,8 +57,8 @@ module.exports = {
         invalidRange: function (range, type) {
             type = {
                 balls: 'el nombre de boles',
-                periods: 'el període',
-                heights: 'l\'alçada'
+                period: 'el període',
+                height: 'l\'alçada'
             }[type]
             return capitalize(type) + ' menor (' + range.min 
                  + ') no pot sobrepassar ' + type + ' major (' + range.max + ')'

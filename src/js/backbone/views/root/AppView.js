@@ -1,7 +1,6 @@
 var AppView = Backbone.View.extend({
     el: window,
     initialize: function (options) {
-        this.domCompute()
         var view = this
 
         this.$el = $('body, html')
@@ -10,7 +9,6 @@ var AppView = Backbone.View.extend({
         if (options.appRouter) {
             this.appRouter = options.appRouter
             this.appRouter.appView = this
-            //console.log(this.appRouter)
         }
         this.dashboard = options.dashboard
         
@@ -30,12 +28,6 @@ var AppView = Backbone.View.extend({
 
         this.layoutOn = this.layouts.header
         this.scrollState = 2
-
-        this.on('create-model', function (model) {
-            //console.log('AppView')
-            this.model = model
-            this.dashboard.trigger('create-model', model)
-        })
 
         $(window).on('scroll', function () {
             if        (view.scrollState === 1) {
@@ -61,7 +53,6 @@ var AppView = Backbone.View.extend({
             event.preventDefault()
             event.stopPropagation()
             var href = $(this).attr('href').substr(1)
-            //console.log('click .internal-link')
             view.appRouter.navigate(href, {trigger: true})
         })
 
@@ -69,7 +60,6 @@ var AppView = Backbone.View.extend({
             event.preventDefault()
             event.stopPropagation()
             var href = $(this).attr('href').substr(1)
-            //console.log('click delegated .internal-link')
             view.appRouter.navigate(href, {trigger: true})
         })
     },
@@ -90,29 +80,10 @@ var AppView = Backbone.View.extend({
         this.scrollState = 0
 
         $('body, html').animate({scrollTop: targetTop}, 300, 'swing', function () {
-            //console.log(Backbone.history.getFragment())
             view.scrollState = 1
-            //console.log(Backbone.history.getFragment())
             view.changeLayout(newLayout)
         })
-    },
-    domCompute: function () {
-        $('.collapsed').each(function (index, item) {
-            var $item = $(item)
-            $item.removeClass('js-hide')
-            var width = $item.outerWidth()
-            $item.data('width', width)
-            $item.css('width', width)
-        })
-
-        $('.word-expanded').each(function (index, item) {
-            var $item = $(item)
-            var width = $item.outerWidth()
-            $item.data('width', width)
-            $item.css('width', width)
-        })
     }
-
 })
 
 module.exports = AppView
