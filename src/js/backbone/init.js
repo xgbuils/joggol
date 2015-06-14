@@ -17,8 +17,13 @@ var siteswapOptionsDefaults = require('./models/siteswapOptionsDefaults')
 var BallsOptions            = require('./models/BallsOptions')
 var PeriodOptions           = require('./models/PeriodOptions')
 var HeightOptions           = require('./models/HeightOptions')
+var AppModel                = require('./models/AppModel')
 
 // Models
+var appModel = new AppModel({
+    layout: 'header'
+})
+
 var balls  = new BallsOptions(siteswapOptionsDefaults.balls)
 var period = new PeriodOptions(siteswapOptionsDefaults.period)
 var height = new HeightOptions(siteswapOptionsDefaults.height)
@@ -53,6 +58,7 @@ var keyboard = {
 
 var controlBar = new ControlBarView({
     el: '#keyboard',
+    appModel: appModel,
     keyboardViews: keyboard,
     patternsKeyboardView: keyboard.patterns
 })
@@ -88,25 +94,31 @@ var fields = {
 
 var fieldsets = {
     balls: new FieldsetView({
+        name: 'balls',
         el: '#fieldset-balls',
         minView: fields.balls.minView,
         maxView: fields.balls.maxView,
         keyboardView: keyboard.balls,
-        model: balls
+        model: balls,
+        appModel: appModel
     }),
     period: new FieldsetView({
+        name: 'period',
         el: '#fieldset-period',
         minView: fields.period.minView,
         maxView: fields.period.maxView,
         keyboardView: keyboard.period,
-        model: period
+        model: period,
+        appModel: appModel
     }),
     height: new FieldsetView({
+        name: 'height',
         el: '#fieldset-height',
         minView: fields.height.minView,
         maxView: fields.height.maxView,
         keyboardView: keyboard.height,
-        model: height
+        model: height,
+        appModel: appModel
     })
 }
 
@@ -141,38 +153,34 @@ var dashboard = new DashboardView({
         model: siteswapOptions
     }),
     controlBarView: controlBar,
+    appModel: appModel
 })
 
 // Routing
-var Router    = require('./routes/Router')
-var callbacks = require('./routes/callbacks')
-
-var appRouter = new Router({
-    model: siteswapOptions,
-})
-
-appRouter.on('route:header'   , callbacks.header   )
-appRouter.on('route:generator', callbacks.generator)
-appRouter.on('route:simulator', callbacks.simulator)
+var appRouter   = require('./routes/Router')
+appRouter.model = siteswapOptions
 
 // layouts
 var layouts = {
     header: new HeaderView({
         el: '#header',
         appRouter: appRouter,
-        controlBarView: controlBar
+        controlBarView: controlBar,
+        model: appModel
     }),
     generator: new GeneratorView({
         el: '#generator',
         appRouter: appRouter,
         dashboardView: dashboard,
-        controlBarView: controlBar
+        controlBarView: controlBar,
+        model: appModel
     }),
     simulator: new SimulatorView({
         el: '#simulator',
         appRouter: appRouter,
         controlBarView: controlBar,
-        patternsKeyboardView: keyboard.patterns
+        patternsKeyboardView: keyboard.patterns,
+        model: appModel
     })
 }
 
@@ -180,8 +188,9 @@ var layouts = {
 var appView = new AppView({
     layouts: layouts,
     dashboard: dashboard,
-    appRouter: appRouter
+    appRouter: appRouter,
+    model: appModel
 })
 
 // routing start
-Backbone.history.start();
+appRouter.start();

@@ -4,8 +4,9 @@
   "description": "aplicació web de malabars",
   "main": "dist/index.html",
   "dependencies": {
-    "frontpiece.model": "^0.5.2",
-    "frontpiece.recursive-model": "^0.4.0",
+    "frontpiece.model": "^0.5.3",
+    "frontpiece.recursive-model": "^0.4.2",
+    "frontpiece.view": "^0.1.0",
     "kinemajs": "0.0.2",
     "lazyarray-lite": "^0.2.1",
     "siteswap-generator": "^0.2.0"
@@ -14,6 +15,7 @@
     "aliasify": "^1.5.1",
     "browser-sync": "^2.2.1",
     "browserify": "^9.0.3",
+    "frontpiece.router": "^0.1.0",
     "gulp": "^3.8.11",
     "gulp-rename": "^1.2.0",
     "gulp-sourcemaps": "^1.3.0",

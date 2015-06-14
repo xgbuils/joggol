@@ -1,6 +1,7 @@
+var View = require('frontpiece.view')
 var LazyArray = require('lazyarray-lite')
 
-var KeyboardView = Backbone.View.extend({
+var KeyboardView = View.extend({
     initialize: function (options) {
         var view = this
         this.$el = $(options.el)
@@ -10,7 +11,7 @@ var KeyboardView = Backbone.View.extend({
             this.fieldsetView.keyboardView = this
         }
 
-        this.model  = options.model
+        this.model = options.model
         this.lazyListOptions = this.model.get()
 
         options.start || (options.start = 0)
@@ -49,7 +50,12 @@ var KeyboardView = Backbone.View.extend({
         })
 
         this.on('click-key', function ($key) {
+            var $lastKey = $('.js-select', this.$el)
             var num  = parseInt($key.text())
+            if ($lastKey[0]) {
+                $lastKey.removeClass('js-select')
+            }
+            $key.addClass('js-select')
             this.center($key)
 
             if (this.fieldsetView) {

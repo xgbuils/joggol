@@ -31,17 +31,6 @@ ENV.forEach(function (env) {
        .pipe(gulp.dest('./dist/' + path + '/fonts'));
     });
 
-    gulp.task('copybackbone:' + sufix, function() {
-       gulp.src('bower_components/backbone/backbone.js')
-       //.pipe(streamify(uglify()))
-       .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
-    });
-
-    gulp.task('copyunderscore:' + sufix, function() {
-       gulp.src('bower_components/underscore/underscore-min.js')
-       .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
-    });
-    
     gulp.task('copyjquery:' + sufix, function() {
        gulp.src('bower_components/jquery/dist/jquery.min.js')
        .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
@@ -80,7 +69,7 @@ ENV.forEach(function (env) {
       var b = browserify({
         cache: {},
         packageCache: {},
-        fullPaths: true
+        fullPaths: false
       })
       b = watchify(b)
 
@@ -97,7 +86,7 @@ ENV.forEach(function (env) {
       b.bundle()
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('main.js'))
-        //.pipe(streamify(uglify()))
+        .pipe(streamify(uglify()))
         .pipe(gulp.dest('./dist/' + path + '/js/'));
     }
    
@@ -112,8 +101,6 @@ ENV.forEach(function (env) {
     
     gulp.task('serve:' + sufix, [
       'copyfonts:' + sufix,
-      'copybackbone:' + sufix,
-      'copyunderscore:' + sufix,
       'copyjquery:' + sufix,
       'js:' + sufix,
       'stylus:' + sufix, 

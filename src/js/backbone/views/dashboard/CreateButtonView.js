@@ -1,14 +1,16 @@
+var View = require('frontpiece.view')
+
 var querystring = require('querystring')
 var rangeEncode = require('../../../utils/range').encode
 
-var CreateButtonView = Backbone.View.extend({
+var CreateButtonView = View.extend({
     initialize: function (options) {
         var view   = this
         this.$el   = $(options.el)
         this.el    = this.$el[0]
         this.keyboardView = options.keyboardView
 
-        this.model = this.model
+        this.model = options.model
         this.model.on('valid', function () {
             console.log('valido!', this.get())
             view.render()
@@ -24,7 +26,7 @@ var CreateButtonView = Backbone.View.extend({
             var qs = querystring.encode(options)
             console.log(qs)
 
-            this.$el.attr('href', '#!simulator/?' + qs)
+            this.$el.attr('href', '#simulator/?' + qs)
         }
     }
 })

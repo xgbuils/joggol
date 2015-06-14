@@ -1,16 +1,21 @@
+var View = require('frontpiece.view')
 var native_android_browser = require('../../../utils/native_android_browser')
 
-var FieldsetView = Backbone.View.extend({
+var FieldsetView = View.extend({
     initialize: function (options) {
         var view = this
-        this.$el = $(options.el)
-        this.el  = this.$el[0]
+        this.name = options.name
+        this.$el  = $(options.el)
+        this.el   = this.$el[0]
 
         this.minField      = options.minView
         this.maxField      = options.maxView
         this.minField.type = 'min'
         this.maxField.type = 'max'
         this.focusField    = undefined
+
+        this.model    = options.model
+        this.appModel = options.appModel
 
         if (options.keyboardView) {
             this.keyboardView = options.keyboardView
@@ -27,10 +32,12 @@ var FieldsetView = Backbone.View.extend({
             event.preventDefault()
             event.stopPropagation()
             view.trigger('click-field', view.minField)
+            var newFocus = this.name + '_min'
+            if (view.appModel.get('focusField') !== newFocus) {
+                view.appModel.set('focusField', newFocus)
+            }
         })
-
-
-        this.model = options.model
+        
         this.model.on('change:min', function () {
             console.log('modelo cambiado')
             console.log(view.model)
@@ -50,7 +57,8 @@ var FieldsetView = Backbone.View.extend({
         })
 
         view.on('focus', function () {
-            view.keyboardView.trigger('active')
+            this.appModel.set('generatorKB', this.name)
+            //view.keyboardView.trigger('active')
 
             $item = $('.editable', view.$el)
             $item.addClass('expanded')
@@ -58,14 +66,13 @@ var FieldsetView = Backbone.View.extend({
         })
 
         this.on('blur', function () {
-            view.keyboardView.trigger('inactive')
+            //view.keyboardView.trigger('inactive')
             //console.log('fieldset ', view.el.id, ' blur')
             this.blur()
         })
 
         $item = $('.editable', view.$el)
         $item.addClass('expanded')
-        //$item.removeClass('minEqMax minLessOrEq1')
         this.blur()
     },
     render: function () {

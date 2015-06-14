@@ -1,6 +1,6 @@
+var View = require('frontpiece.view')
 
-
-var DescriptionView = Backbone.View.extend({
+var DescriptionView = View.extend({
     initialize: function (options) {
         var view = this
         this.$error   = $(options.error)

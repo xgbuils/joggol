@@ -1,8 +1,11 @@
-var DashboardView = Backbone.View.extend({
+var View = require('frontpiece.view')
+
+var DashboardView = View.extend({
     initialize: function (options) {
         var view = this
         this.$el = $(options.el)
         this.el  = this.$el[0]
+        this.appModel = options.appModel
 
         this.fieldsetViews    = options.fieldsetViews
         //console.log(this.fieldsetViews)
@@ -26,6 +29,7 @@ var DashboardView = Backbone.View.extend({
                 oldField.trigger('blur')
                 view.currentFieldset   = undefined
                 oldFieldset.focusField = undefined
+                view.trigger('blur')
             }
             view.controlBarView.trigger('inactive')
         })
@@ -55,6 +59,11 @@ var DashboardView = Backbone.View.extend({
             if (!view.controlBarView.active) {
                 view.controlBarView.trigger('active')
             }
+        })
+
+        this.on('blur', function () {
+            console.log('BLUR TOTAL')
+            this.appModel.set('generatorKB', undefined)
         })
     },
     render: function () {

@@ -1,10 +1,14 @@
-var AppView = Backbone.View.extend({
+var View = require('frontpiece.view')
+
+var AppView = View.extend({
     el: window,
     initialize: function (options) {
         var view = this
 
         this.$el = $('body, html')
         this.el  = this.$el[0]
+
+        this.model = options.model
 
         if (options.appRouter) {
             this.appRouter = options.appRouter
@@ -26,7 +30,13 @@ var AppView = Backbone.View.extend({
             return a.bottom - b.bottom
         })
 
-        this.layoutOn = this.layouts.header
+        this.model.on('change:layout', function (previous) {
+            var current = this.get('layout')
+            console.log(previous)
+            view.layouts[previous].trigger('inactive')
+            view.layouts[current].trigger('active')
+        })
+
         this.scrollState = 2
 
         $(window).on('scroll', function () {
@@ -34,7 +44,6 @@ var AppView = Backbone.View.extend({
                 ++view.scrollState
             } else if (view.scrollState === 2) {
                 var top      = $(window).scrollTop()
-                var layoutOn = view.layoutOn
                 var bottoms  = view.bottoms
                 var len      = bottoms.length
     
@@ -42,7 +51,10 @@ var AppView = Backbone.View.extend({
                     var e = bottoms[i]
                     var layout = view.layouts[e.name]
                     if (e.bottom - 60 >= top) {
-                        view.changeLayout(layout)
+                        if (e.name !== view.model.get('layout')) {
+                            console.log(e.name)
+                            view.model.set('layout', e.name)
+                        }                        
                         break
                     }
                 }
@@ -53,6 +65,7 @@ var AppView = Backbone.View.extend({
             event.preventDefault()
             event.stopPropagation()
             var href = $(this).attr('href').substr(1)
+            console.log('navigate to', href)
             view.appRouter.navigate(href, {trigger: true})
         })
 
@@ -63,16 +76,6 @@ var AppView = Backbone.View.extend({
             view.appRouter.navigate(href, {trigger: true})
         })
     },
-    changeLayout: function (newLayout) {
-        var oldLayout = this.layoutOn
-        if (oldLayout !== newLayout) {
-            if (oldLayout) {
-                oldLayout.trigger('inactive')
-            }
-            this.layoutOn = newLayout
-            newLayout.trigger('active')
-        }
-    },
     scroll: function (layoutName, callback) {
         var view      = this
         var newLayout = this.layouts[layoutName]
@@ -81,7 +84,7 @@ var AppView = Backbone.View.extend({
 
         $('body, html').animate({scrollTop: targetTop}, 300, 'swing', function () {
             view.scrollState = 1
-            view.changeLayout(newLayout)
+            view.model.set('layout', layoutName)
         })
     }
 })

@@ -1,4 +1,6 @@
-var FieldView = Backbone.View.extend({
+var View = require('frontpiece.view')
+
+var FieldView = View.extend({
     initialize: function (options) {
     	var view = this
         view.$el = $(options.el)

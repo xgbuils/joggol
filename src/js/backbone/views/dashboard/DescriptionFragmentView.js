@@ -1,7 +1,9 @@
+var View = require('frontpiece.view')
+
 var generateText = require('../../../messages/generate-text.js')
 var lang         = require('language')
 
-var DescriptionFragmentView = Backbone.View.extend({
+var DescriptionFragmentView = View.extend({
     initialize: function (options) {
         var view  = this
         this.name = options.name

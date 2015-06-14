@@ -28,7 +28,7 @@
           <p class="description">
             <%= header.description %>
           </p>
-          <a href="#!generator" class="internal-link header-btn btn" id="header-btn"><%- header.tryit %></a></a>
+          <a href="/generator" class="internal-link header-btn btn" id="header-btn"><%- header.tryit %></a></a>
         </div>
         <div class="view__absolute-block view__absolute-block--samples">
           <ul id="samples">
@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="menu-header">
-        <a href="#!header" class="internal-link title">juggol</a>
+        <a href="/header" class="internal-link title">juggol</a>
       </div>
     </header>
     <section id="generator" class="view view--generator">
@@ -92,7 +92,7 @@
         </span>
       </div>
       <div class="create">
-        <a id="create" class="internal-link btn" href="#!simulator"><%- generator.generate %></a>
+        <a id="create" class="internal-link btn" href="/simulator"><%- generator.generate %></a>
       </div>
     </section>
     <section class="view view--simulator" id="simulator">
@@ -112,8 +112,6 @@
     <div class="icon-right" id="keyboard-right"></div>
   </div>
   <script src="js/vendor/jquery.min.js"></script>
-  <script src="js/vendor/underscore-min.js"></script>
-  <script src="js/vendor/backbone.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,9 +1,13 @@
-var ControlBarView = Backbone.View.extend({
+var View = require('frontpiece.view')
+
+var ControlBarView = View.extend({
     initialize: function (options) {
         var view = this
 
         var $el = this.$el = $(options.el)
         this.el = $el[0]
+
+        this.appModel = options.appModel
 
         this.keyboardViews = options.keyboardViews
         this.width     = $el.outerWidth()
@@ -26,65 +30,94 @@ var ControlBarView = Backbone.View.extend({
         this.layout = undefined
 
         this.on('active', function() {
-            this.active = true
-            //console.log('controlBar active')
+            this.appModel.set('controlBarActive', true)
             this.$el.removeClass('js-hide')
-            //console.log('id: ', newKeyboardView.el.id, 'key: ', key)
         })
 
         this.on('inactive', function() {
-            this.active = false
-            //console.log('controlBar inactive')
+            this.appModel.set('controlBarActive', false)
             this.$el.addClass('js-hide')
-            //console.log('id: ', newKeyboardView.el.id, 'key: ', key)
         })
 
         this.$el.on('click', '#keyboard-left' , function (event) {
             event.preventDefault()
             event.stopPropagation()
-            view.currentKB[view.layout].trigger('left')
+            view.triggerKeyboard('left')
         })
 
         this.$el.on('click', '#keyboard-right', function (event) {
             event.preventDefault()
             event.stopPropagation()
-            view.currentKB[view.layout].trigger('right')
+            view.triggerKeyboard('right')
         })
 
-        view.$el.on('click', function (event) {
+        this.$el.on('click', function (event) {
             event.preventDefault()
             event.stopPropagation()
         })
 
-        this.on('change-layout', function (name) {
-            //console.log('change-layout ControlBarView')
-            var oldKeyboard = this.currentKB[this.layout]
-            var newKeyboard = this.currentKB[name]
-            if (newKeyboard !== oldKeyboard) {
-                if (oldKeyboard) {
-                    // if change layout: header <--> generator, no inactive oldKeyboard
-                    if (this.layout !== 'header' && name !== 'header') {
-                        oldKeyboard.trigger('inactive')
+        this.appModel.on('change:generatorKB', function (previous) {
+            console.log('CHANGE GENERATOR KB')
+            var keyboardName     = this.get('generatorKB')
+            var controlBarActive = this.get('controlBarActive')
+            if (previous) {
+                view.keyboardViews[previous].trigger('inactive')
+            }
+            if (!controlBarActive) {
+                view.trigger('active')
+            }
+            if (keyboardName) {
+                view.keyboardViews[keyboardName].trigger('active')
+            }
+            
+        })
+
+        this.appModel.on('change:layout', function (previous) {
+            var controlBarActive = this.get('controlBarActive')
+            var layoutName       = this.get('layout')
+            var keyboardName
+            if        (layoutName === 'header' && controlBarActive) {
+                console.log('inactive ControlBarView')
+                view.trigger('inactive')
+            } else {
+                keyboardName = this.get('generatorKB')
+                if (layoutName === 'generator') {
+                    console.log('GENERATOOOR', keyboardName, controlBarActive, previous)                   
+                    if (keyboardName && !controlBarActive) {
+                        view.trigger('active')
                     }
-                }
-                this.layout = name === 'header' ? 'generator' : name
-                //console.log(this.layout)
-                
-                if (newKeyboard) {
-                    //console.log('activando teclado')
-                    newKeyboard.trigger('active')
-                } else if (oldKeyboard){
-                    this.trigger('inactive')
+                    if (previous === 'simulator') {
+                        view.keyboardViews['patterns'].trigger('inactive')
+                        if (keyboardName) {
+                            view.keyboardViews[keyboardName].trigger('active')
+                        }
+                    }
+                    if (keyboardName === undefined && controlBarActive) {
+                        view.trigger('inactive')
+                    }
+                } else if (layoutName === 'simulator') {
+                    if (keyboardName) {
+                        view.keyboardViews[keyboardName].trigger('inactive')
+                    }
+                    if (!controlBarActive) {
+                        view.trigger('active')
+                    }
+                    view.keyboardViews['patterns'].trigger('active')
                 }
             }
         })
-
-        view.on('keyboard-active', function (keyboard) {
-            //console.log('keyboard-active')
-            view.currentKB[this.layout] = keyboard
-        })
     },
-
+    triggerKeyboard: function (dir) {
+        var currentKeyboard
+        var currentLayout = this.appModel.get('layout')
+        var keyboardName
+        if     (currentLayout === 'generator') {
+            keyboardName = this.appModel.get('generatorKB')
+        } else if (currentLayout === 'simulator') {
+            keyboardName = 'patterns'
+        }
+        this.keyboardViews[keyboardName].trigger(dir)
+    }
 })
 
 module.exports = ControlBarView
