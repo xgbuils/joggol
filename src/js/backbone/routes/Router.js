@@ -1,6 +1,5 @@
 var Router = require('frontpiece.router')
 var callbacks = require('./callbacks')
-console.log(callbacks)
 
 var router = new Router()
 router

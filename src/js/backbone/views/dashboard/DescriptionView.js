@@ -13,15 +13,12 @@ var DescriptionView = View.extend({
 
         this.model = options.model
         this.model.on('invalid', function (o, error) {
-            console.log('description invalid')
             view.render(error)
         })
         this.model.on('valid', function () {
-            console.log('SITESWAP VALIIIID')
             view.render()
         })
         if (!this.model.isValid()) {
-            console.log('siteswap invalid')
             this.render(siteswapOptions.validationError)
         } else {
             this.render()

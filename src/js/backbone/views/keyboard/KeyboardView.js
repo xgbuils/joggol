@@ -4,17 +4,20 @@ var LazyArray = require('lazyarray-lite')
 var KeyboardView = View.extend({
     initialize: function (options) {
         var view = this
-        this.$el = $(options.el)
-        this.el  = this.$el[0]
+        this.name = options.name
+        this.$el  = $(options.el)
+        this.el   = this.$el[0]
         if (options.fieldsetView) {
             this.fieldsetView = options.fieldsetView
             this.fieldsetView.keyboardView = this
         }
 
-        this.model = options.model
+        var model = this.model = options.model
+        var keyboardModel = this.keyboardModel = options.keyboardModel
+        var appModel      = this.appModel      = options.appModel
         this.lazyListOptions = this.model.get()
 
-        options.start || (options.start = 0)
+        options.start || (options.start = 1)
 
         this.position  = 0
         this.transform = options.transform || function (e) {return e} 
@@ -24,20 +27,39 @@ var KeyboardView = View.extend({
                 get: function (index) {
                     return index + options.start
                 },
-                maxLength: 100
             })
         }
 
         this.create()
-        
-        view.on('active', function () {
-            view.parent.trigger('keyboard-active', view)
-            //console.log(view.$el[0].id, 'ACTIVE')
+
+        if (keyboardModel) {
+            keyboardModel.on('change:field', function (previous) {
+                console.log('change:field')
+                var current = this.get('field')
+                if (previous !== current) {
+                    var key = model.get(current)
+                    console.log('.number-' + key)
+                    var $key = $('.number-' + key, view.$el)
+                    view.center($key)
+                }
+            })
+
+            keyboardModel.on('change:field', function () {
+                var field = this.get('field')
+                var num = model.get(field)
+            })
+
+            keyboardModel.on('change:field', function () {
+                var field = this.get('field')
+                var key = model.get(field)
+                view.trigger('click-key', $('.number-' + key, view.$el))
+            })
+        }
+
+        appModel.on('keyboard-' + this.name + ':active', function () {
             view.$el.addClass('js-select')
         })
-
-        view.on('inactive', function () {
-            //console.log(view.$el[0].id, 'INACTIVE')
+        appModel.on('keyboard-' + this.name + ':inactive', function () {
             view.$el.removeClass('js-select')
         })
 
@@ -57,17 +79,17 @@ var KeyboardView = View.extend({
             }
             $key.addClass('js-select')
             this.center($key)
-
-            if (this.fieldsetView) {
-                var type = this.fieldsetView.focusField.type
+            if (this.name !== 'patterns') {
+                var type = keyboardModel.get('field')
                 this.model.set(type, num)
-            }          
-
+            }
         })
 
         this.$el.on('click', '.keyboard-btn', function () {
             view.trigger('click-key', $(this))
         })
+
+
     },
     left: function (incr) {
         var listWidth = this.$el.outerWidth()
@@ -95,7 +117,9 @@ var KeyboardView = View.extend({
         }
     },
     center: function ($key) {
+        console.log($key.attr('class'))
         var pos  = $key.offset().left
+        console.log('left', pos)
         var incr = 0.5 * $(window).outerWidth() - pos
 
         if (incr < 0) {
@@ -109,10 +133,8 @@ var KeyboardView = View.extend({
         var begin     = this.index
         this.index   += 30
         var keys_list = this.keys_list.slice(begin, this.index)
-        //console.log(keys_list)
         $.fn.append.apply(this.$el, keys_list
             .map(function (key) {
-                //console.log(key)
                 return '<li><span class="numbers keyboard-btn number-' + transform(key) + '">' + transform(key) + '</span></li>'
             })
         )
@@ -120,11 +142,8 @@ var KeyboardView = View.extend({
     create: function () {
         this.index = 0
         this.maxWidth = Infinity
-        //console.log('lazyOptions', this.lazyListOptions)
         this.keys_list = this.lazyListConstructor(this.lazyListOptions)
-        //console.log(this.keys_list)
         this.$el.empty()
-        //console.log('append!!')
         this.append()
     }
 })

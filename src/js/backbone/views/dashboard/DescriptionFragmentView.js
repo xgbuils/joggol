@@ -18,7 +18,6 @@ var DescriptionFragmentView = View.extend({
         })
     },
     render: function () {
-        console.log(this.name)
         this.$el.text(generateText[this.name]({}, this.model.get(), this.$el, lang))
     }
 })

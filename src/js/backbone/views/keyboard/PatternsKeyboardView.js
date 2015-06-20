@@ -3,6 +3,9 @@ var siteswap     = require('siteswap-generator')
 
 var PatternsKeyboardView = KeyboardView.extend({
     initialize: function (options) {
+        var view = this
+        var appModel = this.appModel = options.appModel
+
         var abc = '0123456789abcdefghijklmnopqrstuvwxyz'
         options.transform = function (pattern) {
             return pattern
@@ -13,9 +16,7 @@ var PatternsKeyboardView = KeyboardView.extend({
         }
         
         options.lazyListConstructor = function (siteswapOptions) {
-            //console.log('siteswapOptions', siteswapOptions)
             var buffer = new siteswap.Buffer(siteswapOptions)
-            //console.log('buffer', buffer)
             return buffer
         }
         KeyboardView.prototype.initialize.call(this, options)
@@ -24,6 +25,11 @@ var PatternsKeyboardView = KeyboardView.extend({
             var pattern = $key.text()
             var simulatorView = this.simulatorView
             simulatorView.render(pattern)
+        })
+
+        appModel.on('create', function (options) {
+            view.lazyListOptions = options
+            view.create()
         })
     },
     

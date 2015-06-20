@@ -6,6 +6,7 @@
   "dependencies": {
     "frontpiece.model": "^0.5.3",
     "frontpiece.recursive-model": "^0.4.2",
+    "frontpiece.router": "^0.2.1",
     "frontpiece.view": "^0.1.0",
     "kinemajs": "0.0.2",
     "lazyarray-lite": "^0.2.1",

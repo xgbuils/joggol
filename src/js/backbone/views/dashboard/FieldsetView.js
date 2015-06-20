@@ -8,57 +8,36 @@ var FieldsetView = View.extend({
         this.$el  = $(options.el)
         this.el   = this.$el[0]
 
-        this.minField      = options.minView
-        this.maxField      = options.maxView
-        this.minField.type = 'min'
-        this.maxField.type = 'max'
-        this.focusField    = undefined
+        this.name           = options.name
+        this.focusField     = undefined
 
-        this.model    = options.model
-        this.appModel = options.appModel
-
-        if (options.keyboardView) {
-            this.keyboardView = options.keyboardView
-            this.keyboardView.fieldsetView = this
-        }
+        var model           = this.model          = options.model
+        var dashboardModel  = this.dashboardModel = options.dashboardModel
+        var keyboardModel   = this.keyboardModel  = options.keyboardModel
+        var appModel        = this.appModel       = options.appModel
 
         this.computeStyles()
-
-        //console.log('keyboard: ', view.keyboardView)
-
-        this.minField.parent = this.maxField.parent = this
 
         this.$el.on('click', function (event) {
             event.preventDefault()
             event.stopPropagation()
-            view.trigger('click-field', view.minField)
-            var newFocus = this.name + '_min'
-            if (view.appModel.get('focusField') !== newFocus) {
-                view.appModel.set('focusField', newFocus)
+            var minFieldModel = view.dashboardModel.getModel(view.name + '.min')
+            if (!minFieldModel.get('active')) {
+                minFieldModel.set('active', true)
+                keyboardModel.set('field', 'min')
             }
         })
-        
-        this.model.on('change:min', function () {
-            console.log('modelo cambiado')
-            console.log(view.model)
-            view.minField.$el.text(view.model.get('min'))
+
+        dashboardModel.on('change:fieldset:' + this.name + '=true', function (previous) {
+            view.trigger('focus')
         })
-        this.model.on('change:max', function () {
-            console.log('modelo cambiado')
-            console.log(view.model.get('max'))
-            view.maxField.$el.text(view.model.get('max'))
-        })
-        this.model.on('invalid', function () {
-            console.log('MODELO INVALIDO')
+        dashboardModel.on('change:fieldset:' + this.name + '=false', function (previous) {
+            view.trigger('blur')
         })
 
-        view.on('click-field', function (field) {
-            view.parent.trigger('click-dashboard', view, field)
-        })
-
-        view.on('focus', function () {
-            this.appModel.set('generatorKB', this.name)
-            //view.keyboardView.trigger('active')
+        this.on('focus', function () {
+            appModel.set('generatorKB', this.name)
+            appModel.set('keyboard', this.name)
 
             $item = $('.editable', view.$el)
             $item.addClass('expanded')
@@ -66,20 +45,14 @@ var FieldsetView = View.extend({
         })
 
         this.on('blur', function () {
-            //view.keyboardView.trigger('inactive')
-            //console.log('fieldset ', view.el.id, ' blur')
+            appModel.set('generatorKB', undefined)
+            appModel.set('keyboard', undefined)
             this.blur()
         })
 
         $item = $('.editable', view.$el)
         $item.addClass('expanded')
         this.blur()
-    },
-    render: function () {
-        var min = this.model.get('min')
-        var max = this.model.get('max')
-        this.minField.$el.text(min)
-        this.maxField.$el.text(max)
     },
     computeStyles: function () {
         if (native_android_browser) {

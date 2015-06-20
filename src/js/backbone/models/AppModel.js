@@ -1,15 +1,22 @@
 var Model = require('frontpiece.model')
 
 var AppModel = Model.extend({
-	initialize: function (attrs, options) {
-        this.on('change:layout', function (previous) {
-        	console.log('change:layout', previous)
-        	var layout   = this.get('layout')
-        	//var previous = this.get('previous-layout')
-        	this.trigger('layout.off:' + previous)
-        	this.trigger('layout:' + layout)
+    initialize: function (options) {
+        this.on('change:keyboard', function (previous) {
+            var current = this.get('keyboard')
+            if (previous) {
+                this.trigger('keyboard-' + previous + ':inactive')
+            }
+            if (current) {
+                this.trigger('keyboard-' + current  + ':active' )
+            }
+            if        (!previous && current) {
+            	this.trigger('keyboard:active')
+            } else if (previous && !current) {
+            	this.trigger('keyboard:inactive')
+            }
         })
-	}
+    }
 })
 
 module.exports = AppModel

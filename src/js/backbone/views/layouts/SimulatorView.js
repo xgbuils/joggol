@@ -3,24 +3,23 @@ var Juggler    = require('../../../Juggler/juggler.js')
 
 var SimulatorView = LayoutView.extend({
     initialize: function (options) {
+        var view = this
         this.name = 'simulator'
         LayoutView.prototype.initialize.call(this, options)
+
+        var model    = this.model    = options.model
         
         this.patternsKeyboardView = options.patternsKeyboardView
         this.patternsKeyboardView.simulatorView = this
 
-        this.on('active', function () {
-            this.render()
-        })
+        var appModel = this.appModel = options.appModel
 
-        this.on('create', function (options) {
-            // set pattern 
-            this.patternsKeyboardView.lazyListOptions = options
-            this.patternsKeyboardView.create()
+        this.on('active', function () {
+            this.appModel.set('keyboard', 'patterns')
+            this.render()
         })
     },
     render: function (pattern) {
-        console.log(pattern)
         if (!pattern) {
             var keys_list = this.patternsKeyboardView.keys_list
             var pattern = keys_list.slice(0, 1)[0].join('')

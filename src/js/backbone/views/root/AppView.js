@@ -14,9 +14,8 @@ var AppView = View.extend({
             this.appRouter = options.appRouter
             this.appRouter.appView = this
         }
-        this.dashboard = options.dashboard
         
-        this.layouts   = options.layouts
+        this.layouts = options.layouts
 
         this.bottoms = []
         for (var name in this.layouts) {
@@ -32,7 +31,6 @@ var AppView = View.extend({
 
         this.model.on('change:layout', function (previous) {
             var current = this.get('layout')
-            console.log(previous)
             view.layouts[previous].trigger('inactive')
             view.layouts[current].trigger('active')
         })
@@ -52,7 +50,6 @@ var AppView = View.extend({
                     var layout = view.layouts[e.name]
                     if (e.bottom - 60 >= top) {
                         if (e.name !== view.model.get('layout')) {
-                            console.log(e.name)
                             view.model.set('layout', e.name)
                         }                        
                         break
@@ -65,7 +62,6 @@ var AppView = View.extend({
             event.preventDefault()
             event.stopPropagation()
             var href = $(this).attr('href').substr(1)
-            console.log('navigate to', href)
             view.appRouter.navigate(href, {trigger: true})
         })
 
@@ -77,9 +73,9 @@ var AppView = View.extend({
         })
     },
     scroll: function (layoutName, callback) {
-        var view      = this
-        var newLayout = this.layouts[layoutName]
-        var targetTop = newLayout.$el.offset().top
+        var view         = this
+        var newLayout    = this.layouts[layoutName]
+        var targetTop    = newLayout.$el.offset().top
         this.scrollState = 0
 
         $('body, html').animate({scrollTop: targetTop}, 300, 'swing', function () {

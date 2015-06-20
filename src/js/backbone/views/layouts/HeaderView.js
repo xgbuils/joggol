@@ -3,10 +3,11 @@ var LayoutView = require('./LayoutView')
 var HeaderView = LayoutView.extend({
     initialize: function (options) {
         this.name = 'header'
-        LayoutView.prototype.initialize.call(this, options)        
+        LayoutView.prototype.initialize.call(this, options)
 
         this.on('active', function () {
             this.$el.removeClass('reduce')
+            this.appModel.set('keyboard', undefined)
         })
 
         this.on('inactive', function () {

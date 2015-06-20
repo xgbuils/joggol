@@ -10,11 +10,6 @@ function createModel(qs, defaults) {
             options[field][type] || (options[field][type] = defaults[field][type])
         })
     })
-
-    console.log(options)
-
-    console.log('CREATE')
-
     this.model.set(options)
 
     return options

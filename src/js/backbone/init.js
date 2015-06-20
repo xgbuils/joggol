@@ -14,15 +14,20 @@ var DescriptionView         = require('./views/dashboard/DescriptionView')
 var DescriptionFragmentView = require('./views/dashboard/DescriptionFragmentView')
 var SiteswapOptions         = require('./models/SiteswapOptions')
 var siteswapOptionsDefaults = require('./models/siteswapOptionsDefaults')
+var AppModel                = require('./models/AppModel')
 var BallsOptions            = require('./models/BallsOptions')
 var PeriodOptions           = require('./models/PeriodOptions')
 var HeightOptions           = require('./models/HeightOptions')
-var AppModel                = require('./models/AppModel')
+var DashboardModel          = require('./models/DashboardModel')
+var Model = require('frontpiece.model')
+var RecursiveModel = require('frontpiece.recursive-model')
 
 // Models
 var appModel = new AppModel({
     layout: 'header'
 })
+
+var dashboardModel = new DashboardModel()
 
 var balls  = new BallsOptions(siteswapOptionsDefaults.balls)
 var period = new PeriodOptions(siteswapOptionsDefaults.period)
@@ -34,25 +39,47 @@ var siteswapOptions = new SiteswapOptions({
     height: height
 })
 
+keyboardBalls  = new Model({
+    active: false
+})
+keyboardPeriod = new Model({
+    active: false
+})
+keyboardHeight = new Model({
+    active: false
+})
+keyboardPatterns = new Model({
+    active: false
+})
+
 // Views 
 var keyboard = {
     balls: new KeyboardView({
         el: '#keyboard-balls',
-        start: 1,
-        model: balls
+        name: 'balls',
+        model: balls,
+        keyboardModel: keyboardBalls,
+        appModel: appModel
     }),
     period: new KeyboardView({
         el: '#keyboard-periods',
-        model: period
+        name: 'period',
+        model: period,
+        keyboardModel: keyboardPeriod,
+        appModel: appModel
     }),
     height: new KeyboardView({
         el: '#keyboard-heights',
-        start: 1,
-        model: height
+        name: 'height',
+        model: height,
+        keyboardModel: keyboardHeight,
+        appModel: appModel
     }),
     patterns: new PatternsKeyboardView({
         el: '#keyboard-patterns',
-        model: siteswapOptions
+        name: 'patterns',
+        model: siteswapOptions,
+        appModel: appModel
     })
 }
 
@@ -68,26 +95,50 @@ var nameFieldsets = ['balls', 'period', 'height']
 var fields = {
     balls: {
         minView: new FieldView({
-            el: '#balls-min'
+            el: '#balls-min',
+            name: 'min',
+            model: dashboardModel.getModel('balls.min'),
+            rangeModel: balls,
+            keyboardModel: keyboardBalls
         }),
         maxView: new FieldView({
-            el: '#balls-max'
+            el: '#balls-max',
+            name: 'max',
+            model: dashboardModel.getModel('balls.max'),
+            rangeModel: balls,
+            keyboardModel: keyboardBalls
         })
     },
     period: {
         minView: new FieldView({
-            el: '#periods-min'
+            el: '#periods-min',
+            name: 'min',
+            model: dashboardModel.getModel('period.min'),
+            rangeModel: period,
+            keyboardModel: keyboardPeriod
         }),
         maxView: new FieldView({
-            el: '#periods-max'
+            el: '#periods-max',
+            name: 'max',
+            model: dashboardModel.getModel('period.max'),
+            rangeModel: period,
+            keyboardModel: keyboardPeriod
         }),
     },
     height: {
         minView: new FieldView({
-            el: '#heights-min'
+            el: '#heights-min',
+            name: 'min',
+            model: dashboardModel.getModel('height.min'),
+            rangeModel: height,
+            keyboardModel: keyboardHeight
         }),
         maxView: new FieldView({
-            el: '#heights-max'
+            el: '#heights-max',
+            name: 'max',
+            model: dashboardModel.getModel('height.max'),
+            rangeModel: height,
+            keyboardModel: keyboardHeight
         }),
     }
 }
@@ -96,28 +147,28 @@ var fieldsets = {
     balls: new FieldsetView({
         name: 'balls',
         el: '#fieldset-balls',
-        minView: fields.balls.minView,
-        maxView: fields.balls.maxView,
-        keyboardView: keyboard.balls,
+        name: 'balls',
         model: balls,
+        dashboardModel: dashboardModel,
+        keyboardModel: keyboardBalls,
         appModel: appModel
     }),
     period: new FieldsetView({
         name: 'period',
         el: '#fieldset-period',
-        minView: fields.period.minView,
-        maxView: fields.period.maxView,
-        keyboardView: keyboard.period,
+        name: 'period',
         model: period,
+        dashboardModel: dashboardModel,
+        keyboardModel: keyboardPeriod,
         appModel: appModel
     }),
     height: new FieldsetView({
         name: 'height',
         el: '#fieldset-height',
-        minView: fields.height.minView,
-        maxView: fields.height.maxView,
-        keyboardView: keyboard.height,
+        name: 'height',
         model: height,
+        dashboardModel: dashboardModel,
+        keyboardModel: keyboardHeight,
         appModel: appModel
     })
 }
@@ -143,22 +194,21 @@ var description = new DescriptionView({
     }),
 })
 
+var createButtonView = new CreateButtonView({
+    el: '#create',
+    model: siteswapOptions
+})
+
 var dashboard = new DashboardView({
     el: '#generator',
-    fieldsetViews: fieldsets,
-    descriptionView: description,
-    createButtonView: new CreateButtonView({
-        el: '#create',
-        keyboardView: keyboard.patterns,
-        model: siteswapOptions
-    }),
-    controlBarView: controlBar,
-    appModel: appModel
+    appModel: appModel,
+    model: dashboardModel
 })
 
 // Routing
-var appRouter   = require('./routes/Router')
-appRouter.model = siteswapOptions
+var appRouter      = require('./routes/Router')
+appRouter.model    = siteswapOptions
+appRouter.appModel = appModel
 
 // layouts
 var layouts = {
@@ -166,21 +216,23 @@ var layouts = {
         el: '#header',
         appRouter: appRouter,
         controlBarView: controlBar,
-        model: appModel
+        appModel: appModel
     }),
     generator: new GeneratorView({
         el: '#generator',
         appRouter: appRouter,
         dashboardView: dashboard,
         controlBarView: controlBar,
-        model: appModel
+        appModel: appModel
     }),
     simulator: new SimulatorView({
         el: '#simulator',
         appRouter: appRouter,
         controlBarView: controlBar,
         patternsKeyboardView: keyboard.patterns,
-        model: appModel
+        model: siteswapOptions,
+        appModel: appModel,
+        keyboardModel: keyboardPatterns
     })
 }
 
