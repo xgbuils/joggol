@@ -34,25 +34,11 @@ var KeyboardView = View.extend({
 
         if (keyboardModel) {
             keyboardModel.on('change:field', function (previous) {
-                console.log('change:field')
                 var current = this.get('field')
                 if (previous !== current) {
                     var key = model.get(current)
-                    console.log('.number-' + key)
-                    var $key = $('.number-' + key, view.$el)
-                    view.center($key)
+                    view.trigger('click-key', $('.number-' + key, view.$el))
                 }
-            })
-
-            keyboardModel.on('change:field', function () {
-                var field = this.get('field')
-                var num = model.get(field)
-            })
-
-            keyboardModel.on('change:field', function () {
-                var field = this.get('field')
-                var key = model.get(field)
-                view.trigger('click-key', $('.number-' + key, view.$el))
             })
         }
 
@@ -121,8 +107,6 @@ var KeyboardView = View.extend({
         }
     },
     center: function ($key) {
-        console.log('center')
-        //console.log($key.attr('class'))
         var pos  = $key.offset().left
         var incr = 0.5 * $(window).outerWidth() - pos
 
