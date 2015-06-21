@@ -9,22 +9,32 @@ var CreateButtonView = View.extend({
         this.$el   = $(options.el)
         this.el    = this.$el[0]
 
-        this.model = options.model
+        var model    = this.model    = options.model
+        var appModel = this.appModel = options.appModel
 
         this.render()
-        this.model.on('valid', function () {
+        model.on('valid', function () {
             view.render()
+            appModel.trigger('simulator-enabled')
+        })
+        model.on('invalid', function () {
+            view.render()
+            appModel.trigger('simulator-disabled')
         })
     },
     render: function () {
-        if (this.model.isValid()) {
-            var options = this.model.get()
+        var model = this.model
+        if (model.isValid()) {
+            var options = model.get()
             for (var key in options) {
                 options[key] = rangeEncode(options[key])
             }
             var qs = querystring.encode(options)
 
             this.$el.attr('href', '#simulator/?' + qs)
+            this.$el.removeClass('disabled')
+        } else {
+            this.$el.addClass('disabled')
         }
     }
 })

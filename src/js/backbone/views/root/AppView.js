@@ -8,7 +8,7 @@ var AppView = View.extend({
         this.$el = $('body, html')
         this.el  = this.$el[0]
 
-        this.model = options.model
+        var appModel = this.model    = options.model
 
         if (options.appRouter) {
             this.appRouter = options.appRouter
@@ -29,10 +29,17 @@ var AppView = View.extend({
             return a.bottom - b.bottom
         })
 
-        this.model.on('change:layout', function (previous) {
+        appModel.on('change:layout', function (previous) {
             var current = this.get('layout')
             view.layouts[previous].trigger('inactive')
             view.layouts[current].trigger('active')
+        })
+
+        appModel.on('simulator-disabled', function () {
+            $('#wrapper', view.$el).addClass('simulator-disabled')
+        })
+        appModel.on('simulator-enabled', function () {
+            $('#wrapper', view.$el).removeClass('simulator-disabled')
         })
 
         this.scrollState = 2

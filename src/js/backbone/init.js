@@ -18,7 +18,6 @@ var AppModel                = require('./models/AppModel')
 var BallsOptions            = require('./models/BallsOptions')
 var PeriodOptions           = require('./models/PeriodOptions')
 var HeightOptions           = require('./models/HeightOptions')
-var DashboardModel          = require('./models/DashboardModel')
 var Model = require('frontpiece.model')
 var RecursiveModel = require('frontpiece.recursive-model')
 
@@ -26,8 +25,6 @@ var RecursiveModel = require('frontpiece.recursive-model')
 var appModel = new AppModel({
     layout: 'header'
 })
-
-var dashboardModel = new DashboardModel()
 
 var balls  = new BallsOptions(siteswapOptionsDefaults.balls)
 var period = new PeriodOptions(siteswapOptionsDefaults.period)
@@ -96,15 +93,17 @@ var fields = {
     balls: {
         minView: new FieldView({
             el: '#balls-min',
-            name: 'min',
-            model: dashboardModel.getModel('balls.min'),
+            fieldset: 'balls',
+            field: 'min',
+            appModel: appModel,
             rangeModel: balls,
             keyboardModel: keyboardBalls
         }),
         maxView: new FieldView({
             el: '#balls-max',
-            name: 'max',
-            model: dashboardModel.getModel('balls.max'),
+            fieldset: 'balls',
+            field: 'max',
+            appModel: appModel,
             rangeModel: balls,
             keyboardModel: keyboardBalls
         })
@@ -112,15 +111,17 @@ var fields = {
     period: {
         minView: new FieldView({
             el: '#periods-min',
-            name: 'min',
-            model: dashboardModel.getModel('period.min'),
+            fieldset: 'period',
+            field: 'min',
+            appModel: appModel,
             rangeModel: period,
             keyboardModel: keyboardPeriod
         }),
         maxView: new FieldView({
             el: '#periods-max',
-            name: 'max',
-            model: dashboardModel.getModel('period.max'),
+            fieldset: 'period',
+            field: 'max',
+            appModel: appModel,
             rangeModel: period,
             keyboardModel: keyboardPeriod
         }),
@@ -128,15 +129,17 @@ var fields = {
     height: {
         minView: new FieldView({
             el: '#heights-min',
-            name: 'min',
-            model: dashboardModel.getModel('height.min'),
+            fieldset: 'height',
+            field: 'min',
+            appModel: appModel,
             rangeModel: height,
             keyboardModel: keyboardHeight
         }),
         maxView: new FieldView({
             el: '#heights-max',
-            name: 'max',
-            model: dashboardModel.getModel('height.max'),
+            fieldset: 'height',
+            field: 'max',
+            appModel: appModel,
             rangeModel: height,
             keyboardModel: keyboardHeight
         }),
@@ -147,27 +150,21 @@ var fieldsets = {
     balls: new FieldsetView({
         name: 'balls',
         el: '#fieldset-balls',
-        name: 'balls',
         model: balls,
-        dashboardModel: dashboardModel,
         keyboardModel: keyboardBalls,
         appModel: appModel
     }),
     period: new FieldsetView({
         name: 'period',
         el: '#fieldset-period',
-        name: 'period',
         model: period,
-        dashboardModel: dashboardModel,
         keyboardModel: keyboardPeriod,
         appModel: appModel
     }),
     height: new FieldsetView({
         name: 'height',
         el: '#fieldset-height',
-        name: 'height',
         model: height,
-        dashboardModel: dashboardModel,
         keyboardModel: keyboardHeight,
         appModel: appModel
     })
@@ -196,13 +193,13 @@ var description = new DescriptionView({
 
 var createButtonView = new CreateButtonView({
     el: '#create',
-    model: siteswapOptions
+    model: siteswapOptions,
+    appModel: appModel
 })
 
 var dashboard = new DashboardView({
     el: '#generator',
     appModel: appModel,
-    model: dashboardModel
 })
 
 // Routing

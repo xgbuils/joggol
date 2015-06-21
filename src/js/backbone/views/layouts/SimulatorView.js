@@ -25,10 +25,10 @@ var SimulatorView = LayoutView.extend({
             var pattern = keys_list.slice(0, 1)[0]
         }
         if (!this.juggler) {
-            var $simulator    = this.$el
-            var width  = $simulator.width()
-            var height = $simulator.height()
-            this.juggler = new Juggler({
+            var $simulator = this.$el
+            var width      = $simulator.width()
+            var height     = $simulator.height()
+            this.juggler   = new Juggler({
                 stage: {
                     container: 'juggler-simulator',
                     width:  width,
@@ -37,7 +37,6 @@ var SimulatorView = LayoutView.extend({
             })
         }
         if (this.pattern !== pattern) {
-            console.log(pattern)
             this.juggler.stop()
             this.juggler.setPattern(pattern)
             this.juggler.play()

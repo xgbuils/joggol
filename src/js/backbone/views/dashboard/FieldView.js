@@ -3,10 +3,12 @@ var View = require('frontpiece.view')
 var FieldView = View.extend({
     initialize: function (options) {
         var view  = this
-        this.name = options.name
+        this.fieldset = options.fieldset
+        this.field    = options.field
+        var name = this.fieldset + '.' + this.field
         this.$el  = $(options.el)
         this.el   = view.$el[0]
-        var model         = this.model         = options.model
+        var appModel      = this.appModel      = options.appModel
         var rangeModel    = this.rangeModel    = options.rangeModel
         var keyboardModel = this.keyboardModel = options.keyboardModel
 
@@ -17,32 +19,24 @@ var FieldView = View.extend({
         this.$el.on('click', function (event) {
             event.preventDefault()
             event.stopPropagation()
-            model.set('active', true)
-            keyboardModel.set('field', model.get('field'))
+            appModel.set('focus', name)
+            keyboardModel.set('field', view.field)
         })
 
-        this.model.on('change:active', function (previous) {
-            var current = this.get('active')
-            if (previous !== current) {
-                view.trigger(current ? 'focus' : 'blur')
-            }
-        })
-
-        rangeModel.on('change:' + this.name, function () {
+        rangeModel.on('change:' + this.field, function () {
             view.render()
         })
 
-        view.on('focus', function (keyboardView) {
-            var $el = this.$el
-            $el.addClass('js-select')
+        appModel.on('focus:' + this.fieldset + '.' + this.field, function () {
+            view.$el.addClass('js-select')
         })
 
-        view.on('blur', function () {
-            this.$el.removeClass('js-select')
+        appModel.on('blur:' + name, function () {
+            view.$el.removeClass('js-select')
         })
     },
     render: function () {
-        var value = this.rangeModel.get(this.name)
+        var value = this.rangeModel.get(this.field)
         this.$el.text(value)
     },
     computeStyles: function () {

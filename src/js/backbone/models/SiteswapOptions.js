@@ -1,5 +1,4 @@
 var message = require('language').message
-var ErrorHandler   = require('../../validation/ErrorHandler.js')
 var RecursiveModel = require('frontpiece.recursive-model')
 
 var SiteswapOptions = RecursiveModel.extend({

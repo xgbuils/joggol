@@ -16,6 +16,27 @@ var AppModel = Model.extend({
             	this.trigger('keyboard:inactive')
             }
         })
+        this.on('change:focus', function (previous) {
+            current = this.get('focus')
+            if (previous !== current) {
+                if (previous) {
+                    this.trigger('blur:' + previous)
+                }
+                if (current) {
+                    this.trigger('focus:' + current)
+                }
+            }
+            var previousFieldset = previous && previous.split('.')[0]
+            var currentFieldset  = current  && current.split('.')[0]
+            if (previousFieldset !== currentFieldset) {
+                if (previousFieldset) {
+                    this.trigger('blur:' + previousFieldset)
+                }
+                if (currentFieldset) {
+                    this.trigger('focus:' + currentFieldset)
+                }
+            }
+        })
     }
 })
 
