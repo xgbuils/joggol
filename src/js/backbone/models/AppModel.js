@@ -26,8 +26,11 @@ var AppModel = Model.extend({
                     this.trigger('focus:' + current)
                 }
             }
-            var previousFieldset = previous && previous.split('.')[0]
-            var currentFieldset  = current  && current.split('.')[0]
+            var p = previous ? previous.split('.') : []
+            var c = current  ? current.split('.')  : []
+            var previousFieldset = p[0]
+            var currentFieldset  = c[0]
+            var currentField     = c[1]
             if (previousFieldset !== currentFieldset) {
                 if (previousFieldset) {
                     this.trigger('blur:' + previousFieldset)
@@ -35,6 +38,9 @@ var AppModel = Model.extend({
                 if (currentFieldset) {
                     this.trigger('focus:' + currentFieldset)
                 }
+            }
+            if (previous !== current && currentFieldset) {
+                this.trigger('click:' + currentFieldset, currentField)
             }
         })
     }

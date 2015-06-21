@@ -12,7 +12,6 @@ var FieldsetView = View.extend({
         this.focusField     = undefined
 
         var model           = this.model          = options.model
-        var keyboardModel   = this.keyboardModel  = options.keyboardModel
         var appModel        = this.appModel       = options.appModel
 
         this.computeStyles()
@@ -27,7 +26,6 @@ var FieldsetView = View.extend({
             var fieldName = view.name + '.min'
             if (focus !== fieldName) {
                 appModel.set('focus', fieldName)
-                keyboardModel.set('field', 'min')
             }
         })
 

@@ -18,8 +18,6 @@ var AppModel                = require('./models/AppModel')
 var BallsOptions            = require('./models/BallsOptions')
 var PeriodOptions           = require('./models/PeriodOptions')
 var HeightOptions           = require('./models/HeightOptions')
-var Model = require('frontpiece.model')
-var RecursiveModel = require('frontpiece.recursive-model')
 
 // Models
 var appModel = new AppModel({
@@ -36,40 +34,24 @@ var siteswapOptions = new SiteswapOptions({
     height: height
 })
 
-keyboardBalls  = new Model({
-    active: false
-})
-keyboardPeriod = new Model({
-    active: false
-})
-keyboardHeight = new Model({
-    active: false
-})
-keyboardPatterns = new Model({
-    active: false
-})
-
 // Views 
 var keyboard = {
     balls: new KeyboardView({
         el: '#keyboard-balls',
         name: 'balls',
         model: balls,
-        keyboardModel: keyboardBalls,
         appModel: appModel
     }),
     period: new KeyboardView({
         el: '#keyboard-periods',
         name: 'period',
         model: period,
-        keyboardModel: keyboardPeriod,
         appModel: appModel
     }),
     height: new KeyboardView({
         el: '#keyboard-heights',
         name: 'height',
         model: height,
-        keyboardModel: keyboardHeight,
         appModel: appModel
     }),
     patterns: new PatternsKeyboardView({
@@ -97,7 +79,6 @@ var fields = {
             field: 'min',
             appModel: appModel,
             rangeModel: balls,
-            keyboardModel: keyboardBalls
         }),
         maxView: new FieldView({
             el: '#balls-max',
@@ -105,7 +86,6 @@ var fields = {
             field: 'max',
             appModel: appModel,
             rangeModel: balls,
-            keyboardModel: keyboardBalls
         })
     },
     period: {
@@ -115,7 +95,6 @@ var fields = {
             field: 'min',
             appModel: appModel,
             rangeModel: period,
-            keyboardModel: keyboardPeriod
         }),
         maxView: new FieldView({
             el: '#periods-max',
@@ -123,7 +102,6 @@ var fields = {
             field: 'max',
             appModel: appModel,
             rangeModel: period,
-            keyboardModel: keyboardPeriod
         }),
     },
     height: {
@@ -133,7 +111,6 @@ var fields = {
             field: 'min',
             appModel: appModel,
             rangeModel: height,
-            keyboardModel: keyboardHeight
         }),
         maxView: new FieldView({
             el: '#heights-max',
@@ -141,7 +118,6 @@ var fields = {
             field: 'max',
             appModel: appModel,
             rangeModel: height,
-            keyboardModel: keyboardHeight
         }),
     }
 }
@@ -151,21 +127,18 @@ var fieldsets = {
         name: 'balls',
         el: '#fieldset-balls',
         model: balls,
-        keyboardModel: keyboardBalls,
         appModel: appModel
     }),
     period: new FieldsetView({
         name: 'period',
         el: '#fieldset-period',
         model: period,
-        keyboardModel: keyboardPeriod,
         appModel: appModel
     }),
     height: new FieldsetView({
         name: 'height',
         el: '#fieldset-height',
         model: height,
-        keyboardModel: keyboardHeight,
         appModel: appModel
     })
 }
@@ -229,7 +202,6 @@ var layouts = {
         patternsKeyboardView: keyboard.patterns,
         model: siteswapOptions,
         appModel: appModel,
-        keyboardModel: keyboardPatterns
     })
 }
 

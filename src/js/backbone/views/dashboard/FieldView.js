@@ -10,7 +10,6 @@ var FieldView = View.extend({
         this.el   = view.$el[0]
         var appModel      = this.appModel      = options.appModel
         var rangeModel    = this.rangeModel    = options.rangeModel
-        var keyboardModel = this.keyboardModel = options.keyboardModel
 
         this.computeStyles()
 
@@ -20,7 +19,6 @@ var FieldView = View.extend({
             event.preventDefault()
             event.stopPropagation()
             appModel.set('focus', name)
-            keyboardModel.set('field', view.field)
         })
 
         rangeModel.on('change:' + this.field, function () {

@@ -13,7 +13,6 @@ var KeyboardView = View.extend({
         }
 
         var model = this.model = options.model
-        var keyboardModel = this.keyboardModel = options.keyboardModel
         var appModel      = this.appModel      = options.appModel
         this.lazyListOptions = this.model.get()
 
@@ -32,13 +31,10 @@ var KeyboardView = View.extend({
 
         this.create()
 
-        if (keyboardModel) {
-            keyboardModel.on('change:field', function (previous) {
-                var current = this.get('field')
-                if (previous !== current) {
-                    var key = model.get(current)
-                    view.trigger('click-key', $('.number-' + key, view.$el))
-                }
+        if (this.name !== 'patterns') {
+            appModel.on('click:' + this.name, function (type) {
+                var key = model.get(type)
+                view.trigger('click-key', $('.number-' + key, view.$el))
             })
         }
 
@@ -70,7 +66,7 @@ var KeyboardView = View.extend({
             $key.addClass('js-select')
             this.center($key)
             if (this.name !== 'patterns') {
-                var type = keyboardModel.get('field')
+                var type = appModel.get('focus').split('.')[1]
                 this.model.set(type, num)
             }
         })
