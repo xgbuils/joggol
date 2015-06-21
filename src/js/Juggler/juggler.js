@@ -22,7 +22,6 @@ var Juggler = (function () {
             var k = (juggling.integer_height - juggling.waiting.time) * juggling.interval
             var r = k / K //(k * k) / (K * K)
             width = r * stage.width
-            console.log('uu', r)
         } else {
             var k = (3 - juggling.waiting.time) * juggling.interval
             var r = k / K // (k * k) / (K * K)
@@ -38,7 +37,6 @@ var Juggler = (function () {
     }
 
     function Juggler(attrs) {
-        console.log(attrs.stage)
         this.attrs = {}
         this.attrs = extend(true, this.attrs, {
             stage: {
@@ -105,13 +103,12 @@ var Juggler = (function () {
             radius  = juggling.balls.radius
         }
 
-        //console.log(width, gravity, radius, shift)
         var num_balls = pattern.reduce(function (a, b) {
           return a + b
         }, 0)
 
         if (num_balls % pattern.length != 0) {
-            throw new Error('El patró es irrealitzable. Es necessita un nombre enter de boles. Actualment: ' + num_balls / pattern.length)
+            throw new Error('El patró ' + pattern + ' es irrealitzable. Es necessita un nombre enter de boles. Actualment: ' + num_balls / pattern.length)
         }
 
         num_balls /= pattern.length
@@ -187,7 +184,6 @@ var Juggler = (function () {
         //attrs.stage.add(attrs.layer)          
         attrs.animation = new Kinema.Animation(function(frame) {
             var steps = Math.floor(frame.time / juggling.interval)
-            //console.log(steps)
             self.balls.forEach(function (ball) {
                 var t = frame.time - juggling.interval * ball.start
                 if (t >= 0) {

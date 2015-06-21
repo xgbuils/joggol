@@ -22,7 +22,7 @@ var SimulatorView = LayoutView.extend({
     render: function (pattern) {
         if (!pattern) {
             var keys_list = this.patternsKeyboardView.keys_list
-            var pattern = keys_list.slice(0, 1)[0].join('')
+            var pattern = keys_list.slice(0, 1)[0]
         }
         if (!this.juggler) {
             var $simulator    = this.$el
@@ -37,6 +37,7 @@ var SimulatorView = LayoutView.extend({
             })
         }
         if (this.pattern !== pattern) {
+            console.log(pattern)
             this.juggler.stop()
             this.juggler.setPattern(pattern)
             this.juggler.play()

@@ -63,6 +63,10 @@ var KeyboardView = View.extend({
             view.$el.removeClass('js-select')
         })
 
+        appModel.on('keyboard-' + this.name + ':move', function (dir) {
+            view.trigger(dir)
+        })
+
         this.on('left', function () {
             this.left(0.6 * this.width)
         })
@@ -117,9 +121,9 @@ var KeyboardView = View.extend({
         }
     },
     center: function ($key) {
-        console.log($key.attr('class'))
+        console.log('center')
+        //console.log($key.attr('class'))
         var pos  = $key.offset().left
-        console.log('left', pos)
         var incr = 0.5 * $(window).outerWidth() - pos
 
         if (incr < 0) {

@@ -55,15 +55,8 @@ var ControlBarView = View.extend({
         })
     },
     triggerKeyboard: function (dir) {
-        var currentKeyboard
-        var currentLayout = this.appModel.get('layout')
-        var keyboardName
-        if     (currentLayout === 'generator') {
-            keyboardName = this.appModel.get('generatorKB')
-        } else if (currentLayout === 'simulator') {
-            keyboardName = 'patterns'
-        }
-        this.keyboardViews[keyboardName].trigger(dir)
+        var appModel = this.appModel
+        appModel.trigger('keyboard-' + appModel.get('keyboard') + ':move', dir)
     }
 })
 
