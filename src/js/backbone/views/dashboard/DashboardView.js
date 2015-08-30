@@ -6,7 +6,7 @@ var DashboardView = View.extend({
         this.$el = $(options.el)
         this.el  = this.$el[0]
         var appModel = this.appModel = options.appModel
-        var model = this.model = options.model
+        var model    = this.model    = options.model
 
         this.$el.on('click', function (event) {
             event.preventDefault()

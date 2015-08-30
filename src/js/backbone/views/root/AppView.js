@@ -4,11 +4,10 @@ var AppView = View.extend({
     el: window,
     initialize: function (options) {
         var view = this
-
         this.$el = $('body, html')
         this.el  = this.$el[0]
 
-        var appModel = this.model    = options.model
+        var appModel = this.model = options.model
 
         if (options.appRouter) {
             this.appRouter = options.appRouter
@@ -27,12 +26,6 @@ var AppView = View.extend({
         }
         this.bottoms.sort(function (a, b) {
             return a.bottom - b.bottom
-        })
-
-        appModel.on('change:layout', function (previous) {
-            var current = this.get('layout')
-            view.layouts[previous].trigger('inactive')
-            view.layouts[current].trigger('active')
         })
 
         appModel.on('simulator-disabled', function () {

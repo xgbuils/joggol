@@ -7,13 +7,9 @@ var KeyboardView = View.extend({
         this.name = options.name
         this.$el  = $(options.el)
         this.el   = this.$el[0]
-        if (options.fieldsetView) {
-            this.fieldsetView = options.fieldsetView
-            this.fieldsetView.keyboardView = this
-        }
 
-        var model = this.model = options.model
-        var appModel      = this.appModel      = options.appModel
+        var model    = this.model    = options.model
+        var appModel = this.appModel = options.appModel
         this.lazyListOptions = this.model.get()
 
         options.start || (options.start = 1)

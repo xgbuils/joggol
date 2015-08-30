@@ -8,11 +8,8 @@ var FieldsetView = View.extend({
         this.$el  = $(options.el)
         this.el   = this.$el[0]
 
-        this.name           = options.name
-        this.focusField     = undefined
-
-        var model           = this.model          = options.model
-        var appModel        = this.appModel       = options.appModel
+        var model    = this.model    = options.model
+        var appModel = this.appModel = options.appModel
 
         this.computeStyles()
         $item = $('.editable', view.$el)

@@ -12,11 +12,9 @@ var SimulatorView = LayoutView.extend({
         this.patternsKeyboardView = options.patternsKeyboardView
         this.patternsKeyboardView.simulatorView = this
 
-        var appModel = this.appModel = options.appModel
-
-        this.on('active', function () {
-            this.appModel.set('keyboard', 'patterns')
-            this.render()
+        this.appModel.on('layout-' + this.name + ':active', function () {
+            this.set('keyboard', 'patterns')
+            view.render()
         })
     },
     render: function (pattern) {

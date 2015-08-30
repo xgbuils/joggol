@@ -2,6 +2,17 @@ var Model = require('frontpiece.model')
 
 var AppModel = Model.extend({
     initialize: function (options) {
+        this.on('change:layout', function (previous) {
+            current = this.get('layout')
+            if (previous !== current) {
+                if (previous) {
+                    this.trigger('layout-' + previous + ':inactive')
+                }
+                if (current) {
+                    this.trigger('layout-' + current  + ':active' )
+                }
+            }
+        })
         this.on('change:keyboard', function (previous) {
             var current = this.get('keyboard')
             if (previous) {

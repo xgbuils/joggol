@@ -13,10 +13,11 @@ var LayoutView = View.extend({
         this.height = $el.outerHeight()
         this.bottom = $el.offset().top + this.height
 
-        this.on('active', function () {
+        
+        this.appModel.on('layout-' + this.name + ':active', function () {
             var fragment = clearSlashes(appRouter.getFragment().split('?')[0])
-            if ( fragment !== this.name && (fragment !== '' || this.name !== 'header')) {
-                appRouter.navigate(this.name)
+            if ( fragment !== view.name && (fragment !== '' || view.name !== 'header')) {
+                appRouter.navigate(view.name)
             }
         })
     }

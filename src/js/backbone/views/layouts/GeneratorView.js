@@ -4,13 +4,11 @@ var GeneratorView = LayoutView.extend({
     initialize: function (options) {
         this.name = 'generator'
         LayoutView.prototype.initialize.call(this, options)
-        var appModel = this.appModel
 
-        this.on('active', function () {
-            var keyboardName     = appModel.get('generatorKB')
-            var controlBarActive = appModel.get('controlBarActive')
+        this.appModel.on('layout-' + this.name + ':active', function () {
+            var keyboardName     = this.get('generatorKB')
             if (keyboardName) {
-                appModel.set('keyboard', keyboardName)
+                this.set('keyboard', keyboardName)
             }
         })
     }
