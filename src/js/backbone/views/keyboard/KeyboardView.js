@@ -22,6 +22,7 @@ var KeyboardView = View.extend({
                 get: function (index) {
                     return index + options.start
                 },
+                maxLength: 100
             })
         }
 
@@ -84,23 +85,25 @@ var KeyboardView = View.extend({
     },
     right: function (incr) {
         var listWidth = this.$el.outerWidth()
+        console.log('listWidth', listWidth)
 
-        if (this.maxWidth === Infinity && this.index >= this.keys_list.maxLength) {
-            this.maxWidth = listWidth - this.width
-        }
-        //var width = $context.data('width')
         this.position += incr
+        console.log('position', this.position)
         if (this.position > this.maxWidth) {
-            this.position = this.maxWidth
+            this.position = this.maxWidth > 0 ? this.maxWidth : 0
         }
+        console.log('position', this.position)
         this.$el.css('left', -this.position)
         if (this.position + 2 * this.width > listWidth && this.index < this.keys_list.maxLength) {
             this.append()
         }
     },
     center: function ($key) {
+        console.log('center ', $key[0])
         var pos  = $key.offset().left
+        console.log('pos', pos)
         var incr = 0.5 * $(window).outerWidth() - pos
+        console.log(0.5 * $(window).outerWidth())
 
         if (incr < 0) {
             this.right(-incr)
@@ -113,13 +116,20 @@ var KeyboardView = View.extend({
         var begin     = this.index
         this.index   += 30
         var keys_list = this.keys_list.slice(begin, this.index)
+        console.log('maxLength', this.keys_list.maxLength)
         $.fn.append.apply(this.$el, keys_list
             .map(function (key) {
                 return '<li><span class="numbers keyboard-btn number-' + transform(key) + '">' + transform(key) + '</span></li>'
             })
         )
+        var listWidth = this.$el.outerWidth()
+        if (this.maxWidth === Infinity && this.index >= this.keys_list.maxLength) {
+            this.maxWidth = listWidth - this.width
+        }
+        console.log('maxWidth', this.maxWidth)
     },
     create: function () {
+        console.log('create')
         this.index = 0
         this.maxWidth = Infinity
         this.keys_list = this.lazyListConstructor(this.lazyListOptions)
