@@ -9,7 +9,7 @@
   <title>juggol</title>
 </head>
 <body>
-  <div id="wrapper" class="wrapper simulator-disabled">
+  <div id="wrapper" class="wrapper">
     <header id="header" class="view view--header">
       <div class="presentation">
         <nav class="view__absolute-block view__absolute-block--languages links">
@@ -28,7 +28,7 @@
           <p class="description">
             <strong>Generador</strong> y <strong>simulador</strong> de <strong>malabares</strong>
           </p>
-          <a href="#generator" class="internal-link header-btn btn" id="header-btn">Pruébalo!</a></a>
+          <a href="/generator" class="internal-link header-btn btn" id="header-btn">Pruébalo!</a></a>
         </div>
         <div class="view__absolute-block view__absolute-block--samples">
           <ul id="samples">
@@ -48,11 +48,11 @@
         </div>
       </div>
       <div class="menu-header">
-        <a href="#header" class="internal-link title">juggol</a>
+        <a href="/header" class="internal-link title">juggol</a>
       </div>
     </header>
     <section id="generator" class="view view--generator">
-      <div class="view__block">
+      <div id="fieldset-balls" class="view__block">
         <h2>Bolas</h2>
         <div id="balls" class="editable balls">
           <span class="word-expanded">entre</span>
@@ -61,7 +61,7 @@
           <span class="contenteditable max" id="balls-max">3</span>
         </div>
       </div>
-      <div class="view__block">
+      <div id="fieldset-period" class="view__block">
         <h2>Periodos</h2>
          <div id="periods" class="editable periods">
           <span class="word-expanded">entre</span><span class="collapsed js-hide">de</span>
@@ -70,7 +70,7 @@
           <span class="contenteditable max" id="periods-max">3</span>
         </div>
       </div>
-      <div class="view__block">
+      <div id="fieldset-height" class="view__block">
         <!--Alçada màxima-->
         <h2><abbr class="view__block__abbr" title="Altura máxima"><span>Altura m<span>áx</span>.</span></abbr></h2>
         <div id="heights" class="editable heights">
@@ -87,12 +87,12 @@
         <span id="success">
           Patrones
           <span id="description-balls"></span>
-          <span id="description-periods"></span>
-          <span id="description-heights"></span>
+          <span id="description-period"></span>
+          <span id="description-height"></span>
         </span>
       </div>
       <div class="create">
-        <a id="create" class="internal-link btn" href="#simulator">Genera!</a>
+        <a id="create" class="internal-link btn" href="/simulator">Genera!</a>
       </div>
     </section>
     <section class="view view--simulator" id="simulator">
@@ -111,7 +111,7 @@
     </div>
     <div class="icon-right" id="keyboard-right"></div>
   </div>
-  <script src="js/jquery.min.js"></script>
+  <script src="js/vendor/jquery.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

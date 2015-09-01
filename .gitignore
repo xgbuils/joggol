@@ -2,7 +2,4 @@ node_modules/
 bower_components/
 dist/dev/
 vendor/
-dist/prod/ca/js/jquery.min.js
-dist/prod/ca/js/main.js
-dist/prod/ca/index.html
 *~

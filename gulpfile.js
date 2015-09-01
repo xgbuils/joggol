@@ -86,7 +86,7 @@ ENV.forEach(function (env) {
       b.bundle()
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('main.js'))
-        //.pipe(streamify(uglify()))
+        .pipe(streamify(uglify()))
         .pipe(gulp.dest('./dist/' + path + '/js/'));
     }
    
