@@ -1,0 +1,12 @@
+{
+  "name": "juggol",
+  "description": "juggling web application",
+  "repository": "https://github.com/xgbuils/juggol",
+  "keywords": [
+    "juggling",
+    "siteswap",
+    "generator",
+    "simulator"
+  ],
+  "image": "heroku/nodejs"
+}

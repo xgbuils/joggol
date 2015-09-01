@@ -1,8 +1,8 @@
 {
   "name": "juggol",
   "version": "0.1.0",
-  "description": "aplicació web de malabars",
-  "main": "dist/index.html",
+  "description": "juggling web application",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.13.3",
     "frontpiece.model": "^0.5.3",
@@ -30,6 +30,9 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.4.0"
+  },
+  "engines": {
+    "node": "0.12.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
