@@ -1,1 +1,1 @@
-require('./backbone/init.js')
+require('./frontpiece_app/init.js')
