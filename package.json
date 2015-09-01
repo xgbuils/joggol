@@ -4,6 +4,7 @@
   "description": "aplicació web de malabars",
   "main": "dist/index.html",
   "dependencies": {
+    "express": "^4.13.3",
     "frontpiece.model": "^0.5.3",
     "frontpiece.recursive-model": "^0.4.2",
     "frontpiece.router": "^0.2.1",

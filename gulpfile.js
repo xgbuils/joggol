@@ -17,6 +17,22 @@ var reload      = browserSync.reload;
 var ENV  = ['dev', 'prod']
 var LANG = ['ca', 'es', 'en']
 
+gulp.task('copyfonts', function() {
+  gulp.src('./src/fonts/**/*.{ttf,woff,eot,svg}', { base: 'src/fonts/'})
+    .pipe(gulp.dest('./dist/generic/fonts/'));
+});
+gulp.task('copyjquery', function() {
+  gulp.src('bower_components/jquery/dist/jquery.min.js')
+    .pipe(gulp.dest('./dist/generic/js/vendor/'));
+});
+
+gulp.task('stylus', function(){
+  gulp.src('src/styles/main.styl')
+    .pipe(stylus({ use: nib(), compress: true }))
+    .pipe(gulp.dest('./dist/generic/styles/'))
+    .pipe(reload({ stream: true }))
+});
+
 ENV.forEach(function (env) {
   LANG.forEach(function (lang) {
     var path  = env + '/' + lang
@@ -26,16 +42,6 @@ ENV.forEach(function (env) {
        require('fs').writeFile('dist/' + path + '/CNAME', lang + '.juggol.com')
     })
 
-    gulp.task('copyfonts:' + sufix, function() {
-       gulp.src('./src/fonts/**/*.{ttf,woff,eot,svg}', { base: 'src/fonts/'})
-       .pipe(gulp.dest('./dist/' + path + '/fonts'));
-    });
-
-    gulp.task('copyjquery:' + sufix, function() {
-       gulp.src('bower_components/jquery/dist/jquery.min.js')
-       .pipe(gulp.dest('./dist/' + path + '/js/vendor/'));
-    });
-    
     gulp.task('template:' + sufix, function() {
        gulp.src(['src/index.html.tpl'])
        .pipe(template(require('./src/lang/' + lang + '.js')))
@@ -44,13 +50,6 @@ ENV.forEach(function (env) {
        .pipe(reload({ stream: true }))
     });
     
-    gulp.task('stylus:' + sufix, function(){
-        gulp.src('src/styles/main.styl')
-            .pipe(stylus({ use: nib(), compress: true }))
-            .pipe(gulp.dest('./dist/' + path + '/styles/'))
-            .pipe(reload({ stream: true }))
-    });
-
     gulp.task('js:' + sufix, function(){
       browserifyShare();
     });
@@ -99,19 +98,14 @@ ENV.forEach(function (env) {
         .pipe(gulp.dest('dist/' + path + '/js'))
     }
     
-    gulp.task('serve:' + sufix, [
-      'copyfonts:' + sufix,
-      'copyjquery:' + sufix,
+    gulp.task('deploy:' + sufix, [
+      'copyfonts',
+      'copyjquery',
       'js:' + sufix,
-      'stylus:' + sufix, 
+      'stylus', 
       'template:' + sufix,
       'cname:' + sufix,
       ], function() {
-      browserSync({
-        server: {
-          baseDir: 'dist/' + path + '/'
-        }
-      });
     
       gulp.watch(['src/index.html.tpl', 'src/lang/*.js'], ['template:' + sufix]);
       gulp.watch('src/styles/**/*.styl', ['stylus:' + sufix]);
