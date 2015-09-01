@@ -40,19 +40,22 @@ var keyboard = {
         el: '#keyboard-balls',
         name: 'balls',
         model: balls,
-        appModel: appModel
+        appModel: appModel,
+        end: 25
     }),
     period: new KeyboardView({
         el: '#keyboard-periods',
         name: 'period',
         model: period,
-        appModel: appModel
+        appModel: appModel,
+        end: 10
     }),
     height: new KeyboardView({
         el: '#keyboard-heights',
         name: 'height',
         model: height,
-        appModel: appModel
+        appModel: appModel,
+        end: 25
     }),
     patterns: new PatternsKeyboardView({
         el: '#keyboard-patterns',

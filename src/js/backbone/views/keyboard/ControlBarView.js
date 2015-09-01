@@ -15,13 +15,6 @@ var ControlBarView = View.extend({
         var widthRight = $('#keyboard-right', $el).outerWidth()
         var keyboardWidth = view.width - widthLeft - widthRight
 
-        for (var name in view.keyboardViews) {
-            var keyboard   = view.keyboardViews[name]
-            keyboard.outerWidth = view.width
-            keyboard.width      = keyboardWidth
-            keyboard.parent     = view
-        }
-
         // current keyboard
         this.currentKB = {
             simulator: options.patternsKeyboardView

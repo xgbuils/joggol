@@ -58,6 +58,7 @@ var AppView = View.extend({
             }
         })
 
+
         $('.internal-link').on('click', function (event) {
             event.preventDefault()
             event.stopPropagation()

@@ -3,16 +3,21 @@ var LazyArray = require('lazyarray-lite')
 
 var KeyboardView = View.extend({
     initialize: function (options) {
-        var view = this
-        this.name = options.name
-        this.$el  = $(options.el)
-        this.el   = this.$el[0]
+        var view   = this
+        this.name  = options.name
+        this.$el   = $(options.el)
+        this.el    = this.$el[0]
+        $parent = this.$el.parents('.keyboard')
+        var widthLeft  = $parent.find('#keyboard-left' ).outerWidth()
+        var widthRight = $parent.find('#keyboard-right').outerWidth()
+        this.width = $parent.outerWidth() - widthLeft - widthRight
 
         var model    = this.model    = options.model
         var appModel = this.appModel = options.appModel
         this.lazyListOptions = this.model.get()
 
         options.start || (options.start = 1)
+        this.end = options.end || Infinity
 
         this.position  = 0
         this.transform = options.transform || function (e) {return e} 
@@ -22,7 +27,7 @@ var KeyboardView = View.extend({
                 get: function (index) {
                     return index + options.start
                 },
-                maxLength: 100
+                maxLength: this.end
             })
         }
 
@@ -85,25 +90,19 @@ var KeyboardView = View.extend({
     },
     right: function (incr) {
         var listWidth = this.$el.outerWidth()
-        console.log('listWidth', listWidth)
 
         this.position += incr
-        console.log('position', this.position)
         if (this.position > this.maxWidth) {
             this.position = this.maxWidth > 0 ? this.maxWidth : 0
         }
-        console.log('position', this.position)
         this.$el.css('left', -this.position)
         if (this.position + 2 * this.width > listWidth && this.index < this.keys_list.maxLength) {
             this.append()
         }
     },
     center: function ($key) {
-        console.log('center ', $key[0])
         var pos  = $key.offset().left
-        console.log('pos', pos)
         var incr = 0.5 * $(window).outerWidth() - pos
-        console.log(0.5 * $(window).outerWidth())
 
         if (incr < 0) {
             this.right(-incr)
@@ -116,7 +115,6 @@ var KeyboardView = View.extend({
         var begin     = this.index
         this.index   += 30
         var keys_list = this.keys_list.slice(begin, this.index)
-        console.log('maxLength', this.keys_list.maxLength)
         $.fn.append.apply(this.$el, keys_list
             .map(function (key) {
                 return '<li><span class="numbers keyboard-btn number-' + transform(key) + '">' + transform(key) + '</span></li>'
@@ -126,14 +124,13 @@ var KeyboardView = View.extend({
         if (this.maxWidth === Infinity && this.index >= this.keys_list.maxLength) {
             this.maxWidth = listWidth - this.width
         }
-        console.log('maxWidth', this.maxWidth)
     },
     create: function () {
-        console.log('create')
         this.index = 0
         this.maxWidth = Infinity
         this.keys_list = this.lazyListConstructor(this.lazyListOptions)
-        this.$el.empty()
+        this.position = 0
+        this.$el.empty().css('left', 0)
         this.append()
     }
 })
