@@ -22,6 +22,7 @@ gulp.task('copyfonts', function() {
     .pipe(gulp.dest('./dist/generic/fonts/'));
 });
 gulp.task('copyjquery', function() {
+  console.log('copy jquery')
   gulp.src('bower_components/jquery/dist/jquery.min.js')
     .pipe(gulp.dest('./dist/generic/js/vendor/'));
 });
