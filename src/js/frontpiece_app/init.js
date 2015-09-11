@@ -219,7 +219,6 @@ var appView = new AppView({
 // routing start
 appRouter.start()
 var fragment = appRouter.getFragment()
-console.log(fragment)
 if (fragment) {
     appRouter.navigate(fragment, {trigger: true})
 }

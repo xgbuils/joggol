@@ -1,12 +1,10 @@
 
 module.exports = {
 	parseHref: function (href, config) {
-        //console.log(href)
         var aux = href.split('?')
         var fragment = aux[0]
         var queryString = {}
     
-        //console.log(aux[1])
         if (aux[1]) {
             var q = aux[1].split('&')
             for (var i in q) {

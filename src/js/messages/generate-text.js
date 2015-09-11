@@ -17,7 +17,6 @@ module.exports = {
     
     period: function (text, period, $output, lang) {
         text.error = false
-        //console.log(period)
         if (period.min !== undefined && period.max !== undefined 
          && period.min <= period.max && period.min > 0) {
             if (period.min === period.max) 
