@@ -2,8 +2,10 @@ var gulp        = require('gulp');
 var gutil       = require('gulp-util');
 var browserify  = require('browserify');
 var browserSync = require('browser-sync');
+var buffer      = require('vinyl-buffer');
 var nib         = require('nib')
 var rename      = require('gulp-rename')
+var sourcemaps  = require('gulp-sourcemaps');
 var streamify   = require('gulp-streamify')
 var stylus      = require('gulp-stylus')
 var template    = require('gulp-template');
@@ -11,6 +13,7 @@ var uglify      = require('gulp-uglify');
 var buffer      = require('vinyl-buffer');
 var source      = require('vinyl-source-stream');
 var watchify    = require('watchify');
+var assign      = require('object-assign')
 
 var reload      = browserSync.reload;
 
@@ -56,6 +59,12 @@ ENV.forEach(function (env) {
     });
 
     function browserifyShare() {
+      var customOpts = {
+        //entries: ['./src/index.js'],
+        debug: true,
+        fullPaths: false
+      };
+      var opts = assign({}, watchify.args, customOpts);
       // create transform
       var aliasify = require('aliasify').configure({
         aliases: {
@@ -66,27 +75,24 @@ ENV.forEach(function (env) {
       })
 
       // create browserify bundle
-      var b = browserify({
-        cache: {},
-        packageCache: {},
-        fullPaths: false
-      })
-      b = watchify(b)
+      var b = watchify(browserify(opts))
 
       b.transform(aliasify)
       b.on('update', function () {
         bundleShare(b);
       })
-
       b.add('./src/js/main.js');
       bundleShare(b);
     }
 
     function bundleShare (b) {
-      b.bundle()
+      return b.bundle()
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
         .pipe(source('main.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
         .pipe(streamify(uglify()))
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist/' + path + '/js/'));
     }
    

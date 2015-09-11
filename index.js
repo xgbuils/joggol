@@ -12,7 +12,20 @@ var sites = {
   'en': true
 }
 
-app.get('/', function (req, res) {
+app.get('/', requestCallback);
+app.get('/header', requestCallback);
+app.get('/generator', requestCallback);
+app.get(/^\/simulator(\?.*)?$/, requestCallback);
+
+var server = app.listen(app.get('port'), function () {
+  var host = server.address().address;
+  var port = server.address().port;
+
+  console.log('Example app listening at http://%s:%s', host, port);
+});
+
+
+function requestCallback(req, res) {
   var subdomain = req.get('host').split('.')[0];
   var lang = 'en'
   if (sites[subdomain]) {
@@ -22,11 +35,4 @@ app.get('/', function (req, res) {
   res.sendFile('dist/prod/' + lang + '/index.html', {
     root: __dirname
   });
-});
-
-var server = app.listen(app.get('port'), function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Example app listening at http://%s:%s', host, port);
-});
+}

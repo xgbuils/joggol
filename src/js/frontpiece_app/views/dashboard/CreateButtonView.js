@@ -31,7 +31,7 @@ var CreateButtonView = View.extend({
             }
             var qs = querystring.encode(options)
 
-            this.$el.attr('href', '#simulator/?' + qs)
+            this.$el.attr('href', '#simulator?' + qs)
             this.$el.removeClass('disabled')
         } else {
             this.$el.addClass('disabled')

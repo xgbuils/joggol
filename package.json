@@ -11,6 +11,7 @@
     "frontpiece.view": "^0.1.0",
     "kinemajs": "0.0.2",
     "lazyarray-lite": "^0.2.1",
+    "object-assign": "^2.1.1",
     "siteswap-generator": "^0.2.0"
   },
   "devDependencies": {
